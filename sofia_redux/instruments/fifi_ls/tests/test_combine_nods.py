@@ -386,7 +386,6 @@ class TestCombineNods(FIFITestCase):
         hdr['ASSC_OBS'] = 'R004'
         hdr['DATE-OBS'] = '2016-03-01T10:39:51'
 
-
         # time comes from date-obs and calculation in combine_nods
         atime = 1456828781.56
         btime1 = 1456828733.56
