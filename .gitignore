@@ -90,3 +90,10 @@ sofia_redux/instruments/fifi_ls/data/*
 2_redux_param_LMC-CII_current_best_newpipe.cfg
 sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
 sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
+
+# Plots
+*.png
+
+# Notebooks
+*.ipynb
+
