@@ -182,6 +182,7 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
 
     # Initialize the arrays to return for each spaxel
     em_opt =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+    e =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     # popt =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
     popt =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
 
@@ -214,20 +215,24 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # Simplified: Emission = 1-Transmission
             # EmissionModel = a + b ∗ λ + c ∗ Emission(λ, T)
             # em = a + b*λ + c(1-T)
-            e = 1-t
+            e[spaxel] = 1-t
+            #  # data.shape (16, 25)
+            # numspexel, numspaxel = hdul.data.shape
 
             # Perform optimized linear fit             
-            popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+            popt[spaxel], pcov = curve_fit(_em_func,e[spaxel], np.array(flatval)[valid_spexel,spaxel],
                         bounds=param_bounds)    
 
             a, c = popt[spaxel]
-            em_opt[spaxel] = a + c*e
+            em_opt[spaxel] = a + c*e[spaxel]
 
-            # Bring back result to original size 16 and refill NaNs at originall positions. Can be done on 
+            # Bring back emission and result to original size 16 and refill NaNs at originall positions. Can be done on 
             # original data, no change in NaNs 
             # Inizialize empty array with size 16
             restored_em_opt = np.empty(hdul.data.shape[dimspexel])
+            e_full = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt[:] = np.nan
+            e_full[:] = np.nan
             # Initialize array with ones at non-NaN indices
             nanarray = np.zeros(hdul.data.shape[dimspexel])
             nanarray[valid_spexel] = 1
@@ -240,6 +245,7 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
                 if value == 1:
                     if original_data_index < hdul.data.shape[dimspexel]:
                         restored_em_opt[original_data_index] = em_opt[spaxel][optimized_data_index]
+                        e_full[original_data_index] = e[spaxel][optimized_data_index]
                         original_data_index += 1
                         optimized_data_index += 1                        
                 elif value == 0:
@@ -247,6 +253,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
 
             # Write back into return array
             em_opt[spaxel] = restored_em_opt
+            e[spaxel] = e_full
+            #print('e_spaxel',e_full)
 
 
             # # Plot some stuff for testing 
@@ -294,7 +302,11 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
  
     em_opt = np.array(em_opt)
     popt = np.array(popt)
-    return popt
+    e = np.transpose(np.array(e))
+    #print('e',e)
+
+    #print('e.shape',e.shape)
+    return popt, e
 
 
 def classify_files(filenames, offbeam=False):
@@ -694,10 +706,27 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
                                 # hier nur neuer namen zur besseren übersicht
                                 
                                 # Telluric scaling = f(extention, extention info, main header)
-                                popt1 = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
-                                a1 = popt1[:, 0]  # Extracts the first column (a values)
-                                c1= popt1[:, 1]  # Extracts the 2nd column (c values if no b valuse) 
-                                # print(a1.shape) 
+                                popt1, e1 = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
+                                a1 =popt1[:, 0]  # Extracts the first column (a values)
+                                c1= popt1[:, 1]  # Extracts the 2nd column (c values if no b valuse)
+                                popt2, e2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul']) 
+                                a2 =popt2[:, 0]  # Extracts the first column (a values)
+                                c2= popt2[:, 1]  # Extracts the 2nd column (c values if no b valuse)  
+                                # reshape into data.shape (16, 25)
+                                numspexel, numspaxel = brow['hdul'][b_fname].data.shape
+                                print('e1.shape',e1.shape)
+                                print('a1.shape',a1.shape)
+                                print('c1.shape',c1.shape)  
+
+                                # Reshape into a 2D array (16, 25)
+                                a1_full= np.tile(a1, (numspexel, 1))
+                                c1_full= np.tile(c1, (numspexel, 1)) 
+                                a2_full= np.tile(a2, (numspexel, 1))
+                                c2_full= np.tile(c2, (numspexel, 1))
+                                print('a1_2d.shape',a1_full.shape)
+                                print('a1',a1)
+                                print('a1_2d',a1_full)
+                                print('c2_full',c2_full)   
                                 # print('a1',a1)
                                 # print('a1_median',np.nanmedian(a1))
                                 # print('c1',c1)
@@ -782,20 +811,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
                                 # plt.show() 
 
 
-                                
-
-
-
-
-
-                                #bdata = np.array([b_flux_ts, b2_flux_ts])
-                                bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
-
-
-                            else:  # alter code für bdata
-                                bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
-                            
-                            #berr und übergabe nach interp_b_nods bleibt
+                            # Ab hier wieder alter code, bdata bleibt bis jetzt unverändert
+                            bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
                             berr = np.array([np.sqrt(b_var),
                                             brow2['hdul'][b_sname].data])
                             b_flux, b_var = \
