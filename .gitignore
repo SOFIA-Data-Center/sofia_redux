@@ -75,25 +75,18 @@ sofia_redux/instruments/fifi_ls/tests/data/*fits
 sofia_redux/instruments/fifi_ls/data/*
 
 # Parameter Files
-2_redux_infiles_63OI_1nod_win.txt
-2_redux_infiles_63OI_win.txt
-2_redux_infiles_Asy_win.txt
-2_redux_infiles_CII_1nod_win.txt
-2_redux_infiles_CII_short_win.txt
-2_redux_infiles_CII_sorted_Christian_win.txt
-2_redux_infiles_CII_sorted_win.txt
-2_redux_infiles_M82_CII.cfg
-2_redux_infiles_OIII_1nod_win.txt
-2_redux_infiles_OIII_sorted_win.txt
-2_redux_param_interpolate_win.cfg
-2_redux_param_LMC-CII_current_best_newpipe_recipe.cfg
-2_redux_param_LMC-CII_current_best_newpipe.cfg
 sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
 sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
+*redux_infiles*
+*redux_param*
 
 # Plots
 *.png
 
 # Notebooks
 *.ipynb
+
+*.out
+*.csv
+*.gpx
 
