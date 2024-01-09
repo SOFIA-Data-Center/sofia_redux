@@ -147,6 +147,14 @@ DEFAULT = {
          'description': 'If set, flux is scaled with the b_flux and the two backgrounds',
          'dtype': 'bool',
          'wtype': 'check_box'},
+        {'key': 'telluric_scaling_on',
+         'name': 'Perform telluric scaling (OTF and TP)',
+         'value': False,
+         'description': 'If set, B-fluxes are telluricly scaled with ZA at A',
+         'dtype': 'bool',
+         'wtype': 'check_box'},
+
+         
     ],
     'lambda_calibrate': [
         {'key': 'save',

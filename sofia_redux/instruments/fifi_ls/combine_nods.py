@@ -24,20 +24,16 @@ from sofia_redux.toolkit.utilities \
     import (hdinsert, gethdul, write_hdul)
 
 from sofia_redux.instruments.fifi_ls.get_atran \
-    import get_atran, clear_atran_cache, get_atran_interpolated
+    import get_atran_interpolated
 from sofia_redux.instruments.fifi_ls.get_resolution \
-    import get_resolution, clear_resolution_cache
+    import get_resolution
 from sofia_redux.instruments.fifi_ls.apply_static_flat \
-    import apply_flat_to_hdul, get_flat, calculate_flat
+    import get_flat, calculate_flat
 
 
 
 
 __all__ = ['classify_files', 'combine_extensions', 'combine_nods', 'telluric_scaling']
-
-
-
-
 
 
 def _mjd(dateobs):
@@ -74,12 +70,6 @@ def _from_hdul(hdul, key):
     """Read a header keyword from the PHU."""
     return hdul[0].header[key.upper().strip()]
 
-# def em_func(em_spax):
-#     def wow(lam ,a, b, c): 
-#         m = a + b*lam + c*em_spax
-#         return m
-#     return wow
-
 def _em_func(e, a, c):
     return a +c*e
 
@@ -107,15 +97,122 @@ def _apply_flat_for_telluric(hdul, flatdata, wave, skip_err=True):
     # calculate_flat return has many values, only need actual data
     return hdu_result[0][0]
 
+def _atransmission(hdul,row,hdr0, hdul0):
+    # gets transmission from current A file
 
+    # data.shape (numramp, 16, 25) -- OTF
+    # data.shape (16, 25) -- non OTF, not covered here
+    numramp, numspexel, numspaxel = hdul.data.shape
+    dimspexel = 1
+    # Values from main header for wavelength calibration
+    dichroic = hdr0['DICHROIC']
+    channel=hdr0['CHANNEL']    
+    obsdate = hdr0['DATE-OBS']
+    # Obsdate needs special format for lambda_calibrate.py 
+    try:
+        obsdate = [int(x) for x in obsdate[:10].split('-')]
+    except (ValueError, TypeError, IndexError):
+        log.error('Invalid DATE-OBS')
+        return
+    channel = hdr0['CHANNEL']
+    b_order = int(hdr0['G_ORD_B', -1])
+    if channel == 'BLUE':
+        if b_order in [1, 2]:
+            blue = 'B%i' % b_order
+        else:
+            log.error("Invalid Blue grating order")
+            return
+    else:
+        blue = None
+
+    # Values from extention header for wavelength calibration
+    ind = row['indpos']
+
+    # Get spectral resolution (RESFILE keyword is added to primehead)
+    resolution = get_resolution(hdr0)
+    if resolution is None:
+        log.error("Unable to determine spectral resolution")
+        return
+
+    # Get ATRAN data from input file or default on disk, smoothed to
+    # current resolution
+    atran_data = get_atran_interpolated(hdr0, resolution=resolution,
+                           atran_dir=None, use_wv=True,
+                           get_unsmoothed=True)
+    if atran_data is None or atran_data[0] is None:
+        log.error("Unable to get ATRAN data")
+        return
+    atran, unsmoothed = atran_data
+    # Split in wavelength (x) and transmission factor (y)
+    w_atran=atran[0]
+    t_atran=atran[1]
+    
+
+    # Get calibration from lambda_calibrate.py
+    # calibration = {'wavelength': w, 'width': p, 'wavefile': wavefile}
+    # wavecal is optional to hand over, DataFrame containing wave calibration data.  May be supplied in
+    # order to remove the overhead of reading the file every iteration of this function.
+    
+    calibration = wave(ind, obsdate, dichroic, blue=blue, wavecal=None)
+    w_cal = calibration['wavelength']
+
+    # Initialize the arrays to return for each spaxel
+    t =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+
+    for spaxel in range(numspaxel):
+        
+        w_cal_loop=w_cal[:,spaxel]
+        lambda_min = np.min(w_cal_loop)
+        lambda_max = np.max(w_cal_loop)
+
+        # Limit the ATRAN wavelengths to lamnda_min and lambda_max
+        mask = (w_atran >= lambda_min) & (w_atran <= lambda_max)
+        w_atran_masked = w_atran[mask]
+        t_atran_masked = t_atran[mask]        
+
+        # Find spexel indices where data is not NaN 
+        valid_spexel = np.where(~np.isnan(hdul.data[:, :, spaxel]))[dimspexel]  # Find non-NaN indices
+        if len(valid_spexel) > 0:  # Proceed only if spaxel has valid data
+
+            # Create a function for nearest neighbor interpolation
+            interp_func = interp1d(w_atran_masked, t_atran_masked, kind='nearest', fill_value='extrapolate')
+
+            # Interpolate the y values at low-resolution x values
+            t[spaxel] = interp_func(w_cal_loop[valid_spexel])
+
+            # Bring back emission and result to original size 16 and refill NaNs at originall positions. Can be done on 
+            # original data, no change in NaNs 
+            # Inizialize empty array with size 16
+            t_full = np.empty(hdul.data.shape[dimspexel])
+            t_full[:] = np.nan
+            # Initialize array with ones at non-NaN indices
+            nanarray = np.zeros(hdul.data.shape[dimspexel])
+            nanarray[valid_spexel] = 1
+            # Create two indices for the arrays of different lengths, then only increment the index of the longer
+            # array (original data). 
+            original_data_index = 0
+            optimized_data_index = 0
+
+            for value in nanarray:
+                if value == 1:
+                    if original_data_index < hdul.data.shape[dimspexel]:
+                        t_full[original_data_index] = t[spaxel][optimized_data_index]
+                        original_data_index += 1
+                        optimized_data_index += 1                        
+                elif value == 0:
+                    original_data_index += 1  # Only increment index of original data 
+
+            # Write back into return array
+            t[spaxel] = t_full
+    t = np.transpose(np.array(t))
+
+    return t
 
 def _telluric_scaling(hdul,brow,hdr0, hdul0):
-
-    # data.shape (16, 25)
+    # data.shape (16, 25), extention
     numspexel, numspaxel = hdul.data.shape
     dimspexel = 0
     dimspaxel = 1
-    # print(numspexel,numspaxel)
     # Values from main header for wavelength calibration
     dichroic = hdr0['DICHROIC']
     channel=hdr0['CHANNEL']    
@@ -253,59 +350,11 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
 
             # Write back into return array
             em_opt[spaxel] = restored_em_opt
-            t[spaxel] = t_full
-            #print('e_spaxel',e_full)
+            t[spaxel] = t_full      
 
-
-            # # Plot some stuff for testing 
-            # ymax = np.max(np.array(flatval)[valid_spexel, spaxel])*1.1
-            # font = {'size'   : 22}
-            # # font = {'family' : 'normal',
-            # #         'weight' : 'bold',
-            # #         'size'   : 22}
-
-            # plt.rc('font', **font)            
-            # fig, ax1 = plt.subplots(figsize=(20, 15))  # Create a single figure with one subplot
-            # # ax1.plot(w[valid_spexel, i], hdul.data[valid_spexel, i], label=f' 63OI Spaxel {i + 1}, Länge {len(valid_spexel)}', marker='.')
-            # # #ax1.plot(w[valid_spexel, i],em[i], marker='*', color='black', label='a + c(1-T)')
-            # # plt.plot(w[valid_spexel, i], em_opt[i][valid_spexel],marker='o', color='m',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt[i]))
-            # ax1.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}, original data', marker='.')
-            # ax1.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}, with flat applied', marker='.')
-            # #ax1.plot(w[valid_spexel, i],em[i], marker='*', color='black', label='a + c(1-T)')
-            # #plt.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o', color='m',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt[spaxel]))
-            # plt.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o', color='m',label='a + c(1-T): a=%5.3f, c=%5.3f data with flat applied' % tuple(popt[spaxel]))
-
-            # #plt.plot(w[valid_spexel, i], em_opt[valid_spexel, i],marker='o', color='m',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
-            # #ax1.plot(w[valid_spexel, i],em_opt, marker='+', color='blue', label='Emission Modell from fit')
-            # ax1.set_xlabel('Wavelength [mum]')
-            
-            # ax1.set_ylabel('Flux [IU]')
-            # ax1.set_ylim(0, ymax*1.2)
-            # ax1.set_title('Random B-File')
-            # ax1.legend(loc='upper left',prop={'size': 20})
-
-            # # Create a twin Axes sharing the same x-axis
-            # ax2 = ax1.twinx()
-            # ax2.plot(w_atran, t_atran, marker='.', color='red', label='ATRAN factor')
-            # # ax2.plot(w[valid_spexel, i], tm_spax, marker='*', color='green', label='ATRAN factor nearest')
-            # ax2.plot(w_cal_loop[valid_spexel], t, marker='*', color='green', label='ATRAN factor nearest')
-            # ax2.set_ylabel('Transmission Factor [-]')
-            # ax2.set_xlim(lambda_min, lambda_max)
-            # ax2.legend(prop={'size': 20})
-
-            # filename = f"CII_Spaxel_{spaxel+1}_fit_no_B_no_P0_withFlat.png"
-
-            # # filename = f"OIII_Spaxel_{spaxel+1}_fit_no_B_P0.png"
-            # # plt.savefig(filename)
-            # #plt.show()
-
- 
     em_opt = np.array(em_opt)
     popt = np.array(popt)
     t = np.transpose(np.array(t))
-    #print('e',e)
-
-    #print('e.shape',e.shape)
     return popt, t
 
 
@@ -464,7 +513,7 @@ def interp_b_nods(atime, btime, bdata, berr):   # pragma: no cover
     return bflux, bvar
 
 
-def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
+def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_scaling_on = False):
     """
     Find a B nod for each A nod.
 
@@ -508,21 +557,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
         log.error('No A nods found')
         return df
     
-    # Define the header for your data file
-    header = ['A', 'C']
-
-
-    # Open the file for writing, and create a CSV writer
-    with open('Opti_param_CII_no_B_onFlat.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Write the header to the CSV file
-        writer.writerow(header)
-
-
-        ## !!! Don't forget to restore for loop intendation when removing the 
-        ## csv write!!!
-
-        for afile, arow in alist.iterrows():
+    for afile, arow in alist.iterrows():
 
             asymmetric = arow['asymmetric']
             bselect = blist[(blist['channel'] == arow['channel'])
@@ -606,12 +641,10 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
                             # header of current file, might change over 
                             # over observations. Might be overkill, but still correct
                             if arow['detchan'] == 'BLUE': 
-                                print('BLUE')
                                 a_chpg = a_hdr['C_CYC_B']                            
                                 b_chpg1 = b_hdr['C_CYC_B']
                                 b_chpg2 = b2_hdr['C_CYC_B']
                             else:
-                                # print('RED')
                                 a_chpg =  a_hdr['C_CYC_R']
                                 b_chpg1 = b_hdr['C_CYC_R']
                                 b_chpg2 = b2_hdr['C_CYC_R']
@@ -682,6 +715,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
                             # retrieve from RAMPSTRT and RAMPEND keys
                             a_hdu_hdr = arow['hdul'][a_fname].header
                             a_shape = arow['hdul'][a_fname].data.shape
+
                             if len(a_shape) == 3 \
                                     and 'RAMPSTRT' in a_hdu_hdr \
                                     and 'RAMPEND' in a_hdu_hdr:
@@ -694,126 +728,36 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
                             else:
                                 atime = np.array([atime])
                             btime = np.array([btime1, btime2])
-
-                            # interpolate B flux to A time
                             b_fname = f'FLUX_G{bgidx2}'
                             b_sname = f'STDDEV_G{bgidx2}'                       
 
-                            # Hier rein mit telluric scheiss, beide Bs nacheinander auf die selbe Art
-                            neu = 1
-                            if neu:  
-                                # brow2['hdul'][b_fname].data (Flux extension) wird im alten code direkt an bdata übergeben, 
-                                # hier nur neuer namen zur besseren übersicht
-                                
-                                # Telluric scaling = f(extention, extention info, main header)
+                            # Perform telluric scaling 
+                            if telluric_scaling_on:  
                                 popt1, t1 = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
                                 a1 =popt1[:, 0]  # Extracts the first column (a values)
                                 c1= popt1[:, 1]  # Extracts the 2nd column (c values if no b valuse)
+                                ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])    
+
                                 popt2, t2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul']) 
                                 a2 =popt2[:, 0]  # Extracts the first column (a values)
                                 c2= popt2[:, 1]  # Extracts the 2nd column (c values if no b valuse)  
                                 # reshape into data.shape (16, 25)
-                                numspexel, numspaxel = brow['hdul'][b_fname].data.shape
-                                print('t1.shape',t1.shape)
-                                print('t1',t1)
-                                # print('a1.shape',a1.shape)
-                                # print('c1.shape',c1.shape)  
-
+                                numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
                                 # Reshape into a 2D array (16, 25)
                                 a1_full= np.tile(a1, (numspexel, 1))
                                 c1_full= np.tile(c1, (numspexel, 1)) 
                                 a2_full= np.tile(a2, (numspexel, 1))
                                 c2_full= np.tile(c2, (numspexel, 1))
-                                # print('a1_2d.shape',a1_full.shape)
-                                # print('a1',a1)
-                                # print('a1_2d',a1_full)
-                                # print('c2_full',c2_full)   
-                                # print('a1',a1)
-                                # print('a1_median',np.nanmedian(a1))
-                                # print('c1',c1)
-                                # print('c1_median',np.nanmedian(c1))
-                                # print('popt1',popt1)
-                                # print('popt1',popt1.shape)
-                                # print('b1_ts',b1_ts.shape)
-                                # print('cali1.shape', cali1['wavelength'].shape)
-                                # # coeff2_ts, b2_ts, cali2 = telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header) 
-                                # Write the results to the CSV file
-                                # print('len(a)',len(a))
-                                for zz in range(len(a1)):  # Assuming a, b, c are arrays of the same length
-                                    writer.writerow([a1[zz], c1[zz]]) 
-                                    # writer.writerow([a[zz], b[zz], c[zz]])
 
-                                # print(a)
-                                # brow['a'] = a
-                                # #df['a'][brow] = a
-                                # brow['b'] = b
-                                # brow['c'] = c
-                                # print('df_lop',df)
-                                # print(brow)
-                                
-                                # print('coefficients b1', popt1)
-                                # print('b1', b_flux)
-                                # print('b1 telluric_scaled', b1_ts)
-                                #print(b1_ts.shape)
-                                # print('coefficients b2', coeff2_ts)
-                                # print('b2 telluric_scaled', b2_ts)
+                                b1_fitted = a1_full + c1_full*(1-t1)
+                                b2_fitted = a2_full + c2_full*(1-t2)                              
 
-                                # # Plot each column as a line
-                                # plt.figure()
-                                # for i in range(brow['hdul'][b_fname].data.shape[1]):
-                                #     valid_spexel = np.where(~np.isnan(brow['hdul'][b_fname].data[:, i]))[0]  # Find non-NaN indices
-                                #     plt.plot(cali1['wavelength'][valid_spexel, i],brow['hdul'][b_fname].data[valid_spexel, i], label=f'Spaxel original {i + 1}', marker='.')
-                                #     plt.plot(cali1['wavelength'][valid_spexel, i],b1_ts[valid_spexel, i], label=f'Spaxel scaled {i + 1}', marker='.')
+                                telfac1 = 1 +  np.divide(c1_full,b1_fitted)*(t1-ta)
+                                telfac2 = 1 +  np.divide(c2_full,b2_fitted)*(t2-ta)
+                                bdata = np.array([np.multiply(b_flux,telfac1), np.multiply(brow2['hdul'][b_fname].data,telfac2)])
 
-                                # plt.xlabel('wavelength')
-                                # plt.ylim(200,2000)
-                                # plt.ylabel('IU')
-                                # plt.legend()  
-                                # plt.title('B1 (before)') 
-                                # plt.show(block=False)      
-
-                                
-                                # plt.figure()
-                                # for i in range(brow2['hdul'][b_fname].data.shape[1]):
-                                #     valid_spexel = np.where(~np.isnan(brow2['hdul'][b_fname].data[:, i]))[0]  # Find non-NaN indices
-                                #     plt.plot(valid_spexel,brow2['hdul'][b_fname].data[valid_spexel, i], label=f'Line {i + 1}', marker='.')
-
-                                # plt.xlabel('spexel')
-                                # plt.ylim(200,2000)
-                                # plt.ylabel('IU')
-                                # plt.legend()
-                                # plt.title('B2 (after)')    
-                                # plt.show() 
-
-
-                                # plt.figure()
-                                # for i in range(brow['hdul'][b_fname].data.shape[1]):
-                                #     valid_spexel = np.where(~np.isnan(brow['hdul'][b_fname].data[:, i]))[0]  # Find non-NaN indices
-                                #     plt.plot(calibration1['wavelength'][valid_spexel, i],brow['hdul'][b_fname].data[valid_spexel, i], label=f'Line {i + 1}', marker='.')
-
-                                # plt.xlabel('wavelength')
-                                # plt.ylim(200,2000)
-                                # plt.ylabel('IU')
-                                # plt.legend()  
-                                # plt.title('B1 (before)') 
-                                # plt.show(block=False)      
-
-                                
-                                # plt.figure()
-                                # for i in range(brow2['hdul'][b_fname].data.shape[1]):
-                                #     valid_spexel = np.where(~np.isnan(brow2['hdul'][b_fname].data[:, i]))[0]  # Find non-NaN indices
-                                #     plt.plot(valid_spexel,brow2['hdul'][b_fname].data[valid_spexel, i], label=f'Line {i + 1}', marker='.')
-
-                                # plt.xlabel('spexel')
-                                # plt.ylim(200,2000)
-                                # plt.ylabel('IU')
-                                # plt.legend()
-                                # plt.title('B2 (after)')    
-                                # plt.show() 
-
-
-                            # Ab hier wieder alter code, bdata bleibt bis jetzt unverändert
-                            bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
+                            else:  
+                                bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
                             berr = np.array([np.sqrt(b_var),
                                             brow2['hdul'][b_sname].data])
                             b_flux, b_var = \
@@ -908,7 +852,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False):
 
 
 def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
-                 outdir=None, write=False, bg_scaling = False):
+                 outdir=None, write=False, bg_scaling = False, telluric_scaling_on = False):
     """
     Combine nods of ramp-fitted, chop-subtracted data.
 
@@ -1007,7 +951,7 @@ def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
         return
     
 
-    df = combine_extensions(df, b_nod_method=b_nod_method, bg_scaling=bg_scaling)
+    df = combine_extensions(df, b_nod_method=b_nod_method, bg_scaling=bg_scaling,  telluric_scaling_on = telluric_scaling_on)
 
     for filename, row in df[df['nodbeam'] == 'A'].iterrows():
 
