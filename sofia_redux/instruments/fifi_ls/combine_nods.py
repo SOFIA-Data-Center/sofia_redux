@@ -215,7 +215,7 @@ def _atransmission(hdul,row,hdr0, hdul0):
 
     return t
 
-def _telluric_scaling(hdul,brow,hdr0, hdul0):
+def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
     # print(hdul.data)
     # print(hdul0[1].data)
     # print(np.divide(hdul.data,hdul0[1].data))
@@ -344,10 +344,31 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # numspexel, numspaxel = hdul.data.shape
 
             # Perform optimized linear fit  
+            if sig_rel:
+                e_mean = np.mean(e)
+
+                e_kehr = 1/e
+                e_mean_kehr= 1/e_mean
+                e_kehr_rel = e_kehr/e_mean_kehr                
+                sigma_mean = np.mean(stddev[valid_spexel,spaxel])            
+                sigma_rel = stddev[valid_spexel,spaxel]/sigma_mean                
+                sigma_used = np.sqrt(np.square(sigma_rel)+np.square(e_kehr_rel))
+                # print('============================================')
+                # print('e_mean',e_mean)
+                # print('e_kehr',e_kehr)
+                # print('e_kehr_rel',e_kehr_rel)
+                # print('sigma_original',stddev[valid_spexel,spaxel])
+                # print('sigma_mean', sigma_mean)
+                # print('sigma_rel', sigma_rel)
+                # print('sigma_rel', sigma_rel)
+                # print('sigma_used',sigma_used)
+                # print('============================================')
+            else: 
+                sigma_used = stddev[valid_spexel,spaxel]
             popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            sigma = stddev[valid_spexel,spaxel], bounds=param_bounds)
+                            sigma = sigma_used, bounds=param_bounds)
             popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                            sigma = stddev[valid_spexel,spaxel], bounds=param_bounds_b) 
+                            sigma = sigma_used, bounds=param_bounds_b) 
         
             popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
                         bounds=param_bounds)
@@ -753,17 +774,17 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         b_fname = f'FLUX_G{bgidx2}'
                         b_sname = f'STDDEV_G{bgidx2}' 
                         # Perform telluric scaling 
+                        med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
+                        sig = False       # True: Sigma into curve fit. False: No sigma into curve fit
+                        sig_rel = True    # True: Normed Sigma. False: STDDEV
+                        ac = True       # True: only a and c fit, False: a, b and c fit
                         if telluric_scaling_on:  
-                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
-                            popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'])
+                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul'], sig_rel) 
+                            popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'], sig_rel)
                             ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])
                             # reshape into data.shape (16, 25)
                             numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
 
-
-                            med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
-                            sig = False     # True: Sigma into curve fit. False: No sigma into curve fit 
-                            ac = True       # True: only a and c fit, False: a, b and c fit
                             if ac: 
                                 if sig:
                                     # Only a and c curve fit parameters  
@@ -800,6 +821,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                                 b_flux = np.multiply(b_flux,telfac1)
                                 b_flux2 = np.multiply(brow2['hdul'][b_fname].data,telfac2)
                                 bdata = np.array([b_flux, b_flux2])
+                                berr = np.array([np.multiply(np.sqrt(b_var),telfac1),
+                                        np.multiply(brow2['hdul'][b_sname].data,telfac2)])
                             else:   # a ,b and c curve fit parameters                                 
                                 if sig: 
                                     a1_b = popt1_b_sig[:, 0]  
@@ -849,12 +872,13 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                                 b_flux = np.multiply(b_flux,telfac1_b)
                                 b_flux2 = np.multiply(brow2['hdul'][b_fname].data,telfac2_b)
                                 bdata = np.array([b_flux, b_flux2])
+                                berr = np.array([np.multiply(np.sqrt(b_var),telfac1_b),
+                                        np.multiply(brow2['hdul'][b_sname].data,telfac2_b)])
 
                         else:  
                             bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
-
-                        berr = np.array([np.sqrt(b_var),
-                                        brow2['hdul'][b_sname].data])
+                            berr = np.array([np.sqrt(b_var),
+                                            brow2['hdul'][b_sname].data])
 
                         if b_nod_method == 'interpolate':
                             # debug message
