@@ -216,16 +216,22 @@ def _atransmission(hdul,row,hdr0, hdul0):
     return t
 
 def _telluric_scaling(hdul,brow,hdr0, hdul0):
-    print(hdul.data)
-    print(hdul0[1].data)
-    print(np.divide(hdul.data,hdul0[1].data))
+    # print(hdul.data)
+    # print(hdul0[1].data)
+    # print(np.divide(hdul.data,hdul0[1].data))
+    # print(hdr0)
+    # print(hdul0[0].header)
+
+
     # print(hdul0[2].header)
     # print(hdul0[2].data)
     # data.shape (16, 25), extention
     numspexel, numspaxel = hdul.data.shape
     dimspexel = 0
     dimspaxel = 1
+    # hdul0.info()
     stddev = hdul0[2].data
+    # print('Go',hdul0['STDDEV_G0'].data)
     # Values from main header for wavelength calibration
     dichroic = hdr0['DICHROIC']
     channel=hdr0['CHANNEL']    
@@ -289,21 +295,27 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
     # Bounds in the physical range for all wavelengths, c must be positive as there are no negative
     # emissions
     param_bounds = ([0, 0], [np.inf, np.inf])
-    param_bounds_b = ([0,-np.inf, 0], [ np.inf, np.inf ,np.inf])
+    param_bounds_b = ([-np.inf,-np.inf, 0], [ np.inf, np.inf ,np.inf])
 
     # Initialize the arrays to return for each spaxel
     em_opt =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     em_opt_b =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+    em_opt_sig =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+    em_opt_b_sig =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     t =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     popt_b =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
     popt =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
-
+    popt_b_sig =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
+    popt_sig =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
+    pr = 0
     for spaxel in range(numspaxel):
+        pr +=1
         
         w_cal_loop=w_cal[:,spaxel]
         lambda_min = np.min(w_cal_loop)
         lambda_max = np.max(w_cal_loop)
         lambda_range = (lambda_max - lambda_min)
+
 
 
         # Limit the ATRAN wavelengths to lamnda_min and lambda_max
@@ -332,23 +344,25 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # numspexel, numspaxel = hdul.data.shape
 
             # Perform optimized linear fit  
-            sigma_on = 1  
-            if sigma_on == 1:       
-                popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                                sigma = stddev[valid_spexel,spaxel], bounds=param_bounds)
-                popt_b[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                                sigma = stddev[valid_spexel,spaxel], bounds=param_bounds_b) 
-            else: 
-                popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            bounds=param_bounds)
-                popt_b[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                                            bounds=param_bounds_b)     
+            popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+                            sigma = stddev[valid_spexel,spaxel], bounds=param_bounds)
+            popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                            sigma = stddev[valid_spexel,spaxel], bounds=param_bounds_b) 
+        
+            popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+                        bounds=param_bounds)
+            popt_b[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                                        bounds=param_bounds_b)     
 
             a, c = popt[spaxel]
             em_opt[spaxel] = a + c*e
+            a_sig, c_sig = popt_sig[spaxel]
+            em_opt_sig[spaxel] = a_sig + c_sig*e
 
             a_b,b_b, c_b = popt_b[spaxel]
             em_opt_b[spaxel] = a_b + b_b*w_cal_loop[valid_spexel]+c_b*e
+            a_b_sig,b_b_sig, c_b_sig = popt_b_sig[spaxel]
+            em_opt_b_sig[spaxel] = a_b_sig + b_b_sig*w_cal_loop[valid_spexel]+c_b_sig*e
 
 
             # Bring back emission and result to original size 16 and refill NaNs at originall positions. Can be done on 
@@ -356,9 +370,13 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # Inizialize empty array with size 16
             restored_em_opt = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt_b = np.empty(hdul.data.shape[dimspexel])
+            restored_em_opt_sig = np.empty(hdul.data.shape[dimspexel])
+            restored_em_opt_b_sig = np.empty(hdul.data.shape[dimspexel])
             t_full = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt[:] = np.nan
             restored_em_opt_b[:] = np.nan
+            restored_em_opt_sig[:] = np.nan
+            restored_em_opt_b_sig[:] = np.nan
             t_full[:] = np.nan
             # Initialize array with ones at non-NaN indices
             nanarray = np.zeros(hdul.data.shape[dimspexel])
@@ -373,6 +391,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
                     if original_data_index < hdul.data.shape[dimspexel]:
                         restored_em_opt[original_data_index] = em_opt[spaxel][optimized_data_index]
                         restored_em_opt_b[original_data_index] = em_opt_b[spaxel][optimized_data_index]
+                        restored_em_opt_sig[original_data_index] = em_opt_sig[spaxel][optimized_data_index]
+                        restored_em_opt_b_sig[original_data_index] = em_opt_b_sig[spaxel][optimized_data_index]
                         t_full[original_data_index] = t[spaxel][optimized_data_index]
                         original_data_index += 1
                         optimized_data_index += 1                        
@@ -382,6 +402,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # Write back into return array
             em_opt[spaxel] = restored_em_opt
             em_opt_b[spaxel] = restored_em_opt_b
+            em_opt_sig[spaxel] = restored_em_opt_sig
+            em_opt_b_sig[spaxel] = restored_em_opt_b_sig
             t[spaxel] = t_full  
 
 
@@ -389,11 +411,18 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # # Plot some stuff for testing 
             # ymax = np.max(hdul.data[valid_spexel, spaxel])*1.1
             # fig, ax1 = plt.subplots(figsize=(20, 15))  # Create a single figure with one subplot
+            # font = {'size'   : 22}
+
+            # plt.rc('font', **font)
             # # ax1.plot(w[valid_spexel, i], hdul.data[valid_spexel, i], label=f' 63OI Spaxel {i + 1}, Länge {len(valid_spexel)}', marker='.')
             # # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel], label=f' OIII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
+            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel,spaxel], label=f' Raw CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
+            # plt.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel], label=f' Flat CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
             # plt.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o', color='m',label='a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt[spaxel]))
-            # plt.plot(w_cal_loop[valid_spexel], em_opt_b[spaxel][valid_spexel],marker='o', color='g',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b[spaxel]))
+            # plt.plot(w_cal_loop[valid_spexel], em_opt_b[spaxel][valid_spexel],marker='o', color='r',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b[spaxel]))
+            
+            # plt.plot(w_cal_loop[valid_spexel], em_opt_sig[spaxel][valid_spexel],marker='*', color='b',label='sigma, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig[spaxel]))
+            # plt.plot(w_cal_loop[valid_spexel], em_opt_b_sig[spaxel][valid_spexel],marker='*', color='g',label='sigma, a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig[spaxel]))
 
             # ax1.set_xlabel('Wavelength [mum]')
             
@@ -402,15 +431,17 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0):
             # ax1.set_title('Random B-File')
             # ax1.legend(loc='upper left')
 
-            # filename = f"OIII_Spaxel_{spaxel+1}_fit_b_no_b_apos.png"
+            # filename = f"CII_Spaxel_{spaxel+1}_sig_FitRampsBase_982.png"
             # plt.savefig(filename)
-
-
+            
+    em_opt = np.transpose(np.array(em_opt))
     em_opt_b = np.transpose(np.array(em_opt_b))
     popt = np.array(popt)
     popt_b = np.array(popt_b)
+    popt_sig = np.array(popt_sig)
+    popt_b_sig = np.array(popt_b_sig)
     t = np.transpose(np.array(t))
-    return popt, t, flatval, popt_b, em_opt_b
+    return popt, t, flatval, popt_b, em_opt_b, popt_sig, popt_b_sig, em_opt, w_cal
 
 
 def classify_files(filenames, offbeam=False):
@@ -723,96 +754,100 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         b_sname = f'STDDEV_G{bgidx2}' 
                         # Perform telluric scaling 
                         if telluric_scaling_on:  
-                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
-                            popt2, t2, b2_flat, popt2_b, b2_fitted_b = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'])
+                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul']) 
+                            popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'])
                             ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])
                             # reshape into data.shape (16, 25)
                             numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
-                            b1_raw = b_flux
-                            b2_raw = brow2['hdul'][b_fname].data
 
-                            ac = 1
+
+                            med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
+                            sig = False     # True: Sigma into curve fit. False: No sigma into curve fit 
+                            ac = True       # True: only a and c fit, False: a, b and c fit
                             if ac: 
-                                # Only a and c curve fit parameters  
-                                a1 =popt1[:, 0]  # Extracts the first column (a values)
-                                c1= popt1[:, 1]  # Extracts the 2nd column (c values if no b values)
-                                a2 =popt2[:, 0]  # Extracts the first column (a values)
-                                c2= popt2[:, 1]  # Extracts the 2nd column (c values if no b values)
-                                a1_med = np.nanmedian(a1)  
-                                a2_med = np.nanmedian(a2)
-                                c1_med = np.nanmedian(c1)
-                                c2_med = np.nanmedian(c2)                          
-                                
-                                # Reshape into a 2D array (16, 25)
-                                a1_full= np.tile(a1, (numspexel, 1))
-                                c1_full= np.tile(c1, (numspexel, 1)) 
-                                a2_full= np.tile(a2, (numspexel, 1))
-                                c2_full= np.tile(c2, (numspexel, 1))    
-
-                                a1_med_full= np.full((numspexel, numspaxel), a1_med)
-                                c1_med_full= np.full((numspexel, numspaxel), c1_med) 
-                                a2_med_full= np.full((numspexel, numspaxel), a2_med)
-                                c2_med_full= np.full((numspexel, numspaxel), c2_med)  
-                                                      
-                                b1_fitted_spex = a1_full + c1_full*(1-t1)
-                                b2_fitted_spex = a2_full + c2_full*(1-t2)
-                                b1_fitted_med = a1_med_full + c1_med_full*(1-t1)
-                                b2_fitted_med = a2_med_full + c2_med_full*(1-t2)
-
-                                b1_fitted = b1_fitted_med
-                                b2_fitted = b2_fitted_med
-
-
-                                b1_used = b1_fitted
-                                b2_used = b2_fitted    
-
-                                # b1_used = b1_flat                          
-                                # b2_used = b2_flat
-
-                                b1_used = b1_raw
-                                b2_used = b2_raw
-
-                                # print('b1_raw',b1_raw[1:5,1:5])
-                                # print('b1_flat',b1_flat[1:5,1:5])
-                                # print('b1_fitted',b1_fitted[1:5,1:5])
-                                # print('b1_fitted_b',b1_fitted_b[1:5,1:5])
-
-                                telfac1 = 1 +  np.divide(c1_full,b1_used)*(t1-ta)
-                                telfac2 = 1 +  np.divide(c2_full,b2_used)*(t2-ta)
+                                if sig:
+                                    # Only a and c curve fit parameters  
+                                    a1 =popt1_sig[:, 0]  # Extracts the first column (a values)
+                                    c1= popt1_sig[:, 1]  # Extracts the 2nd column (c values if no b values)
+                                    a2 =popt2_sig[:, 0]  # Extracts the first column (a values)
+                                    c2= popt2_sig[:, 1]  # Extracts the 2nd column (c values if no b values)
+                                else: 
+                                    a1 =popt1[:, 0]  # Extracts the first column (a values)
+                                    c1= popt1[:, 1]  # Extracts the 2nd column (c values if no b values)
+                                    a2 =popt2[:, 0]  # Extracts the first column (a values)
+                                    c2= popt2[:, 1]  # Extracts the 2nd column (c values if no b values)
+                                if med:
+                                    a1 = np.nanmedian(a1)  
+                                    a2 = np.nanmedian(a2)
+                                    c1 = np.nanmedian(c1)
+                                    c2 = np.nanmedian(c2)  
+                                    # write array of size 16, 25 with one value
+                                    a1_full= np.full((numspexel, numspaxel), a1)
+                                    c1_full= np.full((numspexel, numspaxel), c1) 
+                                    a2_full= np.full((numspexel, numspaxel), a2)
+                                    c2_full= np.full((numspexel, numspaxel), c2)  
+                                else:                                       
+                                    # Reshape into a 2D array (16, 25)
+                                    a1_full= np.tile(a1, (numspexel, 1))
+                                    c1_full= np.tile(c1, (numspexel, 1)) 
+                                    a2_full= np.tile(a2, (numspexel, 1))
+                                    c2_full= np.tile(c2, (numspexel, 1))                         
+                                b1_fitted = a1_full + np.multiply(c1_full,(1-t1))
+                                b2_fitted = a2_full + np.multiply(c2_full,(1-t2))
+                        
+                                telfac1 = 1 +  np.divide(c1_full,b1_fitted)*(t1-ta)
+                                telfac2 = 1 +  np.divide(c2_full,b2_fitted)*(t2-ta)
                                 b_flux = np.multiply(b_flux,telfac1)
                                 b_flux2 = np.multiply(brow2['hdul'][b_fname].data,telfac2)
                                 bdata = np.array([b_flux, b_flux2])
-                            else: 
-                                                                # a ,b and c curve fit parameters  
-                                a1_b = popt1_b[:, 0]  
-                                b1_b = popt1_b[:, 1]                            
-                                c1_b = popt1_b[:, 2]  
-                                a2_b = popt2_b[:, 0]  
-                                b2_b = popt2_b[:, 1]
-                                c2_b = popt2_b[:, 2] 
+                            else:   # a ,b and c curve fit parameters                                 
+                                if sig: 
+                                    a1_b = popt1_b_sig[:, 0]  
+                                    b1_b = popt1_b_sig[:, 1]                            
+                                    c1_b = popt1_b_sig[:, 2]  
+                                    a2_b = popt2_b_sig[:, 0]  
+                                    b2_b = popt2_b_sig[:, 1]
+                                    c2_b = popt2_b_sig[:, 2] 
+                                else:                                    
+                                    a1_b = popt1_b[:, 0]  
+                                    b1_b = popt1_b[:, 1]                            
+                                    c1_b = popt1_b[:, 2]  
+                                    a2_b = popt2_b[:, 0]  
+                                    b2_b = popt2_b[:, 1]
+                                    c2_b = popt2_b[:, 2] 
 
-                                print('a1_b',a1_b)                             
-                                
-                                # Reshape into a 2D array (16, 25)
-                                a1_b_full= np.tile(a1_b, (numspexel, 1))
-                                b1_b_full= np.tile(b1_b, (numspexel, 1))
-                                c1_b_full= np.tile(c1_b, (numspexel, 1)) 
-                                a2_b_full= np.tile(a2_b, (numspexel, 1))
-                                b2_b_full= np.tile(b2_b, (numspexel, 1))
-                                c2_b_full= np.tile(c2_b, (numspexel, 1))
+                                if med:
+                                    a1_b = np.nanmedian(a1_b)
+                                    b1_b = np.nanmedian(b1_b)  
+                                    c1_b = np.nanmedian(c1_b)
+                                    a2_b = np.nanmedian(a2_b)
+                                    b2_b = np.nanmedian(b2_b)  
+                                    c2_b = np.nanmedian(c2_b) 
 
-                                b1_used = b1_fitted_b
-                                b2_used = b2_fitted_b    
+                                    a1_b_full= np.full((numspexel, numspaxel), a1_b)
+                                    b1_b_full= np.full((numspexel, numspaxel), b1_b)
+                                    c1_b_full= np.full((numspexel, numspaxel), c1_b) 
+                                    a2_b_full= np.full((numspexel, numspaxel), a2_b)
+                                    b2_b_full= np.full((numspexel, numspaxel), b2_b)
+                                    c2_b_full= np.full((numspexel, numspaxel), c2_b)  
+                                else:                       
+                                    
+                                    # Reshape into a 2D array (16, 25)
+                                    a1_b_full= np.tile(a1_b, (numspexel, 1))
+                                    b1_b_full= np.tile(b1_b, (numspexel, 1))
+                                    c1_b_full= np.tile(c1_b, (numspexel, 1)) 
+                                    a2_b_full= np.tile(a2_b, (numspexel, 1))
+                                    b2_b_full= np.tile(b2_b, (numspexel, 1))
+                                    c2_b_full= np.tile(c2_b, (numspexel, 1))
 
-                                # b1_used = b1_flat                          
-                                # b2_used = b2_flat
+                                b1_fitted_b = a1_b_full + np.multiply(b1_b_full, lambda1) + np.multiply(c1_b_full,(1-t1))
+                                b2_fitted_b  = a2_b_full + np.multiply(b2_b_full, lambda2) + np.multiply(c2_b_full,(1-t2))  
 
-                                # b1_used = b1_raw
-                                # b2_used = b2_raw
-                                telfac1 = 1 +  np.divide(c1_b_full,b1_used)*(t1-ta)
-                                telfac2 = 1 +  np.divide(c2_b_full,b2_used)*(t2-ta)
-                                b_flux = np.multiply(b_flux,telfac1)
-                                b_flux2 = np.multiply(brow2['hdul'][b_fname].data,telfac2)
+                                telfac1_b = 1 +  np.divide(c1_b_full,b1_fitted_b)*(t1-ta)
+                                telfac2_b = 1 +  np.divide(c2_b_full,b2_fitted_b)*(t2-ta)
+
+                                b_flux = np.multiply(b_flux,telfac1_b)
+                                b_flux2 = np.multiply(brow2['hdul'][b_fname].data,telfac2_b)
                                 bdata = np.array([b_flux, b_flux2])
 
                         else:  
