@@ -10,6 +10,7 @@ import numpy as np
 from pandas import DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tkr
 import time
 from scipy.interpolate import interp1d
 from scipy import stats
@@ -302,11 +303,15 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
     em_opt_b =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     em_opt_sig =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     em_opt_b_sig =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+    em_opt_sig_rel =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
+    em_opt_b_sig_rel =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     t =[np.empty(numspexel) * np.nan for _ in range(numspaxel)]
     popt_b =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
     popt =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
     popt_b_sig =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
     popt_sig =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
+    popt_b_sig_rel =[np.empty(3) * np.nan for _ in range(numspaxel)]  # a, b, c
+    popt_sig_rel =[np.empty(2) * np.nan for _ in range(numspaxel)]  # a, c
     pr = 0
     for spaxel in range(numspaxel):
         pr +=1
@@ -352,7 +357,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
                 e_kehr_rel = e_kehr/e_mean_kehr                
                 sigma_mean = np.mean(stddev[valid_spexel,spaxel])            
                 sigma_rel = stddev[valid_spexel,spaxel]/sigma_mean                
-                sigma_used = np.sqrt(np.square(sigma_rel)+np.square(e_kehr_rel))
+                sigma_rel_used = np.sqrt(np.square(sigma_rel)+np.square(e_kehr_rel))
+                sigma_stddev = stddev[valid_spexel,spaxel] # for plotting purposes
                 # print('============================================')
                 # print('e_mean',e_mean)
                 # print('e_kehr',e_kehr)
@@ -364,11 +370,22 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
                 # print('sigma_used',sigma_used)
                 # print('============================================')
             else: 
-                sigma_used = stddev[valid_spexel,spaxel]
+                sigma_stddev = stddev[valid_spexel,spaxel]
             popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_used, bounds=param_bounds)
+                            sigma = sigma_stddev, bounds=param_bounds)
             popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_used, bounds=param_bounds_b) 
+                            sigma = sigma_stddev, bounds=param_bounds_b) 
+            
+            popt_sig_rel[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+                            sigma = sigma_rel_used, bounds=param_bounds)
+            popt_b_sig_rel[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                            sigma = sigma_rel_used, bounds=param_bounds_b)
+            if sig_rel:
+                popt_sig[spaxel] = popt_sig_rel[spaxel]
+                popt_b_sig[spaxel] = popt_b_sig_rel[spaxel]
+
+                
+                
         
             popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
                         bounds=param_bounds)
@@ -378,12 +395,18 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             a, c = popt[spaxel]
             em_opt[spaxel] = a + c*e
             a_sig, c_sig = popt_sig[spaxel]
+            a_sig_rel, c_sig_rel = popt_sig_rel[spaxel]
+
             em_opt_sig[spaxel] = a_sig + c_sig*e
+            em_opt_sig_rel[spaxel] = a_sig_rel + c_sig_rel*e # for plotting purposes
 
             a_b,b_b, c_b = popt_b[spaxel]
             em_opt_b[spaxel] = a_b + b_b*w_cal_loop[valid_spexel]+c_b*e
             a_b_sig,b_b_sig, c_b_sig = popt_b_sig[spaxel]
             em_opt_b_sig[spaxel] = a_b_sig + b_b_sig*w_cal_loop[valid_spexel]+c_b_sig*e
+
+            a_b_sig_rel,b_b_sig_rel, c_b_sig_rel = popt_b_sig_rel[spaxel]
+            em_opt_b_sig_rel[spaxel] = a_b_sig_rel + b_b_sig_rel*w_cal_loop[valid_spexel]+c_b_sig_rel*e # for plotting purposes
 
 
             # Bring back emission and result to original size 16 and refill NaNs at originall positions. Can be done on 
@@ -393,11 +416,15 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             restored_em_opt_b = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt_sig = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt_b_sig = np.empty(hdul.data.shape[dimspexel])
+            restored_em_opt_sig_rel = np.empty(hdul.data.shape[dimspexel]) # for plotting purposes
+            restored_em_opt_b_sig_rel = np.empty(hdul.data.shape[dimspexel]) # for plotting purposes
             t_full = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt[:] = np.nan
             restored_em_opt_b[:] = np.nan
             restored_em_opt_sig[:] = np.nan
             restored_em_opt_b_sig[:] = np.nan
+            restored_em_opt_sig_rel[:] = np.nan # for plotting purposes
+            restored_em_opt_b_sig_rel[:] = np.nan # for plotting purposes
             t_full[:] = np.nan
             # Initialize array with ones at non-NaN indices
             nanarray = np.zeros(hdul.data.shape[dimspexel])
@@ -414,6 +441,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
                         restored_em_opt_b[original_data_index] = em_opt_b[spaxel][optimized_data_index]
                         restored_em_opt_sig[original_data_index] = em_opt_sig[spaxel][optimized_data_index]
                         restored_em_opt_b_sig[original_data_index] = em_opt_b_sig[spaxel][optimized_data_index]
+                        restored_em_opt_sig_rel[original_data_index] = em_opt_sig_rel[spaxel][optimized_data_index] # for plotting purposes
+                        restored_em_opt_b_sig_rel[original_data_index] = em_opt_b_sig_rel[spaxel][optimized_data_index] # for plotting purposes
                         t_full[original_data_index] = t[spaxel][optimized_data_index]
                         original_data_index += 1
                         optimized_data_index += 1                        
@@ -425,35 +454,109 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             em_opt_b[spaxel] = restored_em_opt_b
             em_opt_sig[spaxel] = restored_em_opt_sig
             em_opt_b_sig[spaxel] = restored_em_opt_b_sig
+            em_opt_sig_rel[spaxel] = restored_em_opt_sig_rel # for plotting purposes
+            em_opt_b_sig_rel[spaxel] = restored_em_opt_b_sig_rel # for plotting purposes
             t[spaxel] = t_full  
 
 
 
-            # # Plot some stuff for testing 
-            # ymax = np.max(hdul.data[valid_spexel, spaxel])*1.1
-            # fig, ax1 = plt.subplots(figsize=(20, 15))  # Create a single figure with one subplot
-            # font = {'size'   : 22}
+            # Plot some stuff for testing 
+            fig, ax1 = plt.subplots(figsize=(20, 15))  # Create a single figure with one subplot
+            fontsize = 50
+            markersize = 8
+            font = {'size'   : fontsize}
 
-            # plt.rc('font', **font)
-            # # ax1.plot(w[valid_spexel, i], hdul.data[valid_spexel, i], label=f' 63OI Spaxel {i + 1}, Länge {len(valid_spexel)}', marker='.')
-            # # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel,spaxel], label=f' Raw CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel], label=f' Flat CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o', color='m',label='a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt[spaxel]))
-            # plt.plot(w_cal_loop[valid_spexel], em_opt_b[spaxel][valid_spexel],marker='o', color='r',label='a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b[spaxel]))
+            plt.rc('font', **font)
+            plt.grid(True)
+            plt.grid(which='minor')
+            plt.rcParams["font.family"] = "Times New Roman"
+
+            # plt.rc('grid', color='black')
+            # ax1.plot(w[valid_spexel, i], hdul.data[valid_spexel, i], label=f' 63OI Spaxel {i + 1}, Länge {len(valid_spexel)}', marker='.')
+            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
+            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel,spaxel], label=f' Raw Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
+            lns1 = ax1.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],marker='s',ms = markersize, 
+                            color='burlywood', label=f' Schrift {fontsize}Flat Spaxel {spaxel + 1}, {len(valid_spexel)} datapoints')
+            lns2 = ax1.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o',ms = markersize ,
+                            color='m',label='a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt[spaxel]))
+            lns3 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b[spaxel][valid_spexel],marker='o',ms = markersize, 
+                            color='r',label='a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b[spaxel]))
             
-            # plt.plot(w_cal_loop[valid_spexel], em_opt_sig[spaxel][valid_spexel],marker='*', color='b',label='sigma, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig[spaxel]))
-            # plt.plot(w_cal_loop[valid_spexel], em_opt_b_sig[spaxel][valid_spexel],marker='*', color='g',label='sigma, a + b*lambda + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig[spaxel]))
+            lns4 = ax1.plot(w_cal_loop[valid_spexel], em_opt_sig[spaxel][valid_spexel],marker='*',ms = markersize, 
+                            color='lime',label='\u03A3, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig[spaxel]))
+            lns5 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b_sig[spaxel][valid_spexel],marker='*',ms = markersize, 
+                            color='g',label='\u03A3, a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig[spaxel]))
+            lns6 = ax1.plot(w_cal_loop[valid_spexel], em_opt_sig_rel[spaxel][valid_spexel],marker='D',ms = markersize, 
+                            color='deepskyblue',label='$\u03A3_{normed}$, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig_rel[spaxel]))
+            lns7 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b_sig_rel[spaxel][valid_spexel],marker='D',ms = markersize, 
+                            color='b',label='$\u03A3_{normed}$, a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig_rel[spaxel]))
 
-            # ax1.set_xlabel('Wavelength [mum]')
+
             
-            # ax1.set_ylabel('Flux [IU]')
-            # # ax1.set_ylim(0, ymax)
-            # ax1.set_title('Random B-File')
-            # ax1.legend(loc='upper left')
 
-            # filename = f"CII_Spaxel_{spaxel+1}_sig_FitRampsBase_982.png"
-            # plt.savefig(filename)
+            # # Create a twin Axes sharing the same x-axis
+            ax2 = ax1.twinx()
+            # ax2.plot(w_cal_loop[valid_spexel], t_atran, marker='.', color='red', label='ATRAN factor')
+            # ax2.plot(w[valid_spexel, i], tm_spax, marker='*', color='green', label='ATRAN factor nearest')
+            lns8 = ax2.plot(w_cal_loop[valid_spexel], t[spaxel][valid_spexel], marker='P',ms = markersize, 
+                            color='gray',linestyle='--' , label='ATRAN factor')
+
+
+            # Find the min and max value of all ax1 data for y1 limits
+            minnime = np.min(np.minimum.reduce([np.array(flatval)[valid_spexel, spaxel],
+                                    em_opt[spaxel][valid_spexel],
+                                    em_opt_b[spaxel][valid_spexel],
+                                    em_opt_sig[spaxel][valid_spexel],
+                                    em_opt_b_sig[spaxel][valid_spexel],
+                                    em_opt_sig_rel[spaxel][valid_spexel],
+                                    em_opt_b_sig_rel[spaxel][valid_spexel]]))
+            maxime = np.max(np.maximum.reduce([np.array(flatval)[valid_spexel, spaxel],
+                                    em_opt[spaxel][valid_spexel],
+                                    em_opt_b[spaxel][valid_spexel],
+                                    em_opt_sig[spaxel][valid_spexel],
+                                    em_opt_b_sig[spaxel][valid_spexel],
+                                    em_opt_sig_rel[spaxel][valid_spexel],
+                                    em_opt_b_sig_rel[spaxel][valid_spexel]]))
+            # Round to the nearest full 100
+            min_value_rounded = np.floor(minnime / 100) * 100
+            max_value_rounded = np.ceil(maxime / 100) * 100            
+
+            # Set tick locations and labels for the first y-axis
+            yticks1 = np.linspace(min_value_rounded, max_value_rounded, 5)  # Example tick locations
+            ax1.set_yticks(yticks1)
+            ax1.set_yticklabels([f'{int(val)}' for val in yticks1])
+            ax1.set_ylim(top=max_value_rounded)
+            ax1.set_ylim(bottom=min_value_rounded)
+            ax1.set_xlabel('Wavelength [\u03BCm]')            
+            ax1.set_ylabel('Flux [I.U.]')
+            ax1.tick_params(axis='y', labelcolor='black')
+
+            # Set tick locations and labels for the second y-axis
+            yticks2 = np.linspace(0, 1, 5)  # Example tick locations
+            ax2.set_yticks(yticks2)
+            ax2.set_yticklabels([f'{val:}' for val in yticks2])
+            ax2.set_ylim(bottom=0)
+            ax2.set_ylim(top=1) 
+            ax2.set_ylabel('Transmission Factor [-]')
+            ax2.tick_params(axis='y', labelcolor='black')
+
+            # Customize the grid
+            ax1.grid(True, linestyle='--', alpha=0.8)
+            ax2.grid(True, linestyle='--', alpha=0.8)
+
+
+            ax1.set_xlim(lambda_min*0.9999, lambda_max*1.0001)
+            lns = lns1 + lns2 + lns3 + lns4 + lns5 + lns6 + lns7 + lns8
+            labs = [l.get_label() for l in lns]
+            # ax1.legend(lns, labs,bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left",
+            #     mode="expand", borderaxespad=0, ncol=1, prop={'size':fontsize})
+                        
+            plt.tight_layout()
+            # plt.show()
+
+            # filename = f"63OI_Spaxel_{spaxel+1}_sigma_normed_sigma_trans.png"
+            filename = f"Test_63OI_{spaxel+1}_legend_node.png"
+            plt.savefig(filename)
             
     em_opt = np.transpose(np.array(em_opt))
     em_opt_b = np.transpose(np.array(em_opt_b))
