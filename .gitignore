@@ -72,7 +72,11 @@ pip-wheel-metadata/
 
 # test data
 sofia_redux/instruments/fifi_ls/tests/data/*fits
-sofia_redux/instruments/fifi_ls/data/*
+
+# atran files
+sofia_redux/instruments/fifi_ls/data/atran_files/*
+sofia_redux/instruments/fifi_ls/data/badpix_files/*
+sofia_redux/instruments/fifi_ls/data/response_files/*
 
 # Parameter Files
 sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
@@ -90,3 +94,5 @@ sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
 *.csv
 *.gpx
 
+sofia_redux/instruments/fifi_ls/paper.py
+sofia_redux/instruments/fifi_ls/combine_nods - Kopie.py
