@@ -11,11 +11,9 @@ from pandas import DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tkr
-import time
 from scipy.interpolate import interp1d
 from scipy import stats
 from scipy.optimize import curve_fit
-import csv
 
 from sofia_redux.instruments.fifi_ls.make_header import make_header
 from sofia_redux.instruments.fifi_ls.lambda_calibrate import wave
@@ -228,22 +226,12 @@ def _atransmission(hdul,row,hdr0, hdul0):
     return t
 
 def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
-    # print(hdul.data)
-    # print(hdul0[1].data)
-    # print(np.divide(hdul.data,hdul0[1].data))
-    # print(hdr0)
-    # print(hdul0[0].header)
 
-
-    # print(hdul0[2].header)
-    # print(hdul0[2].data)
-    # data.shape (16, 25), extention
     numspexel, numspaxel = hdul.data.shape
     dimspexel = 0
     dimspaxel = 1
-    # hdul0.info()
     stddev = hdul0[2].data
-    # print('Go',hdul0['STDDEV_G0'].data)
+
     # Values from main header for wavelength calibration
     dichroic = hdr0['DICHROIC']
     channel=hdr0['CHANNEL']    
@@ -628,48 +616,13 @@ def interp_b_nods(atime, btime, bdata, berr):   # pragma: no cover
                     # f, e = interp(btime, bf, be, atime[t])
                     # Get rid of day changes etc. in data
                     if atime[t] - btime[0] > 180:
-                        hui = 1
-                        print('#################')
-                        print('diff a-b1 before', atime[t] - btime[0])
-                        print(btime)
-                        # btime[0] = btime[1]
                         bf[0] = bf[1]
                         be[0] = be[1]
-
-                        print('b1 > a')
-                        print(btime)
-                        print('diff a-b1 after', atime[t] - btime[0])
-                        print('#################')
                     elif btime[-1] - atime[t] > 180:
-                        holla = 1
-                        print('****************************')
-                        print('diff b1 - a before',btime[-1] - atime[t])
-                        print('a > b2')
-                        print(btime)
-                        # btime[-1] = btime[0]
                         bf[-1] = bf[0]
                         be[-1] = be[0]
-                        print('diff_bf', be[0]-be[1])
-                        print(btime)
-                        print('diff b1 - a after',btime[-1] - atime[t])
-                        print('***************************')
-                    if  hui or holla:
-                        print('ersetzt',btime)
-                    print('Halloooo')
-                    print('--------')
-                    print('bf',bf)
                 
                     f, z = interp(btime, bf, be, atime[t])
-                    print('btime',btime)
-                    print('atime',atime[t])
-                    print('a-b1', atime[t]-btime[0])
-                    print('a-b2', atime[t]-btime[-1])
-                    print('weight_calc',((atime[t]-btime[0])/(btime[-1]-btime[0])))
-                    # print('weight_interp', weight)
-                    print('f',f)
-                    print('ratio',bf[0]/f)
-                    print('--------')
-                    
                     e, arschlecken = interp(btime, be, bf, atime[t])        #interpolate the error like the flux without squared adding
                     bflux[t, i, j] = f
                     bvar[t, i, j] = e * e
@@ -720,11 +673,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
     elif len(alist) == 0:
         log.error('No A nods found')
         return df
-    # list_63 = []
-    # list_var1 = []
-    # list_var2 = []
-    # list_blist = []
-    # u=0
+
     for afile, arow in alist.iterrows():
 
             asymmetric = arow['asymmetric']
@@ -740,27 +689,12 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                 after = (bselect[bselect['tsort'] > 0]).sort_values('tsort')
                 bselect = (bselect[bselect['tsort'] <= 0]).sort_values(
                     'tsort', ascending=False)
-                
-                # # print('u',u) 
-                # filename_after=f"after_{u}.csv"
-                # filename_beselect=f"bselect_{u}.csv"
-                # u+=1
-                
-                # after.to_csv(filename_after,header=True)
-                # bselect.to_csv(filename_beselect,header=True)
+
             else:
-                # print('nearest1')
                 bselect['tsort'] = abs(bselect['mjd'] - arow['mjd'])
                 bselect = bselect.sort_values('tsort')
                 after = None
-            # print('==============')
-            # # print('1',blist)
-            # # print('2',list_blist)
-            # list_blist.append(blist)
-            # print('bselect',bselect['tsort'] * 24 * 60 * 60) # from mjd to seconds
-            # Convert MJD difference to seconds
 
-            # print('3',list_blist)
             primehead, combined_hdul = None, None
             for aidx, apos in enumerate(arow['indpos']):
                 bidx, bidx2 = [], []
@@ -850,12 +784,6 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         brow2['combined'][bgidx2] = True
                         b_fname = f'FLUX_G{bgidx2}'
                         b_sname = f'STDDEV_G{bgidx2}' 
-                        # print('********************')
-                        
-                        # print('brow\n',brow)
-                        # print('arow\n',arow)
-                        # print('brow2\n',brow2)
-                        # print('********************')
 
                         # Get header and data shape of current A file
                         a_hdu_hdr = arow['hdul'][a_fname].header
@@ -996,36 +924,10 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                                 atime += np.arange(nramp, dtype=float) * ramp_incr
                             else:
                                 atime = np.array([atime])
-                            btime = np.array([btime1, btime2])
-                               
-                            b_var1 = np.reshape(b_var,-1)                  
-                            # print('atime',atime)
-                            # print('btime1',btime1)
-                            # print('btime2',btime2)
+                            btime = np.array([btime1, btime2])             
+
                             b_flux, b_var = \
                                 interp_b_nods(atime, btime, bdata, berr)
-                            if 1:
-                                d=1
-                                # print('===================')
-                                # # print('atime dateobs', _unix2dateobs(atime))
-                                # print('btime1',  _unix2dateobs(btime1))
-                                # print('a - b1[s]', atime - btime1)
-                                # print('atime', _unix2dateobs(atime))
-                                # # print('btime1', btime1)
-                                # print('btime2', _unix2dateobs(btime2))
-                                
-                                # print('b2 - a [s]', btime2 - atime)
-                                # print('===================')
-                                # df_63=df_63.append({'A-B1': atime - btime1, 'B2-A':  btime2 - atime}, ignore_index=True)
-
-                                # # print(b_flux.shape)
-                                # b_flux_f=np.array([[[f'{num:.7f}' for num in inner_row] for inner_row in row] for row in b_flux])
-                                # b_flux_t=np.around(b_flux,decimals=7)
-                                # # print(b_flux_t)
-                                # # print(b_var)
-                                # list_63.append({'A-B1': atime - btime1, 'B2-A':  btime2 - atime})
-                                # list_var1.append(b_var1)
-                                # list_var2.append(np.reshape(b_var,-1))
 
                             # reshape if there was only one atime
                             if atime.size == 1:
@@ -1114,13 +1016,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         if bg_scaling and a_hdr['C_AMP']==0:
                             a_background = arow['bglevl'][aidx]
                             flux -= b_flux*a_background/b_background
-                            # print('nearest5')
                         else:
-                            # print('flux', flux[:1,:1])
-                            # print('b_flux', b_flux[:1,:1])
                             flux -= b_flux
-                            # print('flux_out',flux[:1,:1])
-                            # print('nearest6')
                     else:
                         # b_flux from source is negative for symmetric chops
                         # as result of subtract chops
@@ -1145,7 +1042,6 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                     exthead = arow['hdul'][a_fname].header
                     hdinsert(exthead, 'BGLEVL_B', b_background,
                             comment='BG level nod B (ADU/s)')
-                    # print(flux)
                     combined_hdul.append(fits.ImageHDU(flux, header=exthead,
                                                     name=a_fname))
                     combined_hdul.append(fits.ImageHDU(stddev, header=exthead,
@@ -1172,43 +1068,6 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
 
             if combined_hdul is not None:
                 df.at[afile, 'chdul'] = combined_hdul
-    if 1:
-        # df_63 = pd.concat([pd.DataFrame(list_63[i], index=[i]) for i in range(len(list_63))], ignore_index=True)
-        # print(list_blist[0].columns)          
-        keywords_to_print = ['date-obs','tsort']
-        # for df_1 in list_blist:
-        # # Iterate over the columns of each DataFrame
-        #     for col_name, col_values in df_1.items():
-        #         # Check if the column name is in the keywords to print
-        #         if col_name in keywords_to_print:
-        #             # Print the column name and values
-        #             print(col_name)
-        #             print(col_values)
-        # df_blist = pd.concat([pd.DataFrame(list_blist[i], index=[i]) for i in range(len(list_blist))], ignore_index=True)
-        # df_blist = pd.DataFrame(list_blist)
-        # print(df_blist)
-        # print('zeugs',list_var1[:5])
-
-        # print(df_var1)
-        # # df_63.to_csv('63bug.csv')
-        # with open('var1.csv', 'w', newline='') as csvfile:
-        #     writer = csv.writer(csvfile)
-        #     writer.writerows(list_var1)
-        # with open('var2.csv', 'w', newline='') as csvfile:
-        #     writer = csv.writer(csvfile)
-        #     writer.writerows(list_var2)
-        # df_63.hist(figsize=(10, 6))  # Adjust figsize as needed
-        # plt.tight_layout()  # Adjust layout
-        # plt.show()
-        # df_63.hist(column=['A-B1', 'B2-A'], bins=25, density=True, cumulative=False, histtype='bar', figsize=(10, 6), color='blue', edgecolor='black', linewidth=1.2, alpha=0.7)
-        # # df_63.hist(column=['A-B1', 'B2-A'], bins=25, range=(0, 150), density=True, cumulative=False, histtype='bar', figsize=(10, 6), color='blue', edgecolor='black', linewidth=1.2, alpha=0.7)
-        # plt.axvline(x=150, color='red', linestyle='--', linewidth=1)
-
-        # plt.xlabel('Value')
-        # plt.ylabel('Density')
-        # plt.title('Histogram of Data')
-        # plt.grid(True)
-        # plt.show()
 
     return df
 
@@ -1316,8 +1175,6 @@ def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
     df = combine_extensions(df, b_nod_method=b_nod_method, bg_scaling=bg_scaling,  telluric_scaling_on = telluric_scaling_on)
 
     for filename, row in df[df['nodbeam'] == 'A'].iterrows():
-        # print(filename)
-        # print(row)
 
         if outdir is not None:
             outdir = str(outdir)
