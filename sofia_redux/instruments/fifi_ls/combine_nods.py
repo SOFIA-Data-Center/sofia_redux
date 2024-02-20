@@ -30,6 +30,8 @@ from sofia_redux.instruments.fifi_ls.get_resolution \
     import get_resolution
 from sofia_redux.instruments.fifi_ls.apply_static_flat \
     import get_flat, calculate_flat
+from sofia_redux.instruments.fifi_ls.paper \
+    import plot_linefits
 
 
 
@@ -52,6 +54,15 @@ def _unix(dateobs):
     except (ValueError, AttributeError):
         mean_time = 0
     return mean_time
+
+from datetime import datetime
+
+def _unix2dateobs(time_unix):
+    try:
+        time_dobs = Time(time_unix, format='unix').datetime
+    except (ValueError, AttributeError):
+        time_dobs = 0
+    return time_dobs
 
 
 def _read_exthdrs(hdul, key, default=0):
@@ -359,16 +370,7 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
                 sigma_rel = stddev[valid_spexel,spaxel]/sigma_mean                
                 sigma_rel_used = np.sqrt(np.square(sigma_rel)+np.square(e_kehr_rel))
                 sigma_stddev = stddev[valid_spexel,spaxel] # for plotting purposes
-                # print('============================================')
-                # print('e_mean',e_mean)
-                # print('e_kehr',e_kehr)
-                # print('e_kehr_rel',e_kehr_rel)
-                # print('sigma_original',stddev[valid_spexel,spaxel])
-                # print('sigma_mean', sigma_mean)
-                # print('sigma_rel', sigma_rel)
-                # print('sigma_rel', sigma_rel)
-                # print('sigma_used',sigma_used)
-                # print('============================================')
+            
             else: 
                 sigma_stddev = stddev[valid_spexel,spaxel]
             popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
@@ -458,106 +460,12 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             em_opt_b_sig_rel[spaxel] = restored_em_opt_b_sig_rel # for plotting purposes
             t[spaxel] = t_full  
 
-
-
-            # Plot some stuff for testing 
-            fig, ax1 = plt.subplots(figsize=(20, 15))  # Create a single figure with one subplot
-            fontsize = 50
-            markersize = 8
-            font = {'size'   : fontsize}
-
-            plt.rc('font', **font)
-            plt.grid(True)
-            plt.grid(which='minor')
-            plt.rcParams["font.family"] = "Times New Roman"
-
-            # plt.rc('grid', color='black')
-            # ax1.plot(w[valid_spexel, i], hdul.data[valid_spexel, i], label=f' 63OI Spaxel {i + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel, spaxel], label=f' CII Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            # plt.plot(w_cal_loop[valid_spexel], hdul.data[valid_spexel,spaxel], label=f' Raw Spaxel {spaxel + 1}, Länge {len(valid_spexel)}', marker='.')
-            lns1 = ax1.plot(w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],marker='s',ms = markersize, 
-                            color='burlywood', label=f' Schrift {fontsize}Flat Spaxel {spaxel + 1}, {len(valid_spexel)} datapoints')
-            lns2 = ax1.plot(w_cal_loop[valid_spexel], em_opt[spaxel][valid_spexel],marker='o',ms = markersize ,
-                            color='m',label='a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt[spaxel]))
-            lns3 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b[spaxel][valid_spexel],marker='o',ms = markersize, 
-                            color='r',label='a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b[spaxel]))
-            
-            lns4 = ax1.plot(w_cal_loop[valid_spexel], em_opt_sig[spaxel][valid_spexel],marker='*',ms = markersize, 
-                            color='lime',label='\u03A3, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig[spaxel]))
-            lns5 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b_sig[spaxel][valid_spexel],marker='*',ms = markersize, 
-                            color='g',label='\u03A3, a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig[spaxel]))
-            lns6 = ax1.plot(w_cal_loop[valid_spexel], em_opt_sig_rel[spaxel][valid_spexel],marker='D',ms = markersize, 
-                            color='deepskyblue',label='$\u03A3_{normed}$, a  + c(1-T): a=%5.3f, c=%5.3f' % tuple(popt_sig_rel[spaxel]))
-            lns7 = ax1.plot(w_cal_loop[valid_spexel], em_opt_b_sig_rel[spaxel][valid_spexel],marker='D',ms = markersize, 
-                            color='b',label='$\u03A3_{normed}$, a + b*\u03BB + c(1-T): a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt_b_sig_rel[spaxel]))
-
-
-            
-
-            # # Create a twin Axes sharing the same x-axis
-            ax2 = ax1.twinx()
-            # ax2.plot(w_cal_loop[valid_spexel], t_atran, marker='.', color='red', label='ATRAN factor')
-            # ax2.plot(w[valid_spexel, i], tm_spax, marker='*', color='green', label='ATRAN factor nearest')
-            lns8 = ax2.plot(w_cal_loop[valid_spexel], t[spaxel][valid_spexel], marker='P',ms = markersize, 
-                            color='gray',linestyle='--' , label='ATRAN factor')
-
-
-            # Find the min and max value of all ax1 data for y1 limits
-            minnime = np.min(np.minimum.reduce([np.array(flatval)[valid_spexel, spaxel],
-                                    em_opt[spaxel][valid_spexel],
-                                    em_opt_b[spaxel][valid_spexel],
-                                    em_opt_sig[spaxel][valid_spexel],
-                                    em_opt_b_sig[spaxel][valid_spexel],
-                                    em_opt_sig_rel[spaxel][valid_spexel],
-                                    em_opt_b_sig_rel[spaxel][valid_spexel]]))
-            maxime = np.max(np.maximum.reduce([np.array(flatval)[valid_spexel, spaxel],
-                                    em_opt[spaxel][valid_spexel],
-                                    em_opt_b[spaxel][valid_spexel],
-                                    em_opt_sig[spaxel][valid_spexel],
-                                    em_opt_b_sig[spaxel][valid_spexel],
-                                    em_opt_sig_rel[spaxel][valid_spexel],
-                                    em_opt_b_sig_rel[spaxel][valid_spexel]]))
-            # Round to the nearest full 100
-            min_value_rounded = np.floor(minnime / 100) * 100
-            max_value_rounded = np.ceil(maxime / 100) * 100            
-
-            # Set tick locations and labels for the first y-axis
-            yticks1 = np.linspace(min_value_rounded, max_value_rounded, 5)  # Example tick locations
-            ax1.set_yticks(yticks1)
-            ax1.set_yticklabels([f'{int(val)}' for val in yticks1])
-            ax1.set_ylim(top=max_value_rounded)
-            ax1.set_ylim(bottom=min_value_rounded)
-            ax1.set_xlabel('Wavelength [\u03BCm]')            
-            ax1.set_ylabel('Flux [I.U.]')
-            ax1.tick_params(axis='y', labelcolor='black')
-
-            # Set tick locations and labels for the second y-axis
-            yticks2 = np.linspace(0, 1, 5)  # Example tick locations
-            ax2.set_yticks(yticks2)
-            ax2.set_yticklabels([f'{val:}' for val in yticks2])
-            ax2.set_ylim(bottom=0)
-            ax2.set_ylim(top=1) 
-            ax2.set_ylabel('Transmission Factor [-]')
-            ax2.tick_params(axis='y', labelcolor='black')
-
-            # Customize the grid
-            ax1.grid(True, linestyle='--', alpha=0.8)
-            ax2.grid(True, linestyle='--', alpha=0.8)
-
-
-            ax1.set_xlim(lambda_min*0.9999, lambda_max*1.0001)
-            lns = lns1 + lns2 + lns3 + lns4 + lns5 + lns6 + lns7 + lns8
-            labs = [l.get_label() for l in lns]
-            # ax1.legend(lns, labs,bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left",
-            #     mode="expand", borderaxespad=0, ncol=1, prop={'size':fontsize})
+            # Plot the different fits over the flat data
+            source = 'OIII'
+            filename = f"Function_test_2{source}_{spaxel+1}_legend_node.png"
+            plot_linefits(w_cal_loop, valid_spexel, flatval, spaxel, popt, popt_b , popt_sig, popt_sig_rel, popt_b_sig,popt_b_sig_rel, em_opt, em_opt_b, em_opt_b_sig, em_opt_b_sig_rel,
+          em_opt_sig_rel, em_opt_sig,t, lambda_min, lambda_max, source, filename)
                         
-            plt.tight_layout()
-            # plt.show()
-
-            # filename = f"63OI_Spaxel_{spaxel+1}_sigma_normed_sigma_trans.png"
-            filename = f"Test_63OI_{spaxel+1}_legend_node.png"
-            plt.savefig(filename)
-            
     em_opt = np.transpose(np.array(em_opt))
     em_opt_b = np.transpose(np.array(em_opt_b))
     popt = np.array(popt)
@@ -714,8 +622,54 @@ def interp_b_nods(atime, btime, bdata, berr):   # pragma: no cover
                     bflux[t, i, j] = np.nan
                     bvar[t, i, j] = np.nan
                 else:
+                    hui = 0
+                    holla = 0
+                    print(hui,holla)
                     # f, e = interp(btime, bf, be, atime[t])
+                    # Get rid of day changes etc. in data
+                    if atime[t] - btime[0] > 180:
+                        hui = 1
+                        print('#################')
+                        print('diff a-b1 before', atime[t] - btime[0])
+                        print(btime)
+                        # btime[0] = btime[1]
+                        bf[0] = bf[1]
+                        be[0] = be[1]
+
+                        print('b1 > a')
+                        print(btime)
+                        print('diff a-b1 after', atime[t] - btime[0])
+                        print('#################')
+                    elif btime[-1] - atime[t] > 180:
+                        holla = 1
+                        print('****************************')
+                        print('diff b1 - a before',btime[-1] - atime[t])
+                        print('a > b2')
+                        print(btime)
+                        # btime[-1] = btime[0]
+                        bf[-1] = bf[0]
+                        be[-1] = be[0]
+                        print('diff_bf', be[0]-be[1])
+                        print(btime)
+                        print('diff b1 - a after',btime[-1] - atime[t])
+                        print('***************************')
+                    if  hui or holla:
+                        print('ersetzt',btime)
+                    print('Halloooo')
+                    print('--------')
+                    print('bf',bf)
+                
                     f, z = interp(btime, bf, be, atime[t])
+                    print('btime',btime)
+                    print('atime',atime[t])
+                    print('a-b1', atime[t]-btime[0])
+                    print('a-b2', atime[t]-btime[-1])
+                    print('weight_calc',((atime[t]-btime[0])/(btime[-1]-btime[0])))
+                    # print('weight_interp', weight)
+                    print('f',f)
+                    print('ratio',bf[0]/f)
+                    print('--------')
+                    
                     e, arschlecken = interp(btime, be, bf, atime[t])        #interpolate the error like the flux without squared adding
                     bflux[t, i, j] = f
                     bvar[t, i, j] = e * e
@@ -766,7 +720,11 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
     elif len(alist) == 0:
         log.error('No A nods found')
         return df
-    
+    # list_63 = []
+    # list_var1 = []
+    # list_var2 = []
+    # list_blist = []
+    # u=0
     for afile, arow in alist.iterrows():
 
             asymmetric = arow['asymmetric']
@@ -782,11 +740,27 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                 after = (bselect[bselect['tsort'] > 0]).sort_values('tsort')
                 bselect = (bselect[bselect['tsort'] <= 0]).sort_values(
                     'tsort', ascending=False)
+                
+                # # print('u',u) 
+                # filename_after=f"after_{u}.csv"
+                # filename_beselect=f"bselect_{u}.csv"
+                # u+=1
+                
+                # after.to_csv(filename_after,header=True)
+                # bselect.to_csv(filename_beselect,header=True)
             else:
+                # print('nearest1')
                 bselect['tsort'] = abs(bselect['mjd'] - arow['mjd'])
                 bselect = bselect.sort_values('tsort')
                 after = None
+            # print('==============')
+            # # print('1',blist)
+            # # print('2',list_blist)
+            # list_blist.append(blist)
+            # print('bselect',bselect['tsort'] * 24 * 60 * 60) # from mjd to seconds
+            # Convert MJD difference to seconds
 
+            # print('3',list_blist)
             primehead, combined_hdul = None, None
             for aidx, apos in enumerate(arow['indpos']):
                 bidx, bidx2 = [], []
@@ -876,12 +850,23 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         brow2['combined'][bgidx2] = True
                         b_fname = f'FLUX_G{bgidx2}'
                         b_sname = f'STDDEV_G{bgidx2}' 
+                        # print('********************')
+                        
+                        # print('brow\n',brow)
+                        # print('arow\n',arow)
+                        # print('brow2\n',brow2)
+                        # print('********************')
+
+                        # Get header and data shape of current A file
+                        a_hdu_hdr = arow['hdul'][a_fname].header
+                        a_shape = arow['hdul'][a_fname].data.shape
                         # Perform telluric scaling 
                         med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
                         sig = False       # True: Sigma into curve fit. False: No sigma into curve fit
                         sig_rel = True    # True: Normed Sigma. False: STDDEV
                         ac = True       # True: only a and c fit, False: a, b and c fit
-                        if telluric_scaling_on:  
+                        if telluric_scaling_on \
+                            and len(a_shape) == 3:  
                             popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul'], sig_rel) 
                             popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'], sig_rel)
                             ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])
@@ -977,7 +962,14 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                                 bdata = np.array([b_flux, b_flux2])
                                 berr = np.array([np.multiply(np.sqrt(b_var),telfac1_b),
                                         np.multiply(brow2['hdul'][b_sname].data,telfac2_b)])
+                        if telluric_scaling_on \
+                            and len(a_shape) < 3: 
+                            log.warning("Telluric scaling not available for pointed data.  \n"
+                                        "Skipping telluric scaling")
 
+                            bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
+                            berr = np.array([np.sqrt(b_var),
+                                            brow2['hdul'][b_sname].data])
                         else:  
                             bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
                             berr = np.array([np.sqrt(b_var),
@@ -992,10 +984,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
 
                             
                             # UNIX time is a range of values for OTF data:
-                            # retrieve from RAMPSTRT and RAMPEND keys
-                            a_hdu_hdr = arow['hdul'][a_fname].header
-                            a_shape = arow['hdul'][a_fname].data.shape
-
+                            # retrieve from RAMPSTRT and RAMPEND key
                             if len(a_shape) == 3 \
                                     and 'RAMPSTRT' in a_hdu_hdr \
                                     and 'RAMPEND' in a_hdu_hdr:
@@ -1007,10 +996,36 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                                 atime += np.arange(nramp, dtype=float) * ramp_incr
                             else:
                                 atime = np.array([atime])
-                            btime = np.array([btime1, btime2])                    
-
+                            btime = np.array([btime1, btime2])
+                               
+                            b_var1 = np.reshape(b_var,-1)                  
+                            # print('atime',atime)
+                            # print('btime1',btime1)
+                            # print('btime2',btime2)
                             b_flux, b_var = \
                                 interp_b_nods(atime, btime, bdata, berr)
+                            if 1:
+                                d=1
+                                # print('===================')
+                                # # print('atime dateobs', _unix2dateobs(atime))
+                                # print('btime1',  _unix2dateobs(btime1))
+                                # print('a - b1[s]', atime - btime1)
+                                # print('atime', _unix2dateobs(atime))
+                                # # print('btime1', btime1)
+                                # print('btime2', _unix2dateobs(btime2))
+                                
+                                # print('b2 - a [s]', btime2 - atime)
+                                # print('===================')
+                                # df_63=df_63.append({'A-B1': atime - btime1, 'B2-A':  btime2 - atime}, ignore_index=True)
+
+                                # # print(b_flux.shape)
+                                # b_flux_f=np.array([[[f'{num:.7f}' for num in inner_row] for inner_row in row] for row in b_flux])
+                                # b_flux_t=np.around(b_flux,decimals=7)
+                                # # print(b_flux_t)
+                                # # print(b_var)
+                                # list_63.append({'A-B1': atime - btime1, 'B2-A':  btime2 - atime})
+                                # list_var1.append(b_var1)
+                                # list_var2.append(np.reshape(b_var,-1))
 
                             # reshape if there was only one atime
                             if atime.size == 1:
@@ -1074,9 +1089,12 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                             b_background /= 2.
 
                     else:
+                        # print('nearest2')
                         if asymmetric:
+                            # print('nearest3')
                             msg = f'Subbing B {os.path.basename(brow.name)} from '
                         else:
+                            # prin('nearest4')
                             msg = f'Adding B {os.path.basename(brow.name)} to '
 
                     log.debug(msg + describe_a)
@@ -1088,6 +1106,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                     # For other modes, A and B are both spexels x spaxels.
 
                     flux = arow['hdul'][a_fname].data
+                    # print(flux[:1,:1])
                     stddev = arow['hdul'][a_sname].data ** 2 + b_var             
                                 
                     if asymmetric:
@@ -1095,8 +1114,13 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         if bg_scaling and a_hdr['C_AMP']==0:
                             a_background = arow['bglevl'][aidx]
                             flux -= b_flux*a_background/b_background
+                            # print('nearest5')
                         else:
+                            # print('flux', flux[:1,:1])
+                            # print('b_flux', b_flux[:1,:1])
                             flux -= b_flux
+                            # print('flux_out',flux[:1,:1])
+                            # print('nearest6')
                     else:
                         # b_flux from source is negative for symmetric chops
                         # as result of subtract chops
@@ -1104,38 +1128,87 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         # divide by two for doubled source
                         flux /= 2
                         stddev /= 4
+                        # print('nearest7')
                     stddev = np.sqrt(stddev)
 
                     if combined_hdul is None:
-                        primehead = make_header(combine_headers)
+                        primehead = make_header(combine_headers)                       
                         primehead['HISTORY'] = 'Nods combined'
                         hdinsert(primehead, 'PRODTYPE', 'nod_combined')
-                        outfile, _ = os.path.splitext(os.path.basename(afile))
-                        outfile = '_'.join(outfile.split('_')[:-2])
-                        outfile += '_NCM_%s.fits' % primehead.get('FILENUM')
+                        outfile, _ = os.path.splitext(os.path.basename(afile))                     
+                        outfile = '_'.join(outfile.split('_')[:-2])                  
+                        outfile += '_NCM_%s.fits' % primehead.get('FILENUM')                       
                         df.loc[afile, 'outfile'] = outfile
                         hdinsert(primehead, 'FILENAME', outfile)
                         combined_hdul = fits.HDUList(
                             fits.PrimaryHDU(header=primehead))
-
                     exthead = arow['hdul'][a_fname].header
                     hdinsert(exthead, 'BGLEVL_B', b_background,
                             comment='BG level nod B (ADU/s)')
+                    # print(flux)
                     combined_hdul.append(fits.ImageHDU(flux, header=exthead,
                                                     name=a_fname))
                     combined_hdul.append(fits.ImageHDU(stddev, header=exthead,
                                                     name=a_sname))
+                    if 1: 
+                        d=1
+                        # # Create a new HDUList
+                        # hdul = fits.HDUList()
 
-                    # add in scanpos table from A nod if present
+                        # # Append the combined HDUs to the new HDUList
+                        # for hdu in combined_hdul:
+                        #     hdul.append(hdu)
+
+                        # # Print information about all HDUs in the HDUList
+                        # print(hdul.info())
                     a_pname = f'SCANPOS_G{aidx}'
                     if a_pname in arow['hdul']:
                         combined_hdul.append(arow['hdul'][a_pname].copy())
                 else:
                     msg = "No matching B found for "
                     log.debug(msg + describe_a)
+            
+
 
             if combined_hdul is not None:
                 df.at[afile, 'chdul'] = combined_hdul
+    if 1:
+        # df_63 = pd.concat([pd.DataFrame(list_63[i], index=[i]) for i in range(len(list_63))], ignore_index=True)
+        # print(list_blist[0].columns)          
+        keywords_to_print = ['date-obs','tsort']
+        # for df_1 in list_blist:
+        # # Iterate over the columns of each DataFrame
+        #     for col_name, col_values in df_1.items():
+        #         # Check if the column name is in the keywords to print
+        #         if col_name in keywords_to_print:
+        #             # Print the column name and values
+        #             print(col_name)
+        #             print(col_values)
+        # df_blist = pd.concat([pd.DataFrame(list_blist[i], index=[i]) for i in range(len(list_blist))], ignore_index=True)
+        # df_blist = pd.DataFrame(list_blist)
+        # print(df_blist)
+        # print('zeugs',list_var1[:5])
+
+        # print(df_var1)
+        # # df_63.to_csv('63bug.csv')
+        # with open('var1.csv', 'w', newline='') as csvfile:
+        #     writer = csv.writer(csvfile)
+        #     writer.writerows(list_var1)
+        # with open('var2.csv', 'w', newline='') as csvfile:
+        #     writer = csv.writer(csvfile)
+        #     writer.writerows(list_var2)
+        # df_63.hist(figsize=(10, 6))  # Adjust figsize as needed
+        # plt.tight_layout()  # Adjust layout
+        # plt.show()
+        # df_63.hist(column=['A-B1', 'B2-A'], bins=25, density=True, cumulative=False, histtype='bar', figsize=(10, 6), color='blue', edgecolor='black', linewidth=1.2, alpha=0.7)
+        # # df_63.hist(column=['A-B1', 'B2-A'], bins=25, range=(0, 150), density=True, cumulative=False, histtype='bar', figsize=(10, 6), color='blue', edgecolor='black', linewidth=1.2, alpha=0.7)
+        # plt.axvline(x=150, color='red', linestyle='--', linewidth=1)
+
+        # plt.xlabel('Value')
+        # plt.ylabel('Density')
+        # plt.title('Histogram of Data')
+        # plt.grid(True)
+        # plt.show()
 
     return df
 
@@ -1243,6 +1316,8 @@ def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
     df = combine_extensions(df, b_nod_method=b_nod_method, bg_scaling=bg_scaling,  telluric_scaling_on = telluric_scaling_on)
 
     for filename, row in df[df['nodbeam'] == 'A'].iterrows():
+        # print(filename)
+        # print(row)
 
         if outdir is not None:
             outdir = str(outdir)
