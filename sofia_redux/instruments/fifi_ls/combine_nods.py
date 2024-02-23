@@ -602,9 +602,6 @@ def interp_b_nods(atime, btime, bdata, berr):   # pragma: no cover
                     bflux[t, i, j] = np.nan
                     bvar[t, i, j] = np.nan
                 else:
-                    hui = 0
-                    holla = 0
-                    print(hui,holla)
                     # f, e = interp(btime, bf, be, atime[t])
                     # Get rid of day changes etc. in data
                     if atime[t] - btime[0] > 180:
@@ -1000,9 +997,84 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                     # For other modes, A and B are both spexels x spaxels.
 
                     flux = arow['hdul'][a_fname].data
-                    # print(flux[:1,:1])
-                    stddev = arow['hdul'][a_sname].data ** 2 + b_var             
+                    a_shape = arow['hdul'][a_fname].data.shape
+                    numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
+                    # b_flux and stddev with telluric scaling 
+                    if telluric_scaling_on \
+                            and len(a_shape) == 3 \
+                                and b_nod_method=='nearest':  
+                        med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
+                        sig = False       # True: Sigma into curve fit. False: No sigma into curve fit
+                        sig_rel = True    # True: Normed Sigma. False: STDDEV
+                        ac = False       # True: only a and c fit, False: a, b and c fit
+                        popt, t, b_flat, popt_b, b_fitted_b, popt_sig, popt_b_sig, b_fitted, lambda_b = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul'], sig_rel)
+                        ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])
+
+                        if ac: 
+                            if sig:
+                                # Only a and c curve fit parameters  
+                                a =popt_sig[:, 0]  # Extracts the first column (a values)
+                                c= popt_sig[:, 1]  # Extracts the 2nd column (c values if no b values)
                                 
+                            else: 
+                                a =popt[:, 0]  # Extracts the first column (a values)
+                                c= popt[:, 1]  # Extracts the 2nd column (c values if no b values)
+                                
+                            if med:
+                                a = np.nanmedian(a)  
+                                c = np.nanmedian(c)
+                                # write array of size 16, 25 with one value
+                                a_full= np.full((numspexel, numspaxel), a)
+                                c_full= np.full((numspexel, numspaxel), c)  
+                            else:                                       
+                                # Reshape into a 2D array (16, 25)
+                                a_full= np.tile(a, (numspexel, 1))
+                                c_full= np.tile(c, (numspexel, 1)) 
+                         
+                            b_fitted = a_full + np.multiply(c_full,(1-t))                    
+                            telfac = 1 +  np.divide(c_full,b_fitted)*(t-ta)
+                            b_flux = np.multiply(b_flux,telfac) 
+                            stddev_b = np.array([np.multiply(np.sqrt(b_var),telfac)])
+                            b_var = stddev_b**2
+                        else:   # a ,b and c curve fit parameters                                 
+                            if sig: 
+                                a_b = popt_b_sig[:, 0]  
+                                b_b = popt_b_sig[:, 1]                            
+                                c_b = popt_b_sig[:, 2]                             
+                            else:                                    
+                                a_b = popt_b[:, 0]  
+                                b_b = popt_b[:, 1]                            
+                                c_b = popt_b[:, 2]                           
+
+                            if med:
+                                a_b = np.nanmedian(a_b)
+                                b_b = np.nanmedian(b_b)  
+                                c_b = np.nanmedian(c_b)
+                                a_b_full= np.full((numspexel, numspaxel), a_b)
+                                b_b_full= np.full((numspexel, numspaxel), b_b)
+                                c_b_full= np.full((numspexel, numspaxel), c_b)
+                            else:                              
+                                # Reshape into a 2D array (16, 25)
+                                a_b_full= np.tile(a_b, (numspexel, 1))
+                                b_b_full= np.tile(b_b, (numspexel, 1))
+                                c_b_full= np.tile(c_b, (numspexel, 1)) 
+
+                            b_fitted_b = a_b_full + np.multiply(b_b_full, lambda_b) + np.multiply(c_b_full,(1-t))
+                            telfac_b = 1 +  np.divide(c_b_full,b_fitted_b)*(t-ta)
+                            b_flux = np.multiply(b_flux,telfac_b)
+                            stddev_b = np.array([np.multiply(np.sqrt(b_var),telfac_b)])
+                            b_var = stddev_b**2
+                        # reshape into data.shape (16, 25)
+                        numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
+
+                     
+                    if telluric_scaling_on \
+                            and len(a_shape) < 3 \
+                                and b_nod_method=='nearest':  
+                        log.warning("Telluric scaling not available for pointed data.  \n"
+                            "Skipping telluric scaling")         
+                    var_combined = arow['hdul'][a_sname].data ** 2 + b_var   
+
                     if asymmetric:
                         # Optional background scaling for unchopped observations
                         if bg_scaling and a_hdr['C_AMP']==0:
@@ -1016,9 +1088,9 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         flux += b_flux
                         # divide by two for doubled source
                         flux /= 2
-                        stddev /= 4
+                        var_combined /= 4
                         # print('nearest7')
-                    stddev = np.sqrt(stddev)
+                    stddev = np.sqrt(var_combined)
 
                     if combined_hdul is None:
                         primehead = make_header(combine_headers)                       
