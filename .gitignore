@@ -87,9 +87,6 @@ sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
 # Plots
 *.png
 
-# Notebooks
-*.ipynb
-
 *.out
 *.csv
 *.gpx
