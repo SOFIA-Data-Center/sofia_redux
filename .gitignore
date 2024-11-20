@@ -91,6 +91,7 @@ sofia_redux/instruments/fifi_ls/data/badpix_files/badpixels_201707_b.txt
 *.csv
 *.gpx
 
-sofia_redux/instruments/fifi_ls/paper.py
-sofia_redux/instruments/fifi_ls/combine_nods - Kopie.py
-sofia_redux/instruments/fifi_ls/data/header_info/headerdef_asy - Kopie.dat
+sofia_redux/instruments/fifi_ls/backups
+sofia_redux/instruments/fifi_ls/notebooks/stuff
+/params
+
