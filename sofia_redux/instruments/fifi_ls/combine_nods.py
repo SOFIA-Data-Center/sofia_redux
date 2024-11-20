@@ -28,8 +28,6 @@ from sofia_redux.instruments.fifi_ls.get_resolution \
     import get_resolution
 from sofia_redux.instruments.fifi_ls.apply_static_flat \
     import get_flat, calculate_flat
-from sofia_redux.instruments.fifi_ls.paper \
-    import plot_linefits
 
 
 
@@ -217,7 +215,7 @@ def _atransmission(hdul,row,hdr0, hdul0):
 
     return t
 
-def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
+def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel, sig, ac):
 
     numspexel, numspaxel = hdul.data.shape
     dimspexel = 0
@@ -353,20 +351,23 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             
             else: 
                 sigma_stddev = stddev[valid_spexel,spaxel]
-            popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_stddev, bounds=param_bounds)
-            popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+            
+            if ac: 
+                popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+                        sigma = sigma_stddev, bounds=param_bounds)
+                popt_sig_rel[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
+                        sigma = sigma_rel_used, bounds=param_bounds)
+
+
+            else: 
+                popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
                             sigma = sigma_stddev, bounds=param_bounds_b) 
             
-            popt_sig_rel[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_rel_used, bounds=param_bounds)
-            popt_b_sig_rel[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_rel_used, bounds=param_bounds_b)
+                popt_b_sig_rel[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                                sigma = sigma_rel_used, bounds=param_bounds_b)
             if sig_rel:
                 popt_sig[spaxel] = popt_sig_rel[spaxel]
-                popt_b_sig[spaxel] = popt_b_sig_rel[spaxel]
-
-                
+                popt_b_sig[spaxel] = popt_b_sig_rel[spaxel]                
                 
         
             popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
@@ -443,8 +444,8 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             # Plot the different fits over the flat data
             source = 'OIII'
             filename = f"Function_test_2{source}_{spaxel+1}_legend_node.png"
-            plot_linefits(w_cal_loop, valid_spexel, flatval, spaxel, popt, popt_b , popt_sig, popt_sig_rel, popt_b_sig,popt_b_sig_rel, em_opt, em_opt_b, em_opt_b_sig, em_opt_b_sig_rel,
-          em_opt_sig_rel, em_opt_sig,t, lambda_min, lambda_max, source, filename)
+        #     plot_linefits(w_cal_loop, valid_spexel, flatval, spaxel, popt, popt_b , popt_sig, popt_sig_rel, popt_b_sig,popt_b_sig_rel, em_opt, em_opt_b, em_opt_b_sig, em_opt_b_sig_rel,
+        #   em_opt_sig_rel, em_opt_sig,t, lambda_min, lambda_max, source, filename)
                         
     em_opt = np.transpose(np.array(em_opt))
     em_opt_b = np.transpose(np.array(em_opt_b))
@@ -778,14 +779,14 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         a_hdu_hdr = arow['hdul'][a_fname].header
                         a_shape = arow['hdul'][a_fname].data.shape
                         # Perform telluric scaling 
-                        med = True        # True: Takes median of factors. False: Takes curve fit params for each spaxel
-                        sig = False       # True: Sigma into curve fit. False: No sigma into curve fit
-                        sig_rel = True    # True: Normed Sigma. False: STDDEV
-                        ac = True       # True: only a and c fit, False: a, b and c fit
+                        med = False        # True: Takes median of factors. False: Takes curve fit params for each spaxel
+                        sig = True       # True: Sigma into curve fit. False: No sigma into curve fit
+                        sig_rel = False    # True: Normed Sigma. False: STDDEV
+                        ac = False       # True: only a and c fit, False: a, b and c fit
                         if telluric_scaling_on \
                             and len(a_shape) == 3:  
-                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul'], sig_rel) 
-                            popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'], sig_rel)
+                            popt1, t1 , b1_flat, popt1_b, b1_fitted_b, popt1_sig, popt1_b_sig, b1_fitted, lambda1   = _telluric_scaling(brow['hdul'][b_fname],brow, brow['hdul'][0].header, brow['hdul'], sig_rel, sig, ac) 
+                            popt2, t2, b2_flat, popt2_b, b2_fitted_b, popt2_sig, popt2_b_sig, b2_fitted, lambda2 = _telluric_scaling(brow2['hdul'][b_fname],brow2, brow2['hdul'][0].header, brow2['hdul'], sig_rel, sig, ac)
                             ta = _atransmission(arow['hdul'][a_fname],arow, arow['hdul'][0].header, arow['hdul'])
                             # reshape into data.shape (16, 25)
                             numspexel, numspaxel = brow['hdul'][b_fname].data.shape 
