@@ -73,7 +73,7 @@ def _from_hdul(hdul, key):
 def _em_func(e, a, c):
     return a +c*e
 
-def em_func_b(em_spax):
+def _em_func_b(em_spax):
     def wow(lam ,a, b, c): 
         m = a + b*lam + c*em_spax
         return m
@@ -360,10 +360,10 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel, sig, ac):
 
 
             else: 
-                popt_b_sig[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                popt_b_sig[spaxel], pcov = curve_fit(_em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
                             sigma = sigma_stddev, bounds=param_bounds_b) 
             
-                popt_b_sig_rel[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+                popt_b_sig_rel[spaxel], pcov = curve_fit(_em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
                                 sigma = sigma_rel_used, bounds=param_bounds_b)
             if sig_rel:
                 popt_sig[spaxel] = popt_sig_rel[spaxel]
@@ -372,7 +372,7 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel, sig, ac):
         
             popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
                         bounds=param_bounds)
-            popt_b[spaxel], pcov = curve_fit(em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
+            popt_b[spaxel], pcov = curve_fit(_em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
                                         bounds=param_bounds_b)     
 
             a, c = popt[spaxel]
