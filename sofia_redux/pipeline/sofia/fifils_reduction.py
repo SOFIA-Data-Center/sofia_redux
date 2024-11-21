@@ -530,7 +530,10 @@ class FIFILSReduction(Reduction):
 
         # this function returns a dataframe as the result
         result = combine_nods(self.input, write=False,
-                              offbeam=offbeam, b_nod_method=b_nod_method, bg_scaling=bg_scaling, telluric_scaling_on=telluric_scaling_on)
+                              offbeam=offbeam, b_nod_method=b_nod_method,
+                              bg_scaling=bg_scaling,
+                              telluric_scaling_on=telluric_scaling_on)
+
         if result is None or result.empty:
             msg = 'Problem in fifi_ls.combine_nods.'
             log.error(msg)

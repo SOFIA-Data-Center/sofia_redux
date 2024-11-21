@@ -153,8 +153,6 @@ DEFAULT = {
          'description': 'If set, B-fluxes are telluricly scaled with ZA at A',
          'dtype': 'bool',
          'wtype': 'check_box'},
-
-         
     ],
     'lambda_calibrate': [
         {'key': 'save',
