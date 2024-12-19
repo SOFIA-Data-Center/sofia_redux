@@ -4,8 +4,8 @@ from astropy.convolution import Gaussian2DKernel, convolve
 from astropy.io import fits
 from astropy.stats import gaussian_fwhm_to_sigma
 import numpy as np
-from photutils import detect_sources
-from photutils import detect_threshold
+from photutils.segmentation import detect_sources
+from photutils.segmentation import detect_threshold
 
 from sofia_redux.instruments.forcast.hdmerge import hdmerge
 from sofia_redux.toolkit.image.combine import combine_images
