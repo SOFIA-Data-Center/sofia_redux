@@ -930,7 +930,7 @@ class Polyfit(Model):
         s = "\n    Exponents : Coefficients"
         s += "\n--------------------------------\n"
         for i, (ee, c) in enumerate(zip(self.exponents, self.coefficients)):
-            s += "%s : %f" % (repr(tuple(ee)), c)
+            s += "%s : %f" % (repr(tuple(ee.tolist())), c)
             if do_sigma:
                 s += " +/- %f\n" % self.stats.sigma[i]
             else:
