@@ -572,7 +572,7 @@ def register_image(image, reference, upsample=1,
     ishift = np.array(list(np.fix(x) for x in shift0))
     if not (ishift == 0).all():
         img = shift(img, np.flip(ishift), order=0, mode='wrap')
-    source = np.array(img, dtype=np.complex128, copy=False)
+    source = np.asarray(img, dtype=np.complex128)
     sfreq = np.fft.fftn(source)
     rfreq = np.fft.fftn(ref)
 
