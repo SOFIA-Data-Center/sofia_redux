@@ -21,6 +21,13 @@ except ImportError:
     HAS_DRIP = False
     FLITECAMImagingReduction = None
     FLITECAMImagingParameters = None
+try:
+    from PyQt5 import QtWidgets
+except ImportError:
+    QtWidgets = None
+    HAS_PYQT5 = False
+else:
+    HAS_PYQT5 = True
 
 
 def bad_step(*args, **kwargs):
@@ -31,7 +38,8 @@ def bad_step_2(*args, **kwargs):
     return [None, None]
 
 
-@pytest.mark.skipif('not HAS_DRIP')
+@pytest.mark.skipif(not HAS_DRIP, reason="No FLITECAM imaging reduction")
+@pytest.mark.skipif(not HAS_PYQT5, reason="No PyQt5")
 class TestFLITECAMImagingReduction(object):
     @pytest.fixture(autouse=True, scope='function')
     def mock_param(self, qapp):
