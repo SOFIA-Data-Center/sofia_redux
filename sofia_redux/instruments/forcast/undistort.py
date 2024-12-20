@@ -498,7 +498,7 @@ def rebin_image(image, factor, header=None, variance=None, platescale=None):
         numpy.ndarray : the rebinned image (nrow, ncol)
         numpy.ndarray : the rebinned variance (nrow, ncol)
     """
-    ny = int(np.round(np.sqrt(np.product(image.shape) / factor)))
+    ny = int(np.round(np.sqrt(np.prod(image.shape) / factor)))
     nx = int(np.round(ny * factor))
     rebinned = frebin(image.copy(), (ny, nx), total=True)
 

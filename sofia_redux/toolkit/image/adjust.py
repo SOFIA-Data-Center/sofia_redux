@@ -337,7 +337,7 @@ def frebin(data, shape, total=False, order=None,
         rebinned = resize(data, shape, order=order,
                           mode=mode, anti_aliasing=anti_aliasing)
     if total:
-        fac = np.product(data.shape) / np.product(shape)
+        fac = np.prod(data.shape) / np.prod(shape)
         rebinned *= fac
 
     return rebinned

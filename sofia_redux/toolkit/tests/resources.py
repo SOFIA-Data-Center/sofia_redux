@@ -25,8 +25,8 @@ def add_jailbars(data, level=10):
 
 def random_mask(shape, frac=0.5):
     rand = np.random.RandomState(42)
-    mask = np.full(np.product(shape), False)
-    mask[:int(np.product(shape) * frac)] = True
+    mask = np.full(np.prod(shape), False)
+    mask[:int(np.prod(shape) * frac)] = True
     rand.shuffle(mask)
     return np.reshape(mask, shape)
 
