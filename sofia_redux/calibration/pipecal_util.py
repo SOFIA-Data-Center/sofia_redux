@@ -5,7 +5,8 @@ import warnings
 
 from astropy import log
 import numpy as np
-import photutils
+
+from photutils.detection import find_peaks
 
 from sofia_redux.calibration.pipecal_calfac import pipecal_calfac
 from sofia_redux.calibration.pipecal_error import PipeCalError
@@ -196,7 +197,7 @@ def guess_source_position(header, image, srcpos=None):
     if not srcpos:
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            peak = photutils.find_peaks(image, np.nanmedian(image), npeaks=1)
+            peak = find_peaks(image, np.nanmedian(image), npeaks=1)
         try:
             srcpos = [peak['x_peak'][0], peak['y_peak'][0]]
             log.debug('SRCPOS from find_peaks: {}'.format(srcpos))

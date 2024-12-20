@@ -142,7 +142,7 @@ class TestUtil(object):
 
         # find_peaks failure: use crpix
         mocker.patch(
-            'sofia_redux.calibration.pipecal_util.photutils.find_peaks',
+            'sofia_redux.calibration.pipecal_util.find_peaks',
             return_value=None)
         test = util.guess_source_position(header, image)
         assert test == crpix
