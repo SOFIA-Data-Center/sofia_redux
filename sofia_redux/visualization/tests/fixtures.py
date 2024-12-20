@@ -6,7 +6,10 @@ import copy
 import pytest
 import numpy as np
 import astropy.io.fits as pf
-from PyQt5 import QtWidgets, QtCore
+try:
+    from PyQt5 import QtWidgets, QtCore
+except ImportError:
+    pytest.skip("No PyQt5", allow_module_level=True)
 from astropy.modeling import models
 from matplotlib import figure as mpf
 
