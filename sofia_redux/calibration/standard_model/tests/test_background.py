@@ -103,8 +103,8 @@ def test_background_integrand_1(plancks, temperatures, warr, total_throughput,
 
     assert bg_int_1.shape == warr.shape
     assert strictly_decreasing(bg_int_1)
-    assert np.alltrue(bg_int_0 < bg_int_1)
-    assert np.alltrue(bg_int_1 < 1)
+    assert np.all(bg_int_0 < bg_int_1)
+    assert np.all(bg_int_1 < 1)
 
 
 @pytest.mark.parametrize('filter_number', range(5))
@@ -124,7 +124,7 @@ def test_integrand2(numerators, warr, temperatures, field_order):
     assert set(factors.keys()) == set(field_order)
     for field, value in factors.items():
         assert len(value) == len(warr)
-        assert np.alltrue(np.isfinite(value))
+        assert np.all(np.isfinite(value))
 
 
 def test_background_integrand_coeff(warr, temperatures, field_order):
@@ -133,7 +133,7 @@ def test_background_integrand_coeff(warr, temperatures, field_order):
         factor = bg.background_integrand_coeff(numerator, warr,
                                                temperatures[field])
         assert len(factor) == len(warr)
-        assert np.alltrue(np.isfinite(factor))
+        assert np.all(np.isfinite(factor))
         assert strictly_increasing(factor)
 
 
