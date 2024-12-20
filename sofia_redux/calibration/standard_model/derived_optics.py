@@ -59,8 +59,8 @@ def mean_pixels_in_beam(num_pix, total_throughput, wavelengths):
         the beam.
 
     """
-    top = si.simps(num_pix * total_throughput, wavelengths)
-    bottom = si.simps(total_throughput, wavelengths)
+    top = si.simpson(num_pix * total_throughput, x=wavelengths)
+    bottom = si.simpson(total_throughput, x=wavelengths)
     npix_mean = top / bottom
     return npix_mean
 
@@ -98,8 +98,8 @@ def noise_equivalent_power(bg_integrand1, bg_integrand2, num_pix,
     c = const.c.to(u.um / u.s).value
     h = const.h.to(u.erg * u.s).value
 
-    nepterm1 = si.simps(bg_integrand1 * num_pix / wavelengths, wavelengths)
-    nepterm2 = si.simps(bg_integrand2 * num_pix / wavelengths, wavelengths)
+    nepterm1 = si.simpson(bg_integrand1 * num_pix / wavelengths, x=wavelengths)
+    nepterm2 = si.simpson(bg_integrand2 * num_pix / wavelengths, x=wavelengths)
     nep = np.sqrt(2. * telescope_area * omega_pix * h * ergs2W * c
                   * (nepterm1 + nepterm2))
 
