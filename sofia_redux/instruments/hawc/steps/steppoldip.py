@@ -152,7 +152,7 @@ class StepPolDip(StepParent):
 
         # vector varies by pixel
         # (b is npix x 9 x 1 matrix)
-        b = f.dot(c.T)[:,:,np.newaxis]
+        b = f.dot(c.T)[:, :, np.newaxis]
 
         # copy of a for each pixel
         # (aa is npix x 9 x 9)
