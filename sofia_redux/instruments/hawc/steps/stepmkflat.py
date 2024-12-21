@@ -218,7 +218,7 @@ class StepMkflat(StepMOParent, StepLoadAux):
             # 2, 41, 64 array
             rawstd = np.nanstd(rawavg, axis=1)
 
-            # Set Dead / Ramping pixels as NaN in indata
+            # Set Dead / Ramping pixels as nan in indata
             # This next section finds and masks dead and
             # ramping pixels, so they won't bias the medians
             # calculated below. This may be redundant if they have
@@ -230,13 +230,13 @@ class StepMkflat(StepMOParent, StepLoadAux):
 
             # Identify bad and ramping pixels by looking low and high rawstd
             # Dead pixels
-            nbad[np.where(rawstd < bad_dead)] = np.NaN
+            nbad[np.where(rawstd < bad_dead)] = np.nan
             # Ramping pixels
-            nbad[np.where(rawstd > bad_ramping)] = np.NaN
+            nbad[np.where(rawstd > bad_ramping)] = np.nan
 
-            # Mark all bad pixels with NaN in indata
+            # Mark all bad pixels with nan in indata
             # This sets the T1 array signal values to nan.
-            nbad[1, :, 32:64] = np.NaN
+            nbad[1, :, 32:64] = np.nan
             nbad.shape = (4, 1, 41, 64)
             # multiply a (4, n, 41, 64) array by (4, 1, 41, 64) array
             indata *= nbad
@@ -310,7 +310,7 @@ class StepMkflat(StepMOParent, StepLoadAux):
             ynorm[0, :, 0:32] = ymean[0, :, 0:32] / ymeds[0]
             ynorm[0, :, 32:64] = ymean[0, :, 32:64] / ymeds[1]
             ynorm[1, :, 0:32] = ymean[1, :, 0:32] / ymeds[2]
-            ynorm[1, :, 32:64] = np.NaN
+            ynorm[1, :, 32:64] = np.nan
 
             # Make normalized std maps
             ystd = np.nanstd(modulus, axis=1)
@@ -415,12 +415,12 @@ class StepMkflat(StepMOParent, StepLoadAux):
             # to mask the bad pixels.
             bad = np.zeros((2, 41, 64))
             with np.errstate(invalid='ignore'):
-                bad[np.where(badsum != 0)] = np.NaN
+                bad[np.where(badsum != 0)] = np.nan
 
             # Make flatfields (Rcal, Tcal) and medians array
 
             # Make DCAL type flat fields, based on time-averaged
-            # modulus (bad pixels set to NaN)
+            # modulus (bad pixels set to nan)
             rcal = 10000. / ymean[0] + bad[0]
             tcal = 10000. * t_to_r / ymean[1] + bad[1]
 
@@ -491,7 +491,7 @@ class StepMkflat(StepMOParent, StepLoadAux):
             rphase = rphase - (-0.055)
             tphase = tphase - (-0.055)
 
-            # Set NaN pixels to median
+            # Set nan pixels to median
             # (not used at this time)
 
             # R0medianm = np.nanmedian(rphase[:, 0:32])
@@ -649,7 +649,7 @@ class StepMkflat(StepMOParent, StepLoadAux):
             gflatrvar = (mflat.imageget('R ARRAY GAIN'))**2 * rgainvar
             gflattvar = (mflat.imageget('T ARRAY GAIN'))**2 * tgainvar
 
-            # Groupflat bad pixel mask: see where there are NaNs
+            # Groupflat bad pixel mask: see where there are nans
             gbadr = np.zeros(gflatr.shape)
             gbadt = np.zeros(gflatt.shape)
             gbadr[np.where(np.isnan(gflatr))] = 1.0
