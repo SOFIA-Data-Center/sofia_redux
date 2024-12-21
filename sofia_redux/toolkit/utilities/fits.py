@@ -536,6 +536,8 @@ def merge_headers(headers, keyword_configuration, reference_header=None):
 
         elif operation == 'AND':
             try:
+                if not np.all([type(v) is bool for v in values]):
+                    raise TypeError
                 value = np.all(values)
             except TypeError:
                 log.warning(f'Key merge AND operation is invalid for {key}')
@@ -543,6 +545,8 @@ def merge_headers(headers, keyword_configuration, reference_header=None):
 
         elif operation == 'OR':
             try:
+                if not np.all([type(v) is bool for v in values]):
+                    raise TypeError
                 value = np.any(values)
             except TypeError:
                 log.warning(f'Key merge OR operation is invalid for {key}')
