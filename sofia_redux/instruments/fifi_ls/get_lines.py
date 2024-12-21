@@ -33,5 +33,5 @@ def get_lines():
 
     names = ['wavelength', 'name']
     df = pandas.read_csv(linefile, comment='#', names=names,
-                         delim_whitespace=True)
+                         sep=r'\s+')
     return list(df['wavelength']), list(df['name'])

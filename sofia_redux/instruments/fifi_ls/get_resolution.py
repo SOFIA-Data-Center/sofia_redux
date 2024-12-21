@@ -173,7 +173,7 @@ def get_resolution(header, wmean=None, spatial=False):
         log.debug("Loading resolution file: %s" % resfile)
         names = ['chan', 'wavelength', 'res', 'mfwhm']
         df = pandas.read_csv(resfile, comment='#', names=names,
-                             delim_whitespace=True)
+                             sep=r'\s+')
         store_resolution_in_cache(resfile, df)
 
     col = 'mfwhm' if spatial else 'res'

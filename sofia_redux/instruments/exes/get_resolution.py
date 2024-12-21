@@ -93,7 +93,7 @@ def get_resolution(header):
     log.debug(f"Loading resolution file: {resfile}")
     names = ['slitwid', 'res']
     df = pandas.read_csv(resfile, comment='#', names=names,
-                         delim_whitespace=True)
+                         sep=r'\s+')
     if df.empty:
         log.debug('No resolution data; returning header value.')
         return resolun

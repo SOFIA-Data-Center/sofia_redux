@@ -209,7 +209,7 @@ def get_flat(header):
         return
 
     # read the spatial flat file
-    df = pandas.read_csv(spatfile, comment='#', delim_whitespace=True)
+    df = pandas.read_csv(spatfile, comment='#', sep=r'\s+')
     df.sort_values('date', inplace=True)
     df = df[df['date'] >= obsdate]
     if len(df) == 0:
