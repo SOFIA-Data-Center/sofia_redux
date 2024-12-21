@@ -151,8 +151,8 @@ class StepPolDip(StepParent):
         a = c.dot(c.T)
 
         # vector varies by pixel
-        # (b is npix x 9 vector)
-        b = f.dot(c.T)
+        # (b is npix x 9 x 1 matrix)
+        b = f.dot(c.T)[:,:,np.newaxis]
 
         # copy of a for each pixel
         # (aa is npix x 9 x 9)
@@ -160,11 +160,11 @@ class StepPolDip(StepParent):
 
         # solve equations
         # returns npix solutions, with 9 parameters each
-        solution = np.linalg.solve(aa, b)
+        solution = np.linalg.solve(aa, b)[:, :, 0]
 
         # extract desired constants from solution
         # (each have dimension npix)
-        c = solution[:, 0]
+        c = solution[:, 0,]
         q0 = solution[:, 1]
         u0 = solution[:, 2]
         g = solution[:, 3]
