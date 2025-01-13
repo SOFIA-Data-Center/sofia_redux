@@ -389,7 +389,7 @@ def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
         return slopes, sqrt_var
 
 
-def process_extension(hdu, readout_range, rmplngth, threshold=5,
+def process_extension(hdu, readout_range, rmplngth=2, threshold=5,
                       s2n=10, remove_first=None,
                       subtract_bias=True, badmask=None,
                       average_ramps=True, posdata=None,
@@ -403,6 +403,8 @@ def process_extension(hdu, readout_range, rmplngth, threshold=5,
         input HDU extension
     readout_range : array_like of int
         (start readout, ramplength)
+    rmplngth : int, optional
+        Minimum ramp length
     threshold : float, optional
         Robust rejection threshold (in sigma) for combining slopes of
         individual ramps.
