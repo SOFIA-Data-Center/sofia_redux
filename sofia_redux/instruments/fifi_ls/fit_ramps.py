@@ -543,7 +543,7 @@ def process_extension(hdu, readout_range, rmplngth, threshold=5,
         return hdu1, hdu2
 
 
-def fit_ramps(filename, rmplngth = 2, s2n=10, threshold=5, badpix_file=None,
+def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
               write=False, outdir=None, remove_first=True,
               subtract_bias=True, indpos_sigma=3.0):
     """
@@ -709,7 +709,7 @@ def fit_ramps_wrap_helper(_, kwargs, filename):
 def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
                    outdir=None, remove_first=True, subtract_bias=True,
                    indpos_sigma=3.0, allow_errors=False,
-                   write=False, jobs=None, rmplngth = 2):
+                   write=False, jobs=None, rmplngth=2):
     """
     Wrapper for fit_ramps over multiple files.
 
@@ -735,6 +735,8 @@ def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
         Values of 0 or 1 will result in serial processing.  A negative
         value sets jobs to `n_cpus + 1 + jobs` such that -1 would use
         all cpus, and -2 would use all but one cpu.
+    rpmlngth : int, optional
+        Minimum ramp length
 
     Returns
     -------
