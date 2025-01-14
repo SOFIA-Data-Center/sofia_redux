@@ -4,6 +4,7 @@ import os
 
 from astropy.io import fits
 import numpy as np
+import pytest
 
 from sofia_redux.instruments.fifi_ls.telluric_correct \
     import telluric_correct, wrap_telluric_correct, apply_atran_correction
@@ -95,34 +96,24 @@ class TestTelluricCorrect(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_cal_failure(self, mocker, capsys):
+
+    @pytest.mark.parametrize(
+        'sub, msg',
+        [('apply_atran', 'Unable to apply ATRAN'),
+         ('get_atran_interpolated', 'Unable to get ATRAN'),
+         ('get_resolution', 'Unable to determine spectral resolution')])
+    def test_cal_failure(self, mocker, capsys, sub, msg):
         filename = get_scm_files()[0]
 
         # mock failures in subroutines
-
         mocker.patch(
-            'sofia_redux.instruments.fifi_ls.telluric_correct.apply_atran',
+            f'sofia_redux.instruments.fifi_ls.telluric_correct.{sub}',
             return_value=None)
         result = telluric_correct(filename)
         assert result is None
         capt = capsys.readouterr()
-        assert 'Unable to apply ATRAN' in capt.err
+        assert msg in capt.err
 
-        mocker.patch(
-            'sofia_redux.instruments.fifi_ls.telluric_correct.get_atran',
-            return_value=None)
-        result = telluric_correct(filename)
-        assert result is None
-        capt = capsys.readouterr()
-        assert 'Unable to get ATRAN' in capt.err
-
-        mocker.patch(
-            'sofia_redux.instruments.fifi_ls.telluric_correct.get_resolution',
-            return_value=None)
-        result = telluric_correct(filename)
-        assert result is None
-        capt = capsys.readouterr()
-        assert 'Unable to determine spectral resolution' in capt.err
 
     def test_wrap(self):
         files = get_scm_files()
