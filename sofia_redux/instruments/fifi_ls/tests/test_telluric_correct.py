@@ -222,7 +222,10 @@ class TestTelluricCorrect(FIFITestCase):
         expected_atran *= atran[None, 2:18, None]
 
         result = apply_atran_correction(wave, data, var,
-                                        np.array([awave, atran]), 0.0)
+                                        atran=np.array([awave, atran]),
+                                        cutoff=0.0,
+                                        transmission_narrow=0.,
+                                        narrow=False)
         tel_corr, var_corr, atran_store = result
 
         # returned atran should be close to expected
