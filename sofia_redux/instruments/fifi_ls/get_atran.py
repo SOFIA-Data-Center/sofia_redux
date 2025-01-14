@@ -223,7 +223,7 @@ def get_atran(header, resolution=None, filename=None,
             log.warning('Using default ATRAN file.')
             use_wv = False
 
-            log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
+        log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
 
         true_value = [alt, za, wv]
 
@@ -249,7 +249,7 @@ def get_atran(header, resolution=None, filename=None,
         for f in atran_files:
             # check for WV match
             match = regex2.match(os.path.basename(f))
-            if match is not None:
+            if use_wv and wv > 0 and match is not None:
                 match_val = 0
                 for i in range(3):
                     # file alt, za, or wv
