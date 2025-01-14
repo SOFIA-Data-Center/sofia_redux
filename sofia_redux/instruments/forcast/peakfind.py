@@ -10,7 +10,7 @@ from astropy.table import Table
 from astropy.utils.exceptions import AstropyWarning
 import numpy as np
 from pandas import DataFrame
-from photutils import DAOStarFinder
+from photutils.detection import DAOStarFinder
 from scipy.signal import correlate2d
 
 __all__ = ['peakfind', 'PeakFinder']

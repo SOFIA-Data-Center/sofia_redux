@@ -847,7 +847,8 @@ class TestQADImView(object):
 
         # cause a null result in peak find -- still same,
         # since source is at center
-        mocker.patch('photutils.find_peaks', lambda x, y, npeaks=None: None)
+        mocker.patch('photutils.detection.find_peaks',
+                     lambda x, y, npeaks=None: None)
         imviewer.ptable = None
         imviewer.photometry(x0 + 1, y0 + 1)
         values_test()
