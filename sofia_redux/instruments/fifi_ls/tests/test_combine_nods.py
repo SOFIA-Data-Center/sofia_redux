@@ -9,7 +9,7 @@ import pytest
 from sofia_redux.instruments.fifi_ls.tests.resources \
     import FIFITestCase, get_csb_files
 from sofia_redux.instruments.fifi_ls.combine_nods \
-    import (combine_nods, _mjd, _read_exthdrs,
+    import (combine_nods, _mjd, _unix, _read_exthdrs,
             classify_files, combine_extensions)
 
 
@@ -76,6 +76,14 @@ class TestCombineNods(FIFITestCase):
 
         dateobs = 'BADVAL'
         assert _mjd(dateobs) == 0
+
+    def test_unix(self):
+        dateobs = '2016-03-01T10:38:39'
+        expected = 1456828719
+        assert np.allclose(_unix(dateobs), expected)
+
+        dateobs = 'BADVAL'
+        assert _unix(dateobs) == 0
 
     def test_read_exthdrs(self):
         test_file = get_csb_files()[0]
@@ -377,12 +385,11 @@ class TestCombineNods(FIFITestCase):
             c2nc2[1][0].header['FILENAME'].replace('_002', '_004')
         hdr['ASSC_OBS'] = 'R004'
         hdr['DATE-OBS'] = '2016-03-01T10:39:51'
-        hdr['START'] += 2
 
-        # time comes from start, fifistrt, alpha keys
-        atime = 1456857532.28
-        btime1 = 1456857531.0
-        btime2 = 1456857533.0
+        # time comes from date-obs and calculation in combine_nods
+        atime = 1456828781.56
+        btime1 = 1456828733.56
+        btime2 = 1456828793.56
 
         # interpolate: first A will take only nearest B nod, since
         # there's no before B nod.  second A will interpolate before
@@ -446,12 +453,12 @@ class TestCombineNods(FIFITestCase):
             assert np.allclose(data[idx], 40 - interp_val)
 
         # check error if time keys missing and interpolate on
-        del c2nc2[2][0].header['START']
+        del c2nc2[2][0].header['C_CHOPLN']
         result = combine_nods(c2nc2, write=False, b_nod_method='nearest')
         assert result is not None
         with pytest.raises(ValueError) as err:
-            combine_nods(c2nc2, write=False, b_nod_method='interpolate')
-        assert 'Missing START, FIFISTRT, ALPHA, or EXPTIME' in str(err)
+            combine_nods(c2nc2, write=False, b_nod_method='interpolate')        
+        assert 'Missing DATE-OBS, C_CHOPLN or C_CYC keys in headers.' in str(err)
 
         # check error if OTF-style data and offbeam selected
         with pytest.raises(ValueError) as err:
