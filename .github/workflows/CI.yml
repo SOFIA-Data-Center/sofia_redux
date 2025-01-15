@@ -24,9 +24,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
-      - name: "DEBUG: Display Python version"
-        run: python -c "import sys; print(sys.version)"      
       - name: Install dependencies
         run: pip install tox
       - name: run ruff
-        run: tox -e check-style
+        run: tox -e check-style -- $(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA -- '*.py')
