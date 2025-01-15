@@ -7,15 +7,16 @@ name: CI
 on:
   push:
     branches:
-    - dsi-dev
+      - dsi-dev
   pull_request:
     branches:
-    - dsi-dev
+      - dsi-dev
 
 jobs:
+
   check:
+    name: Check Style
     runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     steps:
       - name: checkout git
@@ -28,7 +29,7 @@ jobs:
           python-version: 3.11
       - name: Install dependencies
         run: pip install tox
-      - name: run ruff
+      - name: Check Style
         run: |
           ref="${{github.base_ref}}"
           ref=${ref+"origin/$ref"}
@@ -38,3 +39,20 @@ jobs:
           else
             echo "No python files changed"
           fi
+    
+  test:
+    name: Unit Tests
+    runs-on: self-hosted
+
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v4
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install tox
+      - name: Run tests
+        run: tox -e test
+
