@@ -142,7 +142,7 @@ def get_flatbias(header, pathcal=None):
     blfile = os.path.join(pathcal, 'biaslevels.txt')
     if os.path.isfile(blfile):
         bias_levels = pandas.read_csv(
-            blfile, delim_whitespace=True, comment='#',
+            blfile, sep=r'\s+', comment='#',
             names=['date', 'swclo', 'swchi', 'lwclo', 'lwchi'])
         rows = bias_levels.loc[bias_levels['date'] >= fdate]
         if len(rows) > 0:

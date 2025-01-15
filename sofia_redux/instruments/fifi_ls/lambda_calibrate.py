@@ -115,7 +115,7 @@ def read_wavecal(calfile=None):
         colnames = ['Date', 'ch', 'g0', 'NP', 'a', 'PS', 'QOFF', 'QS']
         colnames += [f'ISOFF{i + 1}' for i in range(25)]
         df = pd.read_csv(calfile, comment='#',
-                         delim_whitespace=True, names=colnames)
+                         sep=r'\s+', names=colnames)
     except Exception as err:  # pragma: no cover
         raise ValueError(f"Cannot parse {calfile} to dataframe: {str(err)}")
     df.calfile = calfile

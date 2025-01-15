@@ -166,7 +166,7 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
                 "Could not locate default date spatial calibration file.")
         df = pd.read_csv(
             default_file, comment='#', names=['date', 'ch', 'file'],
-            delim_whitespace=True, dtype={'date': int})
+            sep=r'\s+', dtype={'date': int})
 
         ch = self.ch
         date_int = self.int_date
@@ -178,7 +178,7 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
 
         self.spatial_file = spatial_file
         df = pd.read_csv(spatial_file, names=['x', 'y'], dtype=float,
-                         delim_whitespace=True, comment='#')
+                         sep=r'\s+', comment='#')
         self.pixel_positions = Coordinate2D([df['x'].values, df['y'].values],
                                             unit='mm')
         self.pixel_offsets = Coordinate2D(
@@ -200,7 +200,7 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
             raise ValueError(f"Could not find file: {coefficient_file}")
 
         df = pd.read_csv(
-            coefficient_file, comment='#', delim_whitespace=True,
+            coefficient_file, comment='#', sep=r'\s+',
             names=['dt', 'ch', 'dch', 'bx', 'ax', 'rx', 'by', 'ay', 'ry'])
 
         dichroic = int(self.dichroic.value)

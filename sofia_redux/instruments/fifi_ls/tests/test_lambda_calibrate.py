@@ -397,7 +397,7 @@ class TestLambdaCalibrate(FIFITestCase):
         colnames = ['Date', 'ch', 'g0', 'NP', 'a', 'PS', 'QOFF', 'QS']
         colnames += [f'ISOFF{i + 1}' for i in range(25)]
         ndf = pd.read_csv(new_calfile, comment='#',
-                          delim_whitespace=True, names=colnames)
+                          sep=r'\s+', names=colnames)
         assert len(ndf.columns) == 33
         assert len(pd.unique(ndf['Date'])) >= 19
 

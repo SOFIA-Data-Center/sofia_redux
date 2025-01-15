@@ -140,7 +140,7 @@ def offset_xy(date, blue=False):
     obsdate = int(''.join([str(x).zfill(2) for x in date]))
     df = pandas.read_csv(
         calfile_default, comment='#', names=['date', 'chan', 'file'],
-        delim_whitespace=True, dtype={'date': int})
+        sep=r'\s+', dtype={'date': int})
     df = df.sort_values('date')
     df['chan'].apply(str.lower)
     channel = 'b' if blue else 'r'
@@ -160,7 +160,7 @@ def offset_xy(date, blue=False):
     if not goodfile(calfile, verbose=True):
         return
     offsets = pandas.read_csv(
-        calfile, names=['x', 'y'], dtype=float, delim_whitespace=True)
+        calfile, names=['x', 'y'], dtype=float, sep=r'\s+')
     offsets = np.array([offsets['x'], offsets['y']]).T
 
     store_spatial_in_cache(calfile, obsdate, calfile, offsets)
@@ -199,7 +199,7 @@ def get_deltavec_coeffs(header, obsdate, telsim2det=0.842):
     if not goodfile(coeff_file, verbose=True):
         return
     df = pandas.read_csv(
-        coeff_file, comment='#', delim_whitespace=True,
+        coeff_file, comment='#', sep=r'\s+',
         names=['dt', 'ch', 'dch', 'bx', 'ax', 'rx', 'by', 'ay', 'ry'])
 
     # The offsets from instrument boresight to telescope boresight

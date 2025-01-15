@@ -586,7 +586,7 @@ def _get_top_bottom_pixels(header, illum_x, illum_y,
                              f"from {custom_wavemap_file}")
         log.info(f'Using custom wavemap {custom_wavemap_file} to '
                  f'modify order edges.')
-        table = pandas.read_csv(custom_wavemap_file, delim_whitespace=True,
+        table = pandas.read_csv(custom_wavemap_file, sep=r'\s+',
                                 dtype=int, comment='#',
                                 names=['b1', 't1', 'ss1', 'ee1'])
 

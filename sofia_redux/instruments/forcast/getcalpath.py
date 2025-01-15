@@ -152,7 +152,7 @@ def getcalpath(header, pathcal=None):
         return result
 
     calcols = ['name', 'conffile', 'kwfile', 'badfile', 'pinfile']
-    df = pandas.read_csv(calfile_default, delim_whitespace=True,
+    df = pandas.read_csv(calfile_default, sep=r'\s+',
                          comment='#', names=calcols, index_col=0)
     table = df[(df.index >= dateobs) & (df['name'] == result['name'])]
     if len(table) == 0:
@@ -175,7 +175,7 @@ def getcalpath(header, pathcal=None):
     dual = header.get('INSTCFG', '').upper().strip() == 'IMAGING_DUAL'
     filter_file_default = os.path.join(path, 'filtershift.txt')
     filtcols = ['spectel', 'dichroic', 'shiftx', 'shifty']
-    df = pandas.read_csv(filter_file_default, delim_whitespace=True,
+    df = pandas.read_csv(filter_file_default, sep=r'\s+',
                          comment='#', names=filtcols, index_col=0)
     table = df[(df.index > dateobs)
                & (df['spectel'] == result['spectel'])
@@ -226,7 +226,7 @@ def _get_grism_cal(pathcal, result):
 
     calcols = ['spectel', 'slit', 'maskfile', 'wavefile',
                'resolution', 'respfile', 'slitfile', 'linefile']
-    df = pandas.read_csv(calfile_default, delim_whitespace=True,
+    df = pandas.read_csv(calfile_default, sep=r'\s+',
                          comment='#', names=calcols, index_col=0)
     table = df[(df.index >= dateobs)
                & (df['spectel'] == spectel)

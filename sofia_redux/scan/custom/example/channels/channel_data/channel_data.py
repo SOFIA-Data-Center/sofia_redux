@@ -194,7 +194,7 @@ class ExampleChannelData(SingleColorChannelData):
                       'coupling': np.float64, 'mux_gain': np.float64,
                       'bias_gain': np.float64}
         converters = {'flag': lambda x: cls.flagspace.parse_string(x).value}
-        pixel_info = pd.read_csv(filename, delim_whitespace=True, comment='#',
+        pixel_info = pd.read_csv(filename, sep=r'\s+', comment='#',
                                  names=column_names, dtype=data_types,
                                  converters=converters).to_dict('index')
 

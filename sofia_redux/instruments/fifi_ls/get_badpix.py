@@ -104,7 +104,7 @@ def read_defaults_table():
         raise ValueError(msg)
 
     table = pandas.read_csv(
-        default_file, comment='#', delim_whitespace=True,
+        default_file, comment='#', sep=r'\s+',
         names=['date', 'channel', 'filename'],
         dtype={'date': int},
         converters={'filename': lambda x: os.path.join(datapath, x),
@@ -181,7 +181,7 @@ def get_badpix(header, filename=None):
         data = pandas.read_csv(
             badpix_file, names=['spaxel', 'spexel'],
             dtype={'spaxel': int, 'spexel': int},
-            comment='#', delim_whitespace=True).values
+            comment='#', sep=r'\s+').values
     except ValueError:
         msg = "Invalid badpix file: {}".format(badpix_file)
         log.error(msg)

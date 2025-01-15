@@ -170,7 +170,7 @@ def get_response(header, filename=None):
 
         try:
             df = pandas.read_csv(
-                default_file, comment='#', delim_whitespace=True,
+                default_file, comment='#', sep=r'\s+',
                 names=['date', 'chan', 'dichroic', 'filename'])
             df = df.sort_values('date')
             rows = df[(df['date'] >= obsdate)

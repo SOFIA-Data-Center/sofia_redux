@@ -163,7 +163,7 @@ def _get_header_configuration(config_file=None, comments_file=None):
                   'min': lambda x: float(x) if x != '.' else None,
                   'max': lambda x: float(x) if x != '.' else None,
                   'enum': lambda x: x.split('|') if x != '.' else []}
-    df = pd.read_csv(config_file, delim_whitespace=True, comment='#',
+    df = pd.read_csv(config_file, sep=r'\s+', comment='#',
                      index_col=0, names=columns, converters=converters)
     df.index = df.index.str.upper().str.strip()
 
@@ -471,7 +471,7 @@ def _process_slit_configuration(header):
     columns = ['date', 'limit', 'div1', 'div2', 'c1', 'c2']
     columns.extend([f'v{i}' for i in range(24)])
 
-    df = pd.read_csv(slit_file, delim_whitespace=True, comment='#',
+    df = pd.read_csv(slit_file, sep=r'\s+', comment='#',
                      names=columns, dtype=float)
     row = df[df['date'] > header['fdate']].iloc[0]
 
@@ -516,7 +516,7 @@ def _process_tort_configuration(header):
 
     columns = ['date', 'hrfl0', 'xdfl0', 'slitrot',
                'krot', 'brl', 'x0brl', 'y0brl', 'hrr', 'detrot']
-    df = pd.read_csv(tort_file, delim_whitespace=True, comment='#',
+    df = pd.read_csv(tort_file, sep=r'\s+', comment='#',
                      names=columns, dtype=float)
     row = df[df['date'] > header['fdate']].iloc[0]
     log.info(f"Using tort parameters from: {tort_file} {row['date']}")
@@ -592,7 +592,7 @@ def _add_configuration_files(header):
         raise ValueError(f"Could not read default file: {default_file}")
 
     columns = ['date', 'bpmfile', 'darkfile', 'linfile']
-    df = pd.read_csv(default_file, delim_whitespace=True,
+    df = pd.read_csv(default_file, sep=r'\s+',
                      comment='#', names=columns)
     df['date'] = df['date'].apply(float)
     row = df[df['date'] > header['fdate']].iloc[0]

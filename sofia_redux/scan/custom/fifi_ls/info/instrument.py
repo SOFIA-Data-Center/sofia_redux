@@ -165,7 +165,7 @@ class FifiLsInstrumentInfo(SofiaInstrumentInfo):
 
         names = ['ch', 'wavelength', 'res', 'fwhm']
         df = pd.read_csv(filename, comment='#', names=names,
-                         delim_whitespace=True)
+                         sep=r'\s+')
 
         if self.channel == 'BLUE':
             order = self.options.get_string('G_ORD_B', default='unknown')
