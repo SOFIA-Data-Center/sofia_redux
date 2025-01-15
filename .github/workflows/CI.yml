@@ -31,7 +31,8 @@ jobs:
         run: pip install tox
       - name: Check Style
         run: |
-          ref="${{github.base_ref}}"  # Only available for PRs, use HEAD~ for direct commits
+          ref="${{github.base_ref}}"
+          ref=${ref+"origin/$ref"}
           changedpyfiles=$(git diff --name-only ${ref:-HEAD~} -- '*.py')
           if [ -n "$changedpyfiles" ]; then
             tox -e check-style -- $changedpyfiles
