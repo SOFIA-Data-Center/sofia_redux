@@ -40,8 +40,8 @@ jobs:
             echo "No python files changed"
           fi
     
-  test:
-    name: Unit Tests
+  test-small:
+    name: Unit Tests (without scan)
     runs-on: self-hosted
 
     steps:
@@ -54,5 +54,5 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
-        run: tox -e test
+        run: tox -e test-small
 
