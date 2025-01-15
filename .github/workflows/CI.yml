@@ -1,0 +1,32 @@
+# GitHub Actions workflow for testing and continuous integration.
+#
+# This file performs testing using tox and tox.ini to define and configure the test environments.
+
+name: CI
+
+on:
+  push:
+    branches:
+    - dsi-dev
+  pull_request:
+    branches:
+    - dsi-dev
+
+jobs:
+  check:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v4
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: "DEBUG: Display Python version"
+        run: python -c "import sys; print(sys.version)"      
+      - name: Install dependencies
+        run: pip install tox
+      - name: run ruff
+        run: tox -e check-style
