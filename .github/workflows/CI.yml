@@ -27,4 +27,11 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: run ruff
-        run: tox -e check-style -- $(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA -- '*.py')
+        run: |
+          changedpyfiles=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA -- '*.py')
+          if [ -n "$changedpyfiles" ]; then
+            echo "Running ruff on changed python files"
+            tox -e check-style -- $changedpyfiles
+          else
+            echo "No python files changed"
+          fi
