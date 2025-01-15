@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: checkout git
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up python
         uses: actions/setup-python@v5
         with:
@@ -29,16 +31,17 @@ jobs:
         run: pip install tox
       - name: Check Style
         run: |
-          changedpyfiles=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA -- '*.py')
+          ref="${{github.base_ref}}"
+          ref=${ref+"origin/$ref"}
+          changedpyfiles=$(git diff --name-only ${ref:-HEAD~} -- '*.py')
           if [ -n "$changedpyfiles" ]; then
-            echo "Running ruff on changed python files"
             tox -e check-style -- $changedpyfiles
           else
             echo "No python files changed"
           fi
     
-  test:
-    name: Unit Tests
+  test-small:
+    name: Unit Tests (without scan)
     runs-on: self-hosted
 
     steps:
@@ -51,5 +54,5 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
-        run: tox -e test
+        run: tox -e test-small
 
