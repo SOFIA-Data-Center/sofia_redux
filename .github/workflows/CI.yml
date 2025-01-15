@@ -29,9 +29,9 @@ jobs:
         run: pip install tox
       - name: Check Style
         run: |
-          changedpyfiles=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA -- '*.py')
+          ref="${{github.base_ref}}"  # Only available for PRs, use HEAD~ for direct commits
+          changedpyfiles=$(git diff --name-only ${ref:-HEAD~} -- '*.py')
           if [ -n "$changedpyfiles" ]; then
-            echo "Running ruff on changed python files"
             tox -e check-style -- $changedpyfiles
           else
             echo "No python files changed"
