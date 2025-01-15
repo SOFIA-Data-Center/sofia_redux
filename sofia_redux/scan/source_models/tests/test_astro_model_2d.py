@@ -2,7 +2,6 @@
 
 from astropy import units
 from copy import deepcopy
-import imageio
 import numpy as np
 import os
 import pytest
@@ -23,13 +22,6 @@ from sofia_redux.scan.source_models.maps.observation_2d import Observation2D
 
 arcsec = units.Unit('arcsec')
 
-
-try:
-    import matplotlib.pyplot as plt
-    have_matplotlib = True
-except (ImportError, ModuleNotFoundError):  # pragma: no cover
-    have_matplotlib = False
-    plt = None
 
 
 class FunctionalAstroModel2D(AstroModel2D):  # pragma: no cover
@@ -767,8 +759,9 @@ def test_write_png(obs2d, initialized_source):
     assert source.png_data[0].shape == (4, 3)
 
 
-@pytest.mark.skipif(not have_matplotlib, reason='matplotlib not installed')
 def test_write_image_png(obs2d, initialized_source, tmpdir):
+    pytest.importorskip("matplotlib")
+    imageio = pytest.importorskip("imageio")
     source = initialized_source.copy()
     source.do_png_write = True
     map_2d = obs2d.copy()

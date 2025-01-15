@@ -19,7 +19,7 @@ else:
     HAS_PYQT5 = True
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif(not HAS_PYQT5, reason="PyQt5 not available")
 class TestQADDialogs(object):
     """Test the QAD Settings dialogs."""
     @pytest.fixture(autouse=True, scope='function')

@@ -58,9 +58,10 @@ __all__ = ['QADImView']
 
 
 class ViewerSignals(QtCore.QObject):
-    make_radial_plot = QtCore.pyqtSignal()
-    make_histogram_plot = QtCore.pyqtSignal()
-    make_p2p_plot = QtCore.pyqtSignal()
+    if HAS_PYQT5:
+        make_radial_plot = QtCore.pyqtSignal()
+        make_histogram_plot = QtCore.pyqtSignal()
+        make_p2p_plot = QtCore.pyqtSignal()
 
 
 class QADImView(object):

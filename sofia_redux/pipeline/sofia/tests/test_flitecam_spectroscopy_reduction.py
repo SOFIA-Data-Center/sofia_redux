@@ -20,9 +20,16 @@ except ImportError:
     HAS_DRIP = False
     FLITECAMSpectroscopyReduction = None
     FLITECAMSpectroscopyParameters = None
+try:
+    from PyQt5 import QtWidgets
+except ImportError:
+    QtWidgets = None
+    HAS_PYQT5 = False
+else:
+    HAS_PYQT5 = True
 
-
-@pytest.mark.skipif('not HAS_DRIP')
+@pytest.mark.skipif(not HAS_DRIP, reason="No FLITECAM imaging reduction")
+@pytest.mark.skipif(not HAS_PYQT5, reason="No PyQt5")
 class TestFLITECAMSpectroscopyReduction(object):
 
     @pytest.fixture(autouse=True, scope='function')
