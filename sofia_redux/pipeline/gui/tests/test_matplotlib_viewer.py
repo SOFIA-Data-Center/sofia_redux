@@ -227,13 +227,13 @@ class TestMatplotlibViewer(object):
         # update with plots, get the next color from the default cycle
         mpview.update(plots)
         axes = mpview.plotter.figure.get_axes()
-        ax1_cyc = next(axes[0]._get_lines.prop_cycler)['color']
+        ax1_cyc = axes[0]._get_lines.get_next_color()
 
         # set a continuous colormap kwarg and update viewer again
         plots[0]['kwargs']['colormap'] = 'plasma'
         mpview.update(plots)
         axes = mpview.plotter.figure.get_axes()
-        ax2_cyc = next(axes[0]._get_lines.prop_cycler)['color']
+        ax2_cyc = axes[0]._get_lines.get_next_color()
 
         # next color is different, after changing colormap
         assert mc.to_hex(ax1_cyc) != mc.to_hex(ax2_cyc)
@@ -243,7 +243,7 @@ class TestMatplotlibViewer(object):
         plots[0]['kwargs']['colormap'] = 'tab20b'
         mpview.update(plots)
         axes = mpview.plotter.figure.get_axes()
-        ax3_cyc = next(axes[0]._get_lines.prop_cycler)['color']
+        ax3_cyc = axes[0]._get_lines.get_next_color()
 
         # next color is different, after changing colormap
         assert mc.to_hex(ax2_cyc) != mc.to_hex(ax3_cyc)
