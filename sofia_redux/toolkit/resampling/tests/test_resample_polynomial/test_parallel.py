@@ -36,4 +36,4 @@ def test_parallel():
     d2 = resampler(xout, yout, smoothing=0.1, relative_smooth=True,
                    order_algorithm='extrapolate', jobs=-1)
 
-    assert np.allclose(d1, d2, equal_nan=True)
+    np.testing.assert_allclose(d1, d2, equal_nan=True)
