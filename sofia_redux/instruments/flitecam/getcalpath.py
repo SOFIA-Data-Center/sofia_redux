@@ -128,7 +128,7 @@ def getcalpath(header):
         return result
 
     calcols = ['name', 'kwfile', 'linfile']
-    df = pandas.read_csv(calfile_default, delim_whitespace=True,
+    df = pandas.read_csv(calfile_default, sep=r'\s+',
                          comment='#', names=calcols, index_col=0)
     table = df[(df.index >= dateobs) & (df['name'] == result['name'])]
     if len(table) == 0:
@@ -191,7 +191,7 @@ def _get_grism_cal(pathcal, result):
 
     calcols = ['spectel', 'slit', 'maskfile', 'wavefile',
                'respfile', 'linefile', 'waveshift', 'resolution']
-    df = pandas.read_csv(calfile_default, delim_whitespace=True,
+    df = pandas.read_csv(calfile_default, sep=r'\s+',
                          comment='#', names=calcols, index_col=0)
     table = df[(df.index >= dateobs)
                & (df['spectel'] == spectel)

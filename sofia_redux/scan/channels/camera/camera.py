@@ -189,7 +189,7 @@ class Camera(Channels):
 
         log.info(f"Reading RCP from {filename}")
 
-        df = pd.read_csv(filename, comment='#', delim_whitespace=True,
+        df = pd.read_csv(filename, comment='#', sep=r'\s+',
                          header=None, converters={0: lambda x: str(x)})
         n_columns = df.columns.size
         df = df.set_index([0])

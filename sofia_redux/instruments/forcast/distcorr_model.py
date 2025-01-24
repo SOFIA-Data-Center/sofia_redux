@@ -62,7 +62,7 @@ def read_pinhole_file(pinhole_file):
         return
     log.info("Reading pinhole file %s" % pinhole_file)
     table = pandas.read_csv(pinhole_file, comment='#',
-                            delim_whitespace=True)
+                            sep=r'\s+')
     return table
 
 

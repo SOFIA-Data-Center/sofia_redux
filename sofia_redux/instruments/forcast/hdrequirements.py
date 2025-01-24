@@ -135,7 +135,7 @@ def hdrequirements(kwfile=None):
         return default
     log.info('using keyword file: %s' % kwfile)
 
-    df = pandas.read_csv(kwfile, delim_whitespace=True,
+    df = pandas.read_csv(kwfile, sep=r'\s+',
                          comment=';', index_col=0)
     if len(df) == 0:
         log.warning('keyword file does not have keyword elements')
