@@ -1040,8 +1040,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
 
 
 def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
-                    outdir=None, write=False, bg_scaling=False, 
-                    telluric_scaling_on=False):
+                 outdir=None, write=False, bg_scaling=False, 
+                 telluric_scaling_on=False):
 
     """
     Combine nods of ramp-fitted, chop-subtracted data.
