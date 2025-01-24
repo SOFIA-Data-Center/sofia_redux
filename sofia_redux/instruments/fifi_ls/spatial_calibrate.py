@@ -438,8 +438,8 @@ def detector_coordinates_to_ra_dec(xs, ys, header):
     ra, dec : numpy.ndarray, numpy.ndarray
         The output detector position equatorial coordinates.
     """
-    obsra = header.get('OBSRA', 0) * 15  # hourangle to degree
-    obsdec = header.get('OBSDEC', 0)
+    obsra = header.get('OBSLAM', 0) #* 15  # hourangle to degree
+    obsdec = header.get('OBSBET', 0)
     sky_angle = header.get('SKY_ANGL', 0)
     dbet_map = header.get('DBET_MAP', 0) / 3600  # arcsec to degree
     dlam_map = header.get('DLAM_MAP', 0) / 3600  # arcsec to degree
@@ -453,8 +453,8 @@ def detector_coordinates_to_ra_dec(xs, ys, header):
         x, y = xs, ys
 
     center_ra, center_dec = obsra, obsdec
-    center_ra -= dlam_map / np.cos(np.radians(center_dec))
-    center_dec -= dbet_map
+    #center_ra -= dlam_map / np.cos(np.radians(center_dec))
+    #center_dec -= dbet_map
 
     # xs is in native RA offsets i.e., should normally subtract but add
     # in this case.
