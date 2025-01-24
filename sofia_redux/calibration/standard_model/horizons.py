@@ -185,7 +185,7 @@ def get_elements(obj):
         Raw output of query.
 
     """
-    elements = obj.elements(get_raw_response=True)
+    elements = obj.elements_async().text
     return elements
 
 
