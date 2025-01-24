@@ -98,7 +98,7 @@ def _em_func_b(em_spax):
 
 
 def _apply_flat_for_telluric(hdul, flatdata, wave, skip_err=True):
-# flat data from get_flat:
+    # flat data from get_flat:
     flatfile, spatdata, specdata, specwave, specerr = flatdata
 
     # update the header for the output file;
