@@ -27,13 +27,15 @@ __keyword_comments_file = None
 __quick_comments = None
 
 
-def create_requirements_table(default_file=None, comment_file=None,
+def create_requirements_table(nodstyle, default_file=None, comment_file=None,
                               reload=False):
     """
     Create the header keyword requirements definition table.
 
     Parameters
     ----------
+    nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric. 
     default_file : str, optional
         File path to the keyword definition file.  The default is
         fifi_ls/data/header_info/headerdef.dat
@@ -62,7 +64,7 @@ def create_requirements_table(default_file=None, comment_file=None,
     clear_requirements_table()
 
     try:
-        __requirements_table = get_keyword_table(filename=default_file).join(
+        __requirements_table = get_keyword_table(nodstyle=nodstyle, filename=default_file).join(
             get_keyword_comments_table(filename=comment_file))
         __requirements_file = default_file
         __keyword_comments_file = comment_file
@@ -96,7 +98,7 @@ def get_keyword_comments():
     return __quick_comments
 
 
-def get_keyword_table(filename=None):
+def get_keyword_table(nodstyle, filename=None):
     """
     Returns a dataframe containing the header requirements.
 
@@ -105,14 +107,21 @@ def get_keyword_table(filename=None):
     filename : str, optional
         File path to the keyword definition file.  The default is
         fifi_ls/data/header_info/headerdef.dat
+    nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric. 
 
     Returns
     -------
     pandas.DataFrame
     """
     if filename is None:
-        filename = os.path.join(os.path.dirname(fifi_ls.__file__),
+        if nodstyle in ['C2NC2', 'ASYMMETRIC']:
+            filename = os.path.join(os.path.dirname(fifi_ls.__file__),
+                                    'data', 'header_info', 'headerdef_asy.dat')
+        else:
+           filename = os.path.join(os.path.dirname(fifi_ls.__file__),
                                 'data', 'header_info', 'headerdef.dat')
+        
     if not goodfile(filename, verbose=True, read=True):
         raise ValueError("invalid header definition file: %s" % filename)
 
@@ -184,10 +193,10 @@ def set_defaults(table):
             row['value'] = row['default']
 
 
-def get_keyword_values(basehead, headers,
+def get_keyword_values(basehead, headers, nodstyle,
                        default_file=None, comment_file=None):
 
-    create_requirements_table(
+    create_requirements_table(nodstyle=nodstyle,
         default_file=default_file,
         comment_file=comment_file,
         reload=False)
@@ -453,8 +462,11 @@ def update_basehead(basehead, table, headers):
             filenums.extend(str(h.get('FILENUM', 'UNKNOWN')).split('-'))
         filenums = natural_sort(list(np.unique(filenums)))
         filenums = [f for f in filenums if valid_num(f)]
-        if len(filenums) > 1:
-            filenum = filenums[0].strip() + '-' + filenums[-1].strip()
+
+        if len(filenums) > 2:
+            filenum = filenums[0].strip() + '-' + filenums[-2].strip() + '-' + filenums[-1].strip()
+        elif len(filenums) == 2:
+            filenum = filenums[0].strip() +  '-' + filenums[-1].strip()
         elif len(filenums) == 1:
             filenum = filenums[0].strip()
         else:
@@ -495,10 +507,14 @@ def order_headers(headers):
     2-tuple
        fits.Header : earliest header
        list of fits.Header : ordered headers
+       nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric. 
     """
     nhead = len(headers)
     if nhead == 1:
-        return headers[0].copy(), [headers[0]]
+        for header in headers:
+            nodstyle = str(header.get('NODSTYLE'))
+        return headers[0].copy(), [headers[0]], nodstyle
     nodstyle = None
     dateobs, nodbeam = [], []
     for header in headers:
@@ -527,11 +543,11 @@ def order_headers(headers):
     # in A or B nod
     sorted_headers = [headers[i] for i in index]
 
-    return basehead, sorted_headers
+    return basehead, sorted_headers, nodstyle
 
 
 def make_header(headers=None, checkheader=False, default_file=None,
-                comment_file=None, check_all=False):
+                comment_file=None, check_all=False, nodstyle=None):
     """
     Standardize and combine input headers.
 
@@ -616,8 +632,8 @@ def make_header(headers=None, checkheader=False, default_file=None,
             log.error("Invalid header in header list")
             return (None, False) if checkheader else None
 
-    basehead, headers = order_headers(headers)
-    table = get_keyword_values(basehead, headers,
+    basehead, headers, nodstyle = order_headers(headers)
+    table = get_keyword_values(basehead, headers, nodstyle,
                                default_file=default_file,
                                comment_file=comment_file)
     success = True
