@@ -441,8 +441,8 @@ def detector_coordinates_to_ra_dec(xs, ys, header):
     obsra = header.get('OBSLAM', 0) #* 15  # hourangle to degree
     obsdec = header.get('OBSBET', 0)
     sky_angle = header.get('SKY_ANGL', 0)
-    dbet_map = header.get('DBET_MAP', 0) / 3600  # arcsec to degree
-    dlam_map = header.get('DLAM_MAP', 0) / 3600  # arcsec to degree
+    # dbet_map = header.get('DBET_MAP', 0) / 3600  # arcsec to degree
+    # dlam_map = header.get('DLAM_MAP', 0) / 3600  # arcsec to degree
 
     if sky_angle != 0:
         radians = np.radians(sky_angle)
