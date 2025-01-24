@@ -106,8 +106,10 @@ def resize_data(data, readout_range, indpos, remove_first_ramps=True,
         # use the values in the last spaxel to check for
         # bad grating position
         mask = 0b0000000000011111
-        grating_values = (data[:, 2::4, 25] & 0xffff) + 2 ** 16 \
-            * ((data[:, 3::4, 25] & 0xffff) & mask)
+        grating_values = (
+            data[:, 2::4, 25].astype(np.uint16)
+            + 2**16 * (data[:, 3::4, 25] & mask).astype(np.int32)
+        )
 
         # average the 4 samples
         grating_values = np.mean(grating_values, axis=1)
