@@ -1060,9 +1060,9 @@ def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
     The procedure is:
 
         1. Read header information from each extension in each of the
-            input files, making lists of A data and B data, with relevant
-            metadata (dither) position, date/time observed (DATE-OBS),
-            inductosyn position, channel, nod style).
+           input files, making lists of A data and B data, with relevant
+           metadata (dither) position, date/time observed (DATE-OBS),
+           inductosyn position, channel, nod style).
 
         2. Loop though all A data to find matching B data
 
