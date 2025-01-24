@@ -267,7 +267,7 @@ class TestPhotometry(object):
             return {'aperture_sum': np.nan}
         mocker.patch(
             'sofia_redux.calibration.pipecal_photometry.'
-            'photutils.aperture_photometry',
+            'aperture_photometry',
             mock_phot)
 
         # sets fluxes, errors to zero if not finite

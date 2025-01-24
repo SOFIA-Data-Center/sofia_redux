@@ -3,12 +3,13 @@
 
 import warnings
 
-from astropy import log
 import numpy as np
-import photutils
+from astropy import log
+from photutils.aperture import (CircularAnnulus, CircularAperture,
+                                aperture_photometry)
 
-from sofia_redux.calibration.pipecal_fitpeak import pipecal_fitpeak
 from sofia_redux.calibration.pipecal_error import PipeCalError
+from sofia_redux.calibration.pipecal_fitpeak import pipecal_fitpeak
 
 __all__ = ['pipecal_photometry']
 
@@ -419,10 +420,10 @@ def pipecal_photometry(image, variance, srcpos=None,
     # Do aperture photometry
 
     # set up source and sky apertures
-    src_aper = photutils.CircularAperture(
+    src_aper = CircularAperture(
         [starx, stary], r=aprad)
     try:
-        sky_aper = photutils.CircularAnnulus(
+        sky_aper = CircularAnnulus(
             [starx, stary], r_in=skyrad[0], r_out=skyrad[1])
     except ValueError:
         # invalid sky radii passed: ignore sky extraction
@@ -433,20 +434,20 @@ def pipecal_photometry(image, variance, srcpos=None,
     mask[~np.isfinite(image)] = True
 
     # extract source flux
-    raw_table = photutils.aperture_photometry(
+    raw_table = aperture_photometry(
         image, src_aper, mask=mask)
 
     # extract variance on the source flux
-    var_table = photutils.aperture_photometry(
+    var_table = aperture_photometry(
         variance, src_aper, mask=mask)
 
     # extract sky background flux
     if sky_aper is not None:
-        bg_table = photutils.aperture_photometry(
+        bg_table = aperture_photometry(
             image, sky_aper, mask=mask)
 
         # extract variance on the sky flux
-        varbg_table = photutils.aperture_photometry(
+        varbg_table = aperture_photometry(
             variance, sky_aper, mask=mask)
 
         # scale background flux to source aperture area

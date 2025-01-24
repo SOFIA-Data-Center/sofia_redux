@@ -334,7 +334,7 @@ def pipecal_config(header):
     default_file = os.path.join(caldata, 'caldefault.txt')
     try:
         def_cal = np.genfromtxt(default_file, comments='#',
-                                dtype=np.unicode_, unpack=True)
+                                dtype=np.str_, unpack=True)
         date, ac1, fdef, std_eflux, ref_calf, avg_calf, \
             rfit_am, rfit_alt, rfit_pwv = def_cal
     except IOError:
@@ -481,7 +481,7 @@ def pipecal_config(header):
         # Read the model_error file
         # Columns: object_name, %model_error
         try:
-            ob, merr, mscale = np.genfromtxt(fname, dtype=np.unicode_,
+            ob, merr, mscale = np.genfromtxt(fname, dtype=np.str_,
                                              unpack=True)
         except (ValueError, TypeError):
             log.error('Standard error file {} is poorly '
@@ -503,7 +503,7 @@ def pipecal_config(header):
     default_file = os.path.join(caldata, 'stddefault.txt')
     try:
         date, ac1, ob, std_flux = np.genfromtxt(
-            default_file, dtype=np.unicode_,
+            default_file, dtype=np.str_,
             unpack=True)
     except IOError:
         log.error('Standards default file {} does not '

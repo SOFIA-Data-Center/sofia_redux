@@ -82,7 +82,7 @@ def apply_atran_correction(wave, data, var, atran, cutoff, transmission_narrow, 
             v = var[n, :, i]
 
             itrans = np.interp(x, aw[a0:a1], at[a0:a1])
-            if not narrow:  
+            if not narrow:
                 for k in range(nwave):
                     transmission = itrans[k]
                     atran_store[n, k, i] = transmission
@@ -105,8 +105,8 @@ def apply_atran_correction(wave, data, var, atran, cutoff, transmission_narrow, 
     return tel_corr, var_corr, atran_store
 
 
-def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=None, hdr_ovr=False,
-                restwav=0.0, redshift=0.0):
+def apply_atran(hdul, atran, narrow=False, cutoff=0.6, skip_corr=False,
+                unsmoothed=None, hdr_ovr=False, restwav=0.0, redshift=0.0):
     """
     Apply transmission data to data in an HDUList.
 
@@ -115,6 +115,9 @@ def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=Non
     hdul : fits.HDUList
     atran : numpy.ndarray
         (2, nwave) where [0, :] = wavelength and [1, :] = transmission
+    narrow : bool, optional
+        The telluric correction value at the rest wave lenght will be
+        used for the complete cube. Only suitable for certain observations.
     cutoff : float, optional
         Used as the fractional transmission below which data will
         be set to NaN. Set to 0 to keep all data.
@@ -124,11 +127,8 @@ def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=Non
     unsmoothed : numpy.ndarray, optional
         Unsmoothed transmission to attach to output file.
         (2, nwave) where [0, :] = wavelength and [1, :] = transmission
-    narrow : bool, optional
-        The telluric correction value at the rest wave lenght will be 
-        used for the complete cube. Only suitable for certain observations.  
     hdr_ovr : bool, optional
-        If set, rest wave length and z are not taken from FITS header (as 
+        If set, rest wave length and z are not taken from FITS header (as
         they might not be available in older observations), but provided
         manually.
     restwav : float, optionl
@@ -152,8 +152,8 @@ def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=Non
         do_reshape = True
     else:
 
-        do_reshape = False                     
-                    
+        do_reshape = False
+
 
     if narrow:
         # Wavelength from header for OTF or as config parameter as keyword only in newer observations
@@ -162,7 +162,7 @@ def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=Non
         # position. Is used for resolution as this is also property of intrument
         if not hdr_ovr:
             try:
-                restwav = hdul[0].header['RESTWAV']  
+                restwav = hdul[0].header['RESTWAV']
                 redshift =  hdul[0].header['REDSHIFT']
             except KeyError:
                 raise ValueError('Missing RESTWAV and REDSHIFT keys in headers, '
@@ -174,7 +174,7 @@ def apply_atran(hdul, atran, narrow, cutoff=0.6, skip_corr=False, unsmoothed=Non
         at = atran[1]
         df = pd.DataFrame({'aw': aw, 'at': at})
         transmission_narrow = df.loc[(df['aw']- wl).abs().idxmin()]['at']
-    else: 
+    else:
         transmission_narrow = 0
 
 
@@ -341,7 +341,7 @@ def telluric_correct_wrap_helper(_, kwargs, filename):
 def wrap_telluric_correct(files, outdir=None, allow_errors=False,
                           atran_dir=None, cutoff=0.6, use_wv=False,
                           skip_corr=False, write=False,
-                          jobs=None, narrow=False, hdr_ovr=True, 
+                          jobs=None, narrow=False, hdr_ovr=True,
                           redshift=0.0, restwav=0.0):
     """
     Wrapper for telluric_correct over multiple files.

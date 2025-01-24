@@ -263,7 +263,7 @@ def reconstruct_slit(image, xarray, yarray, xgrid, ygrid, header=None,
             result['variance'][putidx] += np.sum(area_arr * var_arr, axis=1)
         if dobits:
             bit_arr = np.reshape(np.take(bitmask, takeidx), area_arr.shape)
-            bit_arr = np.mod(np.product(bit_arr, axis=1), 256)
+            bit_arr = np.mod(np.prod(bit_arr, axis=1), 256)
             result['bitmask'][putidx] = bit_arr
 
     result['mask'] = np.array(result['mask'] > (1 - badfrac))

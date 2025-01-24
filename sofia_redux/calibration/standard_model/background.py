@@ -238,7 +238,7 @@ def background_power(telescope_area, omega_pix, bg_integrand1,
 
     """
 
-    integral = si.simps(bg_integrand1 * num_pix, wavelengths)
+    integral = si.simpson(bg_integrand1 * num_pix, x=wavelengths)
     power = telescope_area * omega_pix * integral
     return power
 
@@ -311,5 +311,5 @@ def integrate_integrands(integrands, warr):
     """
     integrals = dict()
     for key, integrand in integrands.items():
-        integrals[key] = si.simps(integrand, warr)
+        integrals[key] = si.simpson(integrand, x=warr)
     return integrals

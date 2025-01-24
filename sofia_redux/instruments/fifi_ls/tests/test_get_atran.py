@@ -2,10 +2,12 @@
 
 import os
 import time
+from pathlib import Path
 
 from astropy.io import fits
 import numpy as np
 
+from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.get_atran \
     import (clear_atran_cache, get_atran_from_cache,
             store_atran_in_cache, get_atran)
@@ -158,10 +160,25 @@ class TestGetAtran(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Bad WV value' in capt.err
 
-        # add a WV value (start and/or end), but no ATRAN repo with WV files
+    def test_header_no_wv(self, capsys, tmp_path):
+        filename = get_scm_files()[0]
+        header = fits.open(filename)[0].header
+
+        # make ATRAN repo without WV files
+        reference_atran = 'atran_40K_45deg_40-300mum.fits'
+        (tmp_path / reference_atran).symlink_to(
+            Path(fifi_ls.__file__).parent /
+            'data' / 'atran_files' / reference_atran)
+
+        # default
+        default = get_atran(header, atran_dir=str(tmp_path))
+        assert default is not None
+        assert isinstance(default, np.ndarray)
+
+        # add a WV value (start and/or end)
         hdr = header.copy()
         hdr['WVZ_STA'] = 6.0
-        result = get_atran(hdr, use_wv=True)
+        result = get_atran(hdr, use_wv=True, atran_dir=str(tmp_path))
         assert np.allclose(result, default)
         capt = capsys.readouterr()
         assert 'Using nearest Alt/ZA' in capt.out
@@ -169,7 +186,7 @@ class TestGetAtran(FIFITestCase):
 
         hdr = header.copy()
         hdr['WVZ_END'] = 6.0
-        result = get_atran(hdr, use_wv=True)
+        result = get_atran(hdr, use_wv=True, atran_dir=str(tmp_path))
         assert np.allclose(result, default)
         capt = capsys.readouterr()
         assert 'Using nearest Alt/ZA' in capt.out
@@ -178,7 +195,7 @@ class TestGetAtran(FIFITestCase):
         hdr = header.copy()
         hdr['WVZ_STA'] = 6.0
         hdr['WVZ_END'] = 8.0
-        result = get_atran(hdr, use_wv=True)
+        result = get_atran(hdr, use_wv=True, atran_dir=str(tmp_path))
         assert np.allclose(result, default)
         capt = capsys.readouterr()
         assert "Alt, ZA, WV: 41.00 45.00 7.00" in capt.out
@@ -187,13 +204,13 @@ class TestGetAtran(FIFITestCase):
 
         # now add wvz_obs -- should be used in place of sta/end
         hdr['WVZ_OBS'] = 5.0
-        get_atran(hdr, use_wv=True)
+        get_atran(hdr, use_wv=True, atran_dir=str(tmp_path))
         capt = capsys.readouterr()
         assert "Alt, ZA, WV: 41.00 45.00 5.00" in capt.out
 
         # but not if it has a bad value
         hdr['WVZ_OBS'] = -9999.
-        get_atran(hdr, use_wv=True)
+        get_atran(hdr, use_wv=True, atran_dir=str(tmp_path))
         capt = capsys.readouterr()
         assert "Alt, ZA, WV: 41.00 45.00 7.00" in capt.out
 

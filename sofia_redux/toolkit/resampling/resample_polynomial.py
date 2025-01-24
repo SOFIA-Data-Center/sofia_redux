@@ -278,7 +278,7 @@ class ResamplePolynomial(ResampleBase):
         if order.ndim == 0:
             min_points = (order + 1) ** n_features
         else:
-            min_points = np.product(order + 1)
+            min_points = np.prod(order + 1)
         if n_samples < min_points:
             raise ValueError("Too few data samples for order")
 
@@ -296,7 +296,7 @@ class ResamplePolynomial(ResampleBase):
         o = np.asarray(self.order)
         if o.shape == ():
             o = np.full(self.features, int(o))
-        return np.product(o + 1)
+        return np.prod(o + 1)
 
     def reduction_settings(self, smoothing=0.0, relative_smooth=False,
                            adaptive_threshold=None,

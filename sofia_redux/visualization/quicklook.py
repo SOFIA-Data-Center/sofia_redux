@@ -11,8 +11,8 @@ from matplotlib.backends.backend_agg \
     import FigureCanvasAgg as FigureCanvas
 from matplotlib.cm import get_cmap
 from matplotlib.figure import Figure
-from mpl_toolkits.axes_grid1.anchored_artists \
-    import AnchoredEllipse
+from matplotlib.offsetbox import AnchoredOffsetbox, AuxTransformBox
+from matplotlib.patches import Ellipse
 import numpy as np
 
 from sofia_redux.toolkit.utilities.fits import gethdul
@@ -273,13 +273,14 @@ def make_image(filename, extension=0, colormap='viridis', scale=None,
             major /= pixscale
             minor /= pixscale
             log.debug(f'Beam major, minor, angle: {major} {minor} {angle}')
-            beam = AnchoredEllipse(ax.transData, width=minor,
-                                   height=major, angle=angle,
-                                   loc=3, pad=1, borderpad=0.4,
-                                   frameon=False)
             face = get_cmap(colormap)(1.0)
-            beam.ellipse.set(facecolor=face, edgecolor='black',
-                             linewidth=2)
+            aux_tr_box = AuxTransformBox(ax.transData)
+            ellipse = Ellipse(xy=(0,0), width=minor, height=major, angle=angle,
+                              facecolor=face, edgecolor='black', linewidth=2)
+            aux_tr_box.add_artist(ellipse)
+            beam = AnchoredOffsetbox(child=aux_tr_box,
+                                     loc=3, pad=1, borderpad=0.4,
+                                     frameon=False)
             ax.add_artist(beam)
             ax.text(0.02, 0.01, 'Beam FWHM', transform=ax.transAxes,
                     horizontalalignment='left', weight='bold')

@@ -132,7 +132,7 @@ def get_keyword_table(filename=None):
         'enum': lambda x: x.split('|') if x != '.' else []
     }
     table = pandas.read_csv(
-        filename, delim_whitespace=True, comment='#',
+        filename, sep=r'\s+', comment='#',
         index_col=0, names=columns, converters=converters)
     table.index = table.index.str.upper().str.strip()
     table.enum = table.apply(
