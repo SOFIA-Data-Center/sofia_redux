@@ -735,6 +735,8 @@ def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
         Values of 0 or 1 will result in serial processing.  A negative
         value sets jobs to `n_cpus + 1 + jobs` such that -1 would use
         all cpus, and -2 would use all but one cpu.
+    rmplngth : int, optional
+        Minimum ramp length
 
     Returns
     -------
