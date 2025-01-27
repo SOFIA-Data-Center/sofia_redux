@@ -892,12 +892,13 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         and len(a_shape) < 3:
                         log.warning("Telluric scaling not available for pointed data.  \n"
                                     "Skipping telluric scaling")
-
-                        bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
+                        b_flux2 = brow2['hdul'][b_fname].data
+                        bdata = np.array([b_flux, b_flux2])
                         berr = np.array([np.sqrt(b_var),
                                         brow2['hdul'][b_sname].data])
                     else:
-                        bdata = np.array([b_flux, brow2['hdul'][b_fname].data])
+                        b_flux2 = brow2['hdul'][b_fname].data
+                        bdata = np.array([b_flux, b_flux2])
                         berr = np.array([np.sqrt(b_var),
                                         brow2['hdul'][b_sname].data])
 
