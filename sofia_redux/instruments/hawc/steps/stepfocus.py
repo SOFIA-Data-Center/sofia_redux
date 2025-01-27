@@ -281,16 +281,14 @@ class StepFocus(StepMOParent):
 
         # Check if extremum is correct
         if fit[0] * sign < 0 or bestfocx < min(focus) or bestfocx > max(focus):
-            # Use np.where to find the index
-            # of the minimum fwhmx (creates a tuple)
-            # Pull the first value from the tuple
-            # and use it as an index for focus
-            # This raises a warning in the log, but we can ignore it
+            # Find the (first) minimum fwhmx
+            # This used to raise a warning in the log, for certain cases,
+            # but we can ignore it
             valsign = [sign * v for v in values]
             try:
                 # It's possible for
-                # np.where(valsign == min(valsign)) to return []
-                guessfocx = focus[np.where(valsign == min(valsign))[0]]
+                # focus[valsign == min(valsign)] to return []
+                guessfocx = focus[valsign == min(valsign)][0]
             except (IndexError, TypeError):
                 log.warning('Error in focus guess - '
                             'just using first value')
