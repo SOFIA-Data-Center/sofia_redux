@@ -37,28 +37,30 @@ def dummy_table():
 
     return make_dummy_table
 
-
 class TestMakeHeader(FIFITestCase):
 
     def test_order_single(self):
         h = fits.Header()
         h['TESTKEY'] = 'foo'
+        h['NODSTYLE'] = 'NMC'
         headers = [h]
         result = u.order_headers(headers)
-        assert len(result) == 2
+        assert len(result) == 3
         assert isinstance(result[0], fits.Header)
         assert len(result[1]) == 1
         assert result[0]['TESTKEY'] == 'foo'
+        assert result[0]['NODSTYLE'] == 'NMC'
 
     def test_order_multiple(self):
         headers = [fits.Header() for _ in range(5)]
         for idx, h in enumerate(headers):
             h['DATE-OBS'] = '2018-01-01T00:00:%02i' % (59 - idx)
             h['IDX'] = idx
-        basehead, oheaders = u.order_headers(headers)
+        basehead, oheaders, nodstyle = u.order_headers(headers)
         assert basehead['IDX'] == (len(headers) - 1)
         assert oheaders[0]['IDX'] == (len(headers) - 1)
         assert oheaders[len(headers) - 1]['IDX'] == 0
+        assert nodstyle == 'None'
 
     def test_order_nods(self):
         headers = [fits.Header() for _ in range(5)]
@@ -67,7 +69,7 @@ class TestMakeHeader(FIFITestCase):
             h['IDX'] = idx
             h['NODSTYLE'] = 'ASYMMETRIC'
             h['NODBEAM'] = 'B' if (idx % 2) == 0 else 'A'
-        basehead, oheaders = u.order_headers(headers)
+        basehead, oheaders, nodstyle = u.order_headers(headers)
 
         # basehead is earliest A nod
         assert basehead['IDX'] == 3
@@ -75,10 +77,11 @@ class TestMakeHeader(FIFITestCase):
         # sorted headers are by date-obs
         assert oheaders[0]['IDX'] == 4
         assert oheaders[4]['IDX'] == 0
-
+        assert nodstyle == 'ASYMMETRIC'
+        
     def test_get_keyword_values(self, mocker):
         headers = [fits.Header()]
-        table = u.get_keyword_values(headers[0], headers)
+        table = u.get_keyword_values(headers[0], headers, nodstyle = 'NMC')
         assert isinstance(table, dict)
         expected_columns = ['required', 'default', 'type', 'combine',
                             'min', 'max', 'enum', 'comment', 'value']
@@ -88,12 +91,12 @@ class TestMakeHeader(FIFITestCase):
                 assert column in row
 
         with pytest.raises(ValueError) as err:
-            u.get_keyword_values(headers[0], headers,
+            u.get_keyword_values(headers[0], headers, nodstyle = 'NMC',
                                  default_file='__does_not_exist__')
         assert "could not create requirements table" in str(err.value).lower()
 
         with pytest.raises(ValueError) as err:
-            u.get_keyword_values(headers[0], headers,
+            u.get_keyword_values(headers[0], headers, nodstyle = 'NMC',
                                  comment_file='__does_not_exist__')
         assert "could not create requirements table" in str(err.value).lower()
 
@@ -103,14 +106,14 @@ class TestMakeHeader(FIFITestCase):
             'create_requirements_table',
             return_value=None)
         with pytest.raises(ValueError) as err:
-            u.get_keyword_values(headers[0], headers,
+            u.get_keyword_values(headers[0], headers, nodstyle = 'NMC',
                                  comment_file='__does_not_exist__')
         assert "could not create requirements table" in str(err.value).lower()
 
     def test_get_keyword_table(self):
         with pytest.raises(ValueError):
-            u.get_keyword_table(filename='__does_not_exist__')
-        table = u.get_keyword_table()
+            u.get_keyword_table(nodstyle='NMC',filename='__does_not_exist__')
+        table = u.get_keyword_table(nodstyle='NMC')
         columns = ['required', 'default', 'type', 'combine',
                    'min', 'max', 'enum']
         for column in columns:
@@ -143,7 +146,7 @@ class TestMakeHeader(FIFITestCase):
         hdul = fits.open(filename)
         header = hdul[0].header
 
-        table = u.get_keyword_values(header, [header])
+        table = u.get_keyword_values(header, [header], nodstyle = 'NMC',)
         values = np.array([r['value'] for r in table.values()])
         assert not np.all(np.equal(values, None))
 
@@ -349,11 +352,12 @@ class TestMakeHeader(FIFITestCase):
         header['AOR_ID'] = 'test_aor '
         header['MISSN-ID'] = 'test_mid '
         header['OBS_ID'] = 'test_obs '
+        header['NODSTYLE'] = 'NMC '
 
         headers = [header]
-        basehead, headers = u.order_headers(headers)
+        basehead, headers, nodstyle = u.order_headers(headers)
 
-        table = u.get_keyword_values(header, headers)
+        table = u.get_keyword_values(header, headers, nodstyle)
         u.update_basehead(basehead, table, headers)
 
         assert basehead['ASSC_AOR'] == 'TEST_AOR'
@@ -362,19 +366,21 @@ class TestMakeHeader(FIFITestCase):
         assert basehead['PROCSTAT'] == 'LEVEL_2'
         assert abs(Time.now() - Time(basehead['DATE'])).to('s').value < 10
         assert basehead['FILENUM'] == 'UNKNOWN'
+        assert basehead['FILENUM'] == 'UNKNOWN'
+        assert basehead['NODSTYLE'] == 'NMC'
 
     def test_update_filenum(self):
         header = fits.Header()
         header['FILENAME'] = '12345_a_file'
-        basehead, headers = u.order_headers([header])
-        table = u.get_keyword_values(header, [header])
+        basehead, headers, nodstyle = u.order_headers([header])
+        table = u.get_keyword_values(header, [header], nodstyle)
         u.update_basehead(basehead, table, [header])
         assert basehead['FILENUM'] == '12345'
 
         header = fits.Header()
         header['OBS_ID'] = 'something_B11_words_R22'
-        basehead, headers = u.order_headers([header])
-        table = u.get_keyword_values(header, [header])
+        basehead, headers, nodstyle = u.order_headers([header])
+        table = u.get_keyword_values(header, [header], nodstyle)
         u.update_basehead(basehead, table, [header])
         assert basehead['FILENUM'] == '22'
 
@@ -385,8 +391,8 @@ class TestMakeHeader(FIFITestCase):
             end = (i + 1) * n - 1
             h['FILENUM'] = '%i-%i' % (start, end)
         headers[0]['FILENUM'] = 'UNKNOWN'
-        basehead, headers = u.order_headers(headers)
-        table = u.get_keyword_values(headers[0], headers)
+        basehead, headers, nodstyle = u.order_headers(headers)
+        table = u.get_keyword_values(headers[0], headers, nodstyle)
         u.update_basehead(basehead, table, headers)
 
         expected = '%i-%i' % (n, (n ** 2) - 1)
