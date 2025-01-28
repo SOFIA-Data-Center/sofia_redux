@@ -26,7 +26,7 @@ from sofia_redux.toolkit.interpolate import \
     interp_1d_point_with_error as interp
 from sofia_redux.toolkit.utilities import gethdul, hdinsert, write_hdul
 
-__all__ = ['classify_files', 'combine_extensions', 'combine_nods', 'telluric_scaling']
+__all__ = ['classify_files', 'combine_extensions', 'combine_nods']
 
 
 def _mjd(dateobs):
