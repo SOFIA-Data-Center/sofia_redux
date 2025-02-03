@@ -98,7 +98,7 @@ DEFAULT = {
          'name': 'Use only full ramps',
          'value': False,
          'description': 'If set, only complete ramps are '
-                        'used for calculation of the linear fit.' 
+                        'used for calculation of the linear fit.'
                         'Incomplete ramps are filled with NaN.',
          'dtype': 'bool',
          'wtype': 'check_box'},
@@ -144,7 +144,8 @@ DEFAULT = {
         {'key': 'bg_scaling',
          'name': 'Scale flux with backgrounds (OTF and TP)',
          'value': False,
-         'description': 'If set, flux is scaled with the b_flux and the two backgrounds',
+         'description': 'If set, flux is scaled with the b_flux and '
+                        'the two backgrounds',
          'dtype': 'bool',
          'wtype': 'check_box'},
         {'key': 'telluric_scaling_on',

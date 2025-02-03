@@ -447,7 +447,7 @@ class FIFILSReduction(Reduction):
             rmplngth = 27
         else:
             rmplngth = 2
-        
+
         if str(badpix_file).strip() == '':
             badpix_file = None
         if parallel:
@@ -728,14 +728,14 @@ class FIFILSReduction(Reduction):
         hdr_ovr = param.get_value('hdr_ovr')
         restwav = param.get_value('restwav')
         redshift = param.get_value('redshift')
-    
+
         if not hdr_ovr:
             restwav = 0.0  # will be overwritten with header value
             redshift = 0.0
         if parallel:
             jobs = self.max_cores
         else:
-            jobs = None 
+            jobs = None
 
         if str(atran_dir).strip() == '':
             atran_dir = None
@@ -746,9 +746,10 @@ class FIFILSReduction(Reduction):
         result = wrap_telluric_correct(self.input, write=False,
                                        jobs=jobs, allow_errors=True,
                                        atran_dir=atran_dir, cutoff=cutoff,
-                                       use_wv=use_wv, skip_corr=skip_tell, narrow=narrow,
+                                       use_wv=use_wv, skip_corr=skip_tell,
+                                       narrow=narrow,
                                        redshift=redshift, hdr_ovr=hdr_ovr,
-                                        restwav=restwav)
+                                       restwav=restwav)
         if not result:
             msg = 'Problem in fifi_ls.telluric_correct.'
             log.error(msg)
