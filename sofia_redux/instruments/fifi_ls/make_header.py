@@ -27,13 +27,15 @@ __keyword_comments_file = None
 __quick_comments = None
 
 
-def create_requirements_table(nodstyle,default_file=None, comment_file=None,
+def create_requirements_table(nodstyle, default_file=None, comment_file=None,
                               reload=False):
     """
     Create the header keyword requirements definition table.
 
     Parameters
     ----------
+    nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric.
     default_file : str, optional
         File path to the keyword definition file.  The default is
         fifi_ls/data/header_info/headerdef.dat
@@ -106,6 +108,8 @@ def get_keyword_table(nodstyle, filename=None):
     filename : str, optional
         File path to the keyword definition file.  The default is
         fifi_ls/data/header_info/headerdef.dat
+    nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric.
 
     Returns
     -------
@@ -113,7 +117,6 @@ def get_keyword_table(nodstyle, filename=None):
     """
     if filename is None:
         if nodstyle in ['C2NC2', 'ASYMMETRIC']:
-            # print('HalloHier')
             filename = os.path.join(os.path.dirname(fifi_ls.__file__),
                                     'data', 'header_info', 'headerdef_asy.dat')
         else:
@@ -503,8 +506,9 @@ def order_headers(headers):
     2-tuple
        fits.Header : earliest header
        list of fits.Header : ordered headers
+       nodstyle : str
+        Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric.
     """
-
     nhead = len(headers)
     if nhead == 1:
         for header in headers:
