@@ -1,18 +1,13 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import os
-from datetime import datetime
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as tkr
 import numba as nb
 import numpy as np
-import pandas as pd
 from astropy import log
 from astropy.io import fits
 from astropy.time import Time
 from pandas import DataFrame
-from scipy import stats
 from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 
@@ -58,7 +53,8 @@ def _read_exthdrs(hdul, key, default=0):
     key : str
         The keyword to look up in the headers.
     default : int, optional
-        The default value to return if the key is not found in the headers. Defaults to 0.
+        The default value to return if the key is not found in the headers.
+        Defaults to 0.
 
     Returns
     -------
@@ -94,20 +90,12 @@ def _apply_flat_for_telluric(hdul, flatdata, wave, skip_err=True):
     # flat data from get_flat:
     flatfile, spatdata, specdata, specwave, specerr = flatdata
 
-    # update the header for the output file;
-    # add the flat file name to it
-    primehead = hdul[0].header
-    # hdul.info()
-
     data = np.asarray(hdul[1].data, dtype=float) # Flux
     var = np.asarray(hdul[2].data,               # Stddev
                         dtype=float) ** 2
     if data.ndim < 3:
         data = data.reshape((1, *data.shape))
         var = var.reshape((1, *var.shape))
-        do_reshape = True
-    else:
-        do_reshape = False
 
     hdu_result = calculate_flat(wave, data, var, spatdata, specdata,
                                 specwave, specerr, skip_err)
@@ -170,8 +158,9 @@ def _atransmission(hdul,row,hdr0, hdul0):
 
     # Get calibration from lambda_calibrate.py
     # calibration = {'wavelength': w, 'width': p, 'wavefile': wavefile}
-    # wavecal is optional to hand over, DataFrame containing wave calibration data. May be
-    # supplied in order to remove the overhead of reading the file every iteration of this function.
+    # wavecal is optional to hand over, DataFrame containing wave calibration
+    # data. May be supplied in order to remove the overhead of reading the file
+    # every iteration of this function.
 
     calibration = wave(ind, obsdate, dichroic, blue=blue, wavecal=None)
     w_cal = calibration['wavelength']
@@ -191,12 +180,12 @@ def _atransmission(hdul,row,hdr0, hdul0):
         t_atran_masked = t_atran[mask]
 
         # Find spexel indices where data is not NaN
-        valid_spexel = np.where(~np.isnan(hdul.data[:, :, spaxel]))[dimspexel]  
+        valid_spexel = np.where(~np.isnan(hdul.data[:, :, spaxel]))[dimspexel]
         if len(valid_spexel) > 0:  # Proceed only if spaxel has valid data
 
             # Create a function for nearest neighbor interpolation
-            interp_func = interp1d(w_atran_masked, t_atran_masked, kind='nearest', 
-                                   fill_value='extrapolate')
+            interp_func = interp1d(w_atran_masked, t_atran_masked,
+                                   kind='nearest', fill_value='extrapolate')
 
             # Interpolate the y values at low-resolution x values
             t[spaxel] = interp_func(w_cal_loop[valid_spexel])
@@ -219,11 +208,13 @@ def _atransmission(hdul,row,hdr0, hdul0):
             for value in nanarray:
                 if value == 1:
                     if original_data_index < hdul.data.shape[dimspexel]:
-                        t_full[original_data_index] = t[spaxel][optimized_data_index]
+                        t_full[original_data_index] = \
+                            t[spaxel][optimized_data_index]
                         original_data_index += 1
                         optimized_data_index += 1
                 elif value == 0:
-                    original_data_index += 1  # Only increment index of original data
+                    # Only increment index of original data
+                    original_data_index += 1
 
             # Write back into return array
             t[spaxel] = t_full
@@ -231,11 +222,11 @@ def _atransmission(hdul,row,hdr0, hdul0):
 
     return t
 
-def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
+
+def _telluric_scaling(hdul, brow, hdr0, hdul0, sig_rel):
 
     numspexel, numspaxel = hdul.data.shape
     dimspexel = 0
-    dimspaxel = 1
     stddev = hdul0[2].data
 
     # Values from main header for wavelength calibration
@@ -285,27 +276,27 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
     t_atran=atran[1]
 
 
-    # Get calibration from lambda_calibrate.py. 
+    # Get calibration from lambda_calibrate.py.
     # Calibration format: {'wavelength': w, 'width': p, 'wavefile': wavefile}.
-    # The `wavecal` parameter is optional and may be supplied as a DataFrame 
-    # containing wave calibration data. This avoids the overhead of reading the 
+    # The `wavecal` parameter is optional and may be supplied as a DataFrame
+    # containing wave calibration data. This avoids the overhead of reading the
     # file in every iteration of this function.
 
 
     calibration = wave(ind, obsdate, dichroic, blue=blue, wavecal=None)
     w_cal = calibration['wavelength']
 
-    # Perform flat fielding as in apply_static_flat.py to remove noise. This is 
-    # already performed per grating position here. The calculation occurs in a 
-    # for loop per grating position. The flat-fielded data is only used to 
-    # obtain the 'a' and 'c' values from the curve fit. Un-flatted data will be 
+    # Perform flat fielding as in apply_static_flat.py to remove noise. This is
+    # already performed per grating position here. The calculation occurs in a
+    # for loop per grating position. The flat-fielded data is only used to
+    # obtain the 'a' and 'c' values from the curve fit. Un-flatted data will be
     # used in subsequent pipeline steps as before.
 
     flatdata = get_flat(hdr0)
     flatval = _apply_flat_for_telluric(hdul0, flatdata, w_cal, skip_err=True)
 
 
-    # Bounds in the physical range for all wavelengths, c must be positive as 
+    # Bounds in the physical range for all wavelengths, c must be positive as
     # there are no negative emissions
     param_bounds = ([0, 0], [np.inf, np.inf])
     param_bounds_b = ([-np.inf,-np.inf, 0], [ np.inf, np.inf ,np.inf])
@@ -327,28 +318,19 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
         w_cal_loop=w_cal[:,spaxel]
         lambda_min = np.min(w_cal_loop)
         lambda_max = np.max(w_cal_loop)
-        lambda_range = (lambda_max - lambda_min)
-
-
-
-        # Limit the ATRAN wavelengths to lamnda_min and lambda_max
-        # 30 because 15 spexel intervals and half pixel added
-        mask_ext = (
-            (w_atran >= (lambda_min - (lambda_range / 30))) &
-            (w_atran <= (lambda_max + (lambda_range / 30)))
-        )
 
         mask = (w_atran >= lambda_min) & (w_atran <= lambda_max)
         w_atran_masked = w_atran[mask]
         t_atran_masked = t_atran[mask]
 
         # Find spexel indices where data is not NaN
-        valid_spexel = np.where(~np.isnan(hdul.data[:, spaxel]))[dimspexel]  # Find non-NaN indices
+        valid_spexel = np.where(~np.isnan(hdul.data[:, spaxel]))[dimspexel]
         if len(valid_spexel) > 0:  # Proceed only if spaxel has valid data
 
             # Create a function for nearest neighbor interpolation
             interp_func = interp1d(
-                w_atran_masked, t_atran_masked, kind='nearest', fill_value='extrapolate'
+                w_atran_masked, t_atran_masked,
+                kind='nearest', fill_value='extrapolate'
             )
 
             # Interpolate the y values at low-resolution x values
@@ -375,15 +357,27 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
 
             else:
                 sigma_used = stddev[valid_spexel,spaxel]
-            popt_sig[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_used, bounds=param_bounds)
-            popt_b_sig[spaxel], pcov = curve_fit(_em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                            sigma = sigma_used, bounds=param_bounds_b) 
-        
-            popt[spaxel], pcov = curve_fit(_em_func,e, np.array(flatval)[valid_spexel,spaxel],
-                        bounds=param_bounds)
-            popt_b[spaxel], pcov = curve_fit(_em_func_b(e), w_cal_loop[valid_spexel], np.array(flatval)[valid_spexel,spaxel],
-                                        bounds=param_bounds_b)     
+            popt_sig[spaxel], pcov = curve_fit(
+                _em_func,
+                e,
+                np.array(flatval)[valid_spexel, spaxel],
+                sigma = sigma_used, bounds=param_bounds)
+            popt_b_sig[spaxel], pcov = curve_fit(
+                _em_func_b(e),
+                w_cal_loop[valid_spexel],
+                np.array(flatval)[valid_spexel, spaxel],
+                sigma = sigma_used, bounds=param_bounds_b)
+
+            popt[spaxel], pcov = curve_fit(
+                _em_func,
+                e,
+                np.array(flatval)[valid_spexel, spaxel],
+                bounds=param_bounds)
+            popt_b[spaxel], pcov = curve_fit(
+                _em_func_b(e),
+                w_cal_loop[valid_spexel],
+                np.array(flatval)[valid_spexel,spaxel],
+                bounds=param_bounds_b)
 
             a, c = popt[spaxel]
             em_opt[spaxel] = a + c*e
@@ -393,13 +387,14 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             a_b,b_b, c_b = popt_b[spaxel]
             em_opt_b[spaxel] = a_b + b_b*w_cal_loop[valid_spexel]+c_b*e
             a_b_sig,b_b_sig, c_b_sig = popt_b_sig[spaxel]
-            em_opt_b_sig[spaxel] = a_b_sig + b_b_sig*w_cal_loop[valid_spexel]+c_b_sig*e
+            em_opt_b_sig[spaxel] = (a_b_sig + b_b_sig*w_cal_loop[valid_spexel]
+                                    + c_b_sig*e)
 
 
 
-            # Bring back emission and result to original size 16 and refill NaNs at original positions. 
-            # Can be done on original data, no change in NaNs
-            # Inizialize empty array with size 16
+            # Bring back emission and result to original size 16 and refill NaNs
+            # at original positions. Can be done on original data, no change in
+            # NaNs. Inizialize empty array with size 16
             restored_em_opt = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt_b = np.empty(hdul.data.shape[dimspexel])
             restored_em_opt_sig = np.empty(hdul.data.shape[dimspexel])
@@ -413,23 +408,29 @@ def _telluric_scaling(hdul,brow,hdr0, hdul0, sig_rel):
             # Initialize array with ones at non-NaN indices
             nanarray = np.zeros(hdul.data.shape[dimspexel])
             nanarray[valid_spexel] = 1
-            # Create two indices for the arrays of different lengths, then only increment the index of the longer
-            # array (original data).
+            # Create two indices for the arrays of different lengths, then only
+            # increment the index of the longer array (original data).
             original_data_index = 0
             optimized_data_index = 0
 
             for value in nanarray:
                 if value == 1:
                     if original_data_index < hdul.data.shape[dimspexel]:
-                        restored_em_opt[original_data_index] = em_opt[spaxel][optimized_data_index]
-                        restored_em_opt_b[original_data_index] = em_opt_b[spaxel][optimized_data_index]
-                        restored_em_opt_sig[original_data_index] = em_opt_sig[spaxel][optimized_data_index]
-                        restored_em_opt_b_sig[original_data_index] = em_opt_b_sig[spaxel][optimized_data_index]
-                        t_full[original_data_index] = t[spaxel][optimized_data_index]
+                        restored_em_opt[original_data_index] = \
+                            em_opt[spaxel][optimized_data_index]
+                        restored_em_opt_b[original_data_index] = \
+                            em_opt_b[spaxel][optimized_data_index]
+                        restored_em_opt_sig[original_data_index] = \
+                            em_opt_sig[spaxel][optimized_data_index]
+                        restored_em_opt_b_sig[original_data_index] = \
+                            em_opt_b_sig[spaxel][optimized_data_index]
+                        t_full[original_data_index] = \
+                            t[spaxel][optimized_data_index]
                         original_data_index += 1
                         optimized_data_index += 1
                 elif value == 0:
-                    original_data_index += 1  # Only increment index of original data
+                    # Only increment index of original data
+                    original_data_index += 1
 
             # Write back into return array
             em_opt[spaxel] = restored_em_opt
@@ -617,7 +618,8 @@ def interp_b_nods(atime, btime, bdata, berr):   # pragma: no cover
     return bflux, bvar
 
 
-def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_scaling_on=False):
+def combine_extensions(df, b_nod_method='nearest', bg_scaling=False,
+                       telluric_scaling_on=False):
     """
     Find a B nod for each A nod.
 
@@ -642,17 +644,18 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
         A scaling factor to apply to the background data for B nod combination.
     telluric_scaling_on : bool, optional
         If True, applies telluric scaling during B nod combination.
-    
+
     Returns
     -------
     list of fits.HDUList
-        A list of HDUList objects containing the combined B nod data for each A nod.
+        A list of HDUList objects containing the combined B nod data for each
+        A nod.
 
     Raises
     ------
     ValueError
-        If an invalid B nod method is specified, or if the data is not compatible
-        with the selected method.its.HDUList
+        If an invalid B nod method is specified, or if the data is not
+        compatible with the selected method.its.HDUList
     """
     # check B method parameter
     if b_nod_method not in ['nearest', 'average', 'interpolate']:
@@ -755,7 +758,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                     try:
                         # read number of chop cycles per grating position from
                         # header of current file, might change over
-                        # over observations. Might be overkill, but still correct
+                        # observations. Might be overkill, but still correct
                         if arow['detchan'] == 'BLUE':
                             a_chpg = a_hdr['C_CYC_B']
                             b_chpg1 = b_hdr['C_CYC_B']
@@ -764,7 +767,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                             a_chpg =  a_hdr['C_CYC_R']
                             b_chpg1 = b_hdr['C_CYC_R']
                             b_chpg2 = b2_hdr['C_CYC_R']
-                        # unix time at middle of grating position, each time looking from A file
+                        # unix time at middle of grating position, each time
+                        # looking from A file
                         # --> 3x adix as base as current A nod is reference
 
                         atime = _unix(a_hdr['DATE-OBS']) \
@@ -775,7 +779,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                             + (aidx + 0.5)*((b2_hdr['C_CHOPLN']*2/250)*b_chpg2)
 
                     except KeyError:
-                        raise ValueError('Missing DATE-OBS, C_CHOPLN or C_CYC keys in headers.')
+                        raise ValueError('Missing DATE-OBS, C_CHOPLN or C_CYC '
+                                         'keys in headers.')
 
                     # get index for second B row
                     bgidx2 = np.nonzero(bidx2)[0][0]
@@ -976,10 +981,10 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                 # For other modes, A and B are both spexels x spaxels.
 
                 flux = arow['hdul'][a_fname].data
-                stddev = arow['hdul'][a_sname].data ** 2 + b_var     
+                stddev = arow['hdul'][a_sname].data ** 2 + b_var
                 if telluric_scaling_on and b_nod_method=='nearest':
                     log.warning("Telluric Scaling only for interpolated data")
-                        
+
                 if asymmetric:
                     # Optional background scaling for unchopped observations
                     if bg_scaling and a_hdr['C_AMP']==0:
@@ -987,7 +992,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
                         flux -= b_flux*a_background/b_background
                     else:
                         if telluric_scaling_on:
-                            flux_diff = np.nanmedian(flux) - np.nanmedian(b_flux)
+                            flux_diff = np.nanmedian(flux) \
+                                - np.nanmedian(b_flux)
                             flux_diff_full = np.full(flux.shape, flux_diff)
                             flux -= b_flux + flux_diff_full
                         else:
@@ -1035,7 +1041,7 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False, telluric_sc
 
 
 def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
-                 outdir=None, write=False, bg_scaling=False, 
+                 outdir=None, write=False, bg_scaling=False,
                  telluric_scaling_on=False):
 
     """
@@ -1140,7 +1146,9 @@ def combine_nods(filenames, offbeam=False, b_nod_method='nearest',
         return
 
 
-    df = combine_extensions(df, b_nod_method=b_nod_method, bg_scaling=bg_scaling,  telluric_scaling_on = telluric_scaling_on)
+    df = combine_extensions(df, b_nod_method=b_nod_method,
+                            bg_scaling=bg_scaling,
+                            telluric_scaling_on=telluric_scaling_on)
 
     for filename, row in df[df['nodbeam'] == 'A'].iterrows():
 
