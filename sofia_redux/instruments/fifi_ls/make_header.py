@@ -62,8 +62,9 @@ def create_requirements_table(nodstyle,default_file=None, comment_file=None,
     clear_requirements_table()
 
     try:
-        __requirements_table = get_keyword_table(nodstyle=nodstyle, filename=default_file).join(
-            get_keyword_comments_table(filename=comment_file))
+        __requirements_table = get_keyword_table(
+            nodstyle=nodstyle, filename=default_file).join(
+                get_keyword_comments_table(filename=comment_file))
         __requirements_file = default_file
         __keyword_comments_file = comment_file
         __quick_comments = __requirements_table['comment'].to_dict()
@@ -118,7 +119,7 @@ def get_keyword_table(nodstyle, filename=None):
         else:
            filename = os.path.join(os.path.dirname(fifi_ls.__file__),
                                 'data', 'header_info', 'headerdef.dat')
-        
+
     if not goodfile(filename, verbose=True, read=True):
         raise ValueError("invalid header definition file: %s" % filename)
 
@@ -460,9 +461,7 @@ def update_basehead(basehead, table, headers):
         filenums = natural_sort(list(np.unique(filenums)))
         filenums = [f for f in filenums if valid_num(f)]
 
-        if len(filenums) > 2:
-            filenum = filenums[0].strip() + '-' + filenums[-2].strip() + '-' + filenums[-1].strip()
-        elif len(filenums) == 2:
+        if len(filenums) > 1:
             filenum = filenums[0].strip() +  '-' + filenums[-1].strip()
         elif len(filenums) == 1:
             filenum = filenums[0].strip()
@@ -505,8 +504,8 @@ def order_headers(headers):
        fits.Header : earliest header
        list of fits.Header : ordered headers
     """
-    
-    nhead = len(headers)   
+
+    nhead = len(headers)
     if nhead == 1:
         for header in headers:
             nodstyle = str(header.get('NODSTYLE'))

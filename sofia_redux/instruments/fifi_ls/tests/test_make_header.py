@@ -78,7 +78,7 @@ class TestMakeHeader(FIFITestCase):
         assert oheaders[0]['IDX'] == 4
         assert oheaders[4]['IDX'] == 0
         assert nodstyle == 'ASYMMETRIC'
-        
+
     def test_get_keyword_values(self, mocker):
         headers = [fits.Header()]
         table = u.get_keyword_values(headers[0], headers, nodstyle = 'NMC')
