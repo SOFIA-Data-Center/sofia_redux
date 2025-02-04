@@ -106,8 +106,10 @@ def resize_data(data, readout_range, indpos, remove_first_ramps=True,
         # use the values in the last spaxel to check for
         # bad grating position
         mask = 0b0000000000011111
-        grating_values = (data[:, 2::4, 25] & 0xffff) + 2 ** 16 \
-            * ((data[:, 3::4, 25] & 0xffff) & mask)
+        grating_values = (
+            data[:, 2::4, 25].astype(np.uint16)
+            + 2**16 * (data[:, 3::4, 25] & mask).astype(np.int32)
+        )
 
         # average the 4 samples
         grating_values = np.mean(grating_values, axis=1)
@@ -340,8 +342,8 @@ def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
         return flux, np.sqrt(mvar)
     else:
         # data.shape : (ramps/spaxel, ramplength, nwave(16), ns(slopespaxel(25))
-        #ramps_per_spaxel, nramp, nwave, nspaxel = data.shape             
-          
+        #ramps_per_spaxel, nramp, nwave, nspaxel = data.shape
+
         # flag outliers from meancomb before calculating the variance
         slopes[~info['mask']] = np.nan
         var[~info['mask']] = np.nan
@@ -349,42 +351,48 @@ def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
          # 1st order linear fit
         nr, nspe, nspa = slopes.shape
         # reshape into ramps, pixel for easier thinking
-        slopes_r = np.reshape(slopes,(nr,nspe*nspa))  
-        # Create arrays to store the coefficients and the fitted data for each pixel
+        slopes_r = np.reshape(slopes,(nr,nspe*nspa))
+        # Create arrays to store the coefficients and the fitted
+        # data for each pixel
         coefficients = np.zeros((nspe*nspa, 2))  # 2 for slope and intercept
         fitted_data = np.zeros_like(slopes_r)
 
         # Loop over each pixel and perform a linear fit over the ramps
         for i in range(nspe*nspa):
-            valid_mask = ~np.isnan(slopes_r[:, i])  # Create a mask for non-NaN values
+            # Create a mask for non-NaN values
+            valid_mask = ~np.isnan(slopes_r[:, i])
             x = np.arange(nr)[valid_mask]
             y = slopes_r[:, i][valid_mask]
-            # get rid of empty pixels 
-            
-            # Empty pixels, i.e., pixels with no valid data points (all NaNs), will have 
-            # coefficients set to [0, 0] and fitted_data will remain all zeros. This is 
-            # because when there are no valid data points to perform the linear fit, 
-            # linregress will return slope and intercept values of zero. We handle this 
-            # situation by checking if len(x) > 0, which ensures that there is at least 
-            # one valid data point to perform the linear fit. Tested by JupyterNotebook 
-            # snippet.
+            # get rid of empty pixels
+
+            # Empty pixels, i.e., pixels with no valid data points
+            # (all NaNs), will have coefficients set to [0, 0] and
+            # fitted_data will remain all zeros. This is because
+            # when there are no valid data points to perform the
+            # linear fit, linregress will return slope and
+            # intercept values of zero. We handle this situation by
+            # checking if len(x) > 0, which ensures that there is
+            # at least one valid data point to perform the linear
+            # fit. Tested by JupyterNotebook snippet.
             if len(x) > 0:
                 slope, intercept, _, _, _ = linregress(x, y)
                 coefficients[i] = [slope, intercept]
                 fitted_data[:, i] = slope * np.arange(nr) + intercept
 
-        # get the difference between the fitted data and original data while reshaping back to 
-        # ramps, spexel, spaxel        
-        diff = np.reshape(slopes_r,(nr,nspe,nspa)) - np.reshape(fitted_data,(nr,nspe,nspa))
+        # get the difference between the fitted data and original
+        # data while reshaping back to ramps, spexel, spaxel
+        diff = (np.reshape(slopes_r,(nr,nspe,nspa))
+                - np.reshape(fitted_data,(nr,nspe,nspa)))
         # Calculate variance over slopes
         svar = np.nanvar(diff,0)
         # np.nan_to_num(svar, copy=False, nan=0.0)
-        for k in nb.prange(data.shape[0]):           #prange: loop can be parallised 
+        for k in nb.prange(data.shape[0]):  # prange: loop can be parallised
             for i in range(data.shape[2]):
                 for j in range(data.shape[3]):
                     if not np.isnan(var[k, i, j]) and not np.isnan(svar[i, j]):
-                        var[k, i, j] = np.sqrt((var[k, i, j] * var[k, i, j]) + (svar[i, j] * svar[i, j]))
-                            
+                        var[k, i, j] = np.sqrt((var[k, i, j] * var[k, i, j])
+                                                + (svar[i, j] * svar[i, j]))
+
         sqrt_var =  np.where(np.isnan(var), np.nan, np.sqrt(var))
         return slopes, sqrt_var
 
@@ -499,7 +507,8 @@ def process_extension(hdu, readout_range, rmplngth, threshold=5,
                      'UNIX time of last ramp [s]')
 
             # new table with only good ramp-averaged position data
-            # todo: consider averaging spatially local ramps as well -> Christian says don't do it
+            # todo: consider averaging spatially local ramps as well
+            # -> Christian says don't do it
             pdata = Table()
             for name in ['DLAM_MAP', 'DBET_MAP']:
                 reshaped = posdata[name].reshape(newshape)
@@ -534,7 +543,7 @@ def process_extension(hdu, readout_range, rmplngth, threshold=5,
         return hdu1, hdu2
 
 
-def fit_ramps(filename, rmplngth = 2, s2n=10, threshold=5, badpix_file=None,
+def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
               write=False, outdir=None, remove_first=True,
               subtract_bias=True, indpos_sigma=3.0):
     """
@@ -700,7 +709,7 @@ def fit_ramps_wrap_helper(_, kwargs, filename):
 def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
                    outdir=None, remove_first=True, subtract_bias=True,
                    indpos_sigma=3.0, allow_errors=False,
-                   write=False, jobs=None, rmplngth = 2):
+                   write=False, jobs=None, rmplngth=2):
     """
     Wrapper for fit_ramps over multiple files.
 
@@ -726,6 +735,8 @@ def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
         Values of 0 or 1 will result in serial processing.  A negative
         value sets jobs to `n_cpus + 1 + jobs` such that -1 would use
         all cpus, and -2 would use all but one cpu.
+    rmplngth : int, optional
+        Minimum ramp length
 
     Returns
     -------

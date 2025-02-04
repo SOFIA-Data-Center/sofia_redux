@@ -369,7 +369,11 @@ class TestFitRamps(FIFITestCase):
         filename = get_split_files()[0]
         hdul = fits.open(filename)
         # make indpos small to make the math easier
-        indpos = 40000
+        indpos = np.int64(40000)
+        # variation of indpos for bad value
+        badindpos = 10000
+        assert 0 == (indpos + badindpos) >> 16, \
+            "This test only assigns the last 16 bits to the 26th spaxel."
         hdul[1].header['INDPOS'] = indpos
 
         # make some data with known slopes
@@ -384,11 +388,12 @@ class TestFitRamps(FIFITestCase):
                     data[i, :, j, k] = np.arange(32, dtype=np.int16) \
                         + rand.random_integers(-1, 1, 32)
 
-                    # set the values in the 26th spaxel to the indpos, with
-                    # a little wiggle
-                    if k == 25:
-                        data[i, :, 2::4, k] = indpos + sign * i
-                        data[i, :, 3::4, k] = 0
+                # set the values in the 26th spaxel to the indpos, with
+                # a little wiggle.
+                # note that u.resize_data() intertpretes these as uint16
+                # and adds 5 bits from the 4th byte (=0 here)
+                data[i, :, 2::4, 25] = (indpos + sign * i).astype(np.int16)
+                data[i, :, 3::4, 25] = 0
 
         # reshape back to expected size
         hdul[1].data = data.reshape((480, 18, 26))
@@ -415,8 +420,8 @@ class TestFitRamps(FIFITestCase):
         assert 'Bad ramp index' not in capsys.readouterr().out
 
         # now insert a bad value in the data for two ramps
-        data[3, ::2, 2::4, 25] = indpos + 10000
-        data[10, ::2, 2::4, 25] = indpos - 10000
+        data[3, ::2, 2::4, 25] = (indpos + badindpos).astype(np.int16)
+        data[10, ::2, 2::4, 25] = (indpos - badindpos).astype(np.int16)
         hdul[1].data = data.reshape((480, 18, 26))
 
         # these ramps should be flagged
