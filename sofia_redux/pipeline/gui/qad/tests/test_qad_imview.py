@@ -3,15 +3,15 @@
 
 import types
 
+import numpy as np
+import pytest
 from astropy import log
 from astropy.io import fits
 from astropy.table import Table
 from astropy.wcs import WCS
 
-import numpy as np
-import pytest
-
-from sofia_redux.pipeline.gui.qad.qad_imview import QADImView, HAS_REGIONS
+from sofia_redux.pipeline.gui.qad.qad_imview import (HAS_PYQT5, HAS_REGIONS,
+                                                     QADImView)
 from sofia_redux.pipeline.gui.tests.test_qad_viewer import MockDS9
 
 
@@ -712,6 +712,7 @@ class TestQADImView(object):
         capt = capsys.readouterr()
         assert 'regions' not in capt.out
 
+    @pytest.mark.skipif(not HAS_PYQT5, reason="PyQt5 not available")
     def test_radial_plot(self, mocker, capsys):
         """Test radial plot call.  Plot functionality is mocked."""
         self.mock_ds9(mocker)
@@ -721,6 +722,7 @@ class TestQADImView(object):
         capt = capsys.readouterr()
         assert 'plotting' in capt.out
 
+    @pytest.mark.skipif(not HAS_PYQT5, reason="PyQt5 not available")
     def test_histogram_plot(self, mocker, capsys):
         """Test histogram plot call.  Plot functionality is mocked."""
         self.mock_ds9(mocker)
@@ -730,6 +732,7 @@ class TestQADImView(object):
         capt = capsys.readouterr()
         assert 'plotting' in capt.out
 
+    @pytest.mark.skipif(not HAS_PYQT5, reason="PyQt5 not available")
     def test_p2p_plot(self, mocker, capsys):
         """Test p2p plot call.  Plot functionality is mocked."""
         self.mock_ds9(mocker)
