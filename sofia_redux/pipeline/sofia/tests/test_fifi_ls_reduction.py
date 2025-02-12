@@ -2,6 +2,7 @@
 """Tests for the FIFI-LS Reduction class."""
 
 import os
+import re
 import shutil
 
 from astropy.io import fits
@@ -627,11 +628,15 @@ class TestFIFILSReduction(object):
         param = red.get_parameter_set(step_index=idx)
         param.set_value('slice_method', 'reference')
         param.set_value('point_method', 'reference')
-        red.input[0][0].header['G_WAVE_R'] = 118.6
+        refwv = 118.6
+        red.input[0][0].header['G_WAVE_R'] = refwv
         red.step()
         capt = capsys.readouterr()
-        assert 'Plotting at 118.593 um, near reference ' \
-               'wavelength at 118.6 um' in capt.out
+        match = re.search(r'Plotting at ([\d\.]+) um, near reference '
+                          r'wavelength at ([\d\.]+) um', capt.out)
+        assert match
+        np.testing.assert_almost_equal(float(match[1]), refwv, decimal=2)
+        np.testing.assert_almost_equal(float(match[2]), refwv)
         assert 'Saved image' in capt.out
         assert os.path.isfile(outfile)
         shutil.copyfile(outfile, tmpdir.join('tmp0.png'))
@@ -642,11 +647,14 @@ class TestFIFILSReduction(object):
         param.set_value('slice_method', 'reference')
         param.set_value('point_method', 'reference')
         red.input[0][0].header['CHANNEL'] = 'BLUE'
-        red.input[0][0].header['G_WAVE_B'] = 118.6
+        red.input[0][0].header['G_WAVE_B'] = refwv
         red.step()
         capt = capsys.readouterr()
-        assert 'Plotting at 118.593 um, near reference ' \
-               'wavelength at 118.6 um' in capt.out
+        match = re.search(r'Plotting at ([\d\.]+) um, near reference '
+                          r'wavelength at ([\d\.]+) um', capt.out)
+        assert match
+        np.testing.assert_almost_equal(float(match[1]), refwv, decimal=2)
+        np.testing.assert_almost_equal(float(match[2]), refwv)
         assert 'Saved image' in capt.out
 
         # test bad data with reference: will reject all frames,
@@ -766,15 +774,21 @@ class TestFIFILSReduction(object):
         # modify the input data to have older style beam values,
         # but mismatched units
         hdul = red.input[0]
+        expected = []
         for hdu in hdul:
             if 'BMAJ' in hdu.header:
                 hdu.header['BMAJ'] = (hdu.header['BMAJ'] * 3600,
                                       'beam (degree)')
                 hdu.header['BMIN'] = (hdu.header['BMIN'] * 3600,
                                       'beam (degree)')
+                expected.append(hdu.header['BMAJ'])
         # beam is too big in degree units
         red.specmap()
-        assert 'Beam major, minor, angle: 14280' in capsys.readouterr().out
+        pixscale = 3.0  # this depends on the current resolution file
+        capt = capsys.readouterr()
+        for e in expected:
+            assert f'Beam major, minor, angle: {e/pixscale}' \
+                in capt.out
 
         # set comments to proper old-style keys with arcsec values
         for hdu in hdul:
@@ -785,4 +799,7 @@ class TestFIFILSReduction(object):
                                       'beam (arcsec)')
         # this case is handled - comment units match values
         red.specmap()
-        assert 'Beam major, minor, angle: 3.96' in capsys.readouterr().out
+        capt = capsys.readouterr()
+        for e in expected:
+            assert f'Beam major, minor, angle: {e/pixscale/3600}' \
+                in capt.out
