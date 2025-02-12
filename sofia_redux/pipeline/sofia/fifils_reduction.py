@@ -447,7 +447,7 @@ class FIFILSReduction(Reduction):
             rmplngth = 27
         else:
             rmplngth = 2
-        
+
         if str(badpix_file).strip() == '':
             badpix_file = None
         if parallel:
@@ -526,10 +526,14 @@ class FIFILSReduction(Reduction):
         offbeam = param.get_value('offbeam')
         b_nod_method = param.get_value('b_nod_method')
         bg_scaling = param.get_value('bg_scaling')
+        telluric_scaling_on = param.get_value('telluric_scaling_on')
 
         # this function returns a dataframe as the result
         result = combine_nods(self.input, write=False,
-                              offbeam=offbeam, b_nod_method=b_nod_method, bg_scaling=bg_scaling)
+                              offbeam=offbeam, b_nod_method=b_nod_method,
+                              bg_scaling=bg_scaling,
+                              telluric_scaling_on=telluric_scaling_on)
+
         if result is None or result.empty:
             msg = 'Problem in fifi_ls.combine_nods.'
             log.error(msg)
@@ -724,14 +728,14 @@ class FIFILSReduction(Reduction):
         hdr_ovr = param.get_value('hdr_ovr')
         restwav = param.get_value('restwav')
         redshift = param.get_value('redshift')
-    
+
         if not hdr_ovr:
             restwav = 0.0  # will be overwritten with header value
             redshift = 0.0
         if parallel:
             jobs = self.max_cores
         else:
-            jobs = None 
+            jobs = None
 
         if str(atran_dir).strip() == '':
             atran_dir = None
@@ -742,9 +746,10 @@ class FIFILSReduction(Reduction):
         result = wrap_telluric_correct(self.input, write=False,
                                        jobs=jobs, allow_errors=True,
                                        atran_dir=atran_dir, cutoff=cutoff,
-                                       use_wv=use_wv, skip_corr=skip_tell, narrow=narrow,
+                                       use_wv=use_wv, skip_corr=skip_tell,
+                                       narrow=narrow,
                                        redshift=redshift, hdr_ovr=hdr_ovr,
-                                        restwav=restwav)
+                                       restwav=restwav)
         if not result:
             msg = 'Problem in fifi_ls.telluric_correct.'
             log.error(msg)
