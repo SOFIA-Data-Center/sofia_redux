@@ -1,0 +1,58 @@
+# GitHub Actions workflow for testing and continuous integration.
+#
+# This file performs testing using tox and tox.ini to define and configure the test environments.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - dsi-dev
+  pull_request:
+    branches:
+      - dsi-dev
+
+jobs:
+
+  check:
+    name: Check Style
+    runs-on: self-hosted
+
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install tox
+      - name: Check Style
+        run: |
+          ref="${{github.base_ref}}"
+          ref=${ref+"origin/$ref"}
+          changedpyfiles=$(git diff --name-status ${ref:-HEAD~} -- '*.py' | grep -v '^D' | cut -f 2-)
+          if [ -n "$changedpyfiles" ]; then
+            tox -e check-style -- $changedpyfiles
+          else
+            echo "No python files changed"
+          fi
+    
+  test-small:
+    name: Unit Tests (without scan)
+    runs-on: self-hosted
+
+    steps:
+      - name: checkout git
+        uses: actions/checkout@v4
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install tox
+      - name: Run tests
+        run: tox -e test-small-xdist
+
