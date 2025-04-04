@@ -7,10 +7,10 @@ name: CI
 on:
   push:
     branches:
-      - dsi-dev
+      - sdc-dev
   pull_request:
     branches:
-      - dsi-dev
+      - sdc-dev
 
 jobs:
 
