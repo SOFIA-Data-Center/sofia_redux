@@ -26,6 +26,9 @@
 # be accessible, and the documentation will not build correctly.
 
 
+# Disable some linter errors for this file
+# ruff: noqa: F405 E501
+
 import datetime
 import sys
 from pathlib import Path
