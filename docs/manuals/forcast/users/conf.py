@@ -25,9 +25,14 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-import os
-import sys
+
+# Disable some linter errors for this file
+# ruff: noqa: F405 E501
+
 import datetime
+import sys
+from pathlib import Path
+from tomllib import load as toml_load
 
 try:
     from sphinx_astropy.conf.v1 import *  # noqa
@@ -35,13 +40,10 @@ except ImportError:
     print('ERROR: the documentation requires the sphinx-astropy package to be installed')
     sys.exit(1)
 
-# Get configuration information from setup.cfg
-from configparser import ConfigParser
-conf = ConfigParser()
-
-conf.read([os.path.join(os.path.dirname(__file__),
-                        '..', '..', '..', '..', 'setup.cfg')])
-setup_cfg = dict(conf.items('metadata'))
+# Get configuration information from pyproject.toml
+with open(Path(__file__).parent.parent.parent.parent.parent
+          / 'pyproject.toml', 'rb') as f:
+    pyproject = toml_load(f)['project']
 
 # -- General configuration ----------------------------------------------------
 

@@ -7,10 +7,10 @@ build-backend = 'setuptools.build_meta'
 [project]
 name = "sofia_redux"
 description = "SOFIA data reduction pipelines"
-authors = [{name = "SOFIA-USRA", email = "mclarke@sofia.usra.edu"}]
+authors = [{name = "SOFIA Data Center", email = "sdc-redux@irs.uni-stuttgart.de"}]
 license = {file = "LICENSE.rst"}
 dynamic = ["version"]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "astropy>=5.1.1",
     "astroquery>=0.4.4",
