@@ -25,9 +25,10 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-import os
-import sys
 import datetime
+import sys
+from pathlib import Path
+from tomllib import load as toml_load
 
 try:
     from sphinx_astropy.conf.v1 import *  # noqa
@@ -35,13 +36,10 @@ except ImportError:
     print('ERROR: the documentation requires the sphinx-astropy package to be installed')
     sys.exit(1)
 
-# Get configuration information from setup.cfg
-from configparser import ConfigParser
-conf = ConfigParser()
-
-conf.read([os.path.join(os.path.dirname(__file__),
-                        '..', '..', '..', '..', 'setup.cfg')])
-setup_cfg = dict(conf.items('metadata'))
+# Get configuration information from pyproject.toml
+with open(Path(__file__).parent.parent.parent.parent.parent
+          / 'pyproject.toml', 'rb') as f:
+    pyproject = toml_load(f)['project']
 
 # -- General configuration ----------------------------------------------------
 
@@ -71,10 +69,10 @@ docnumber = 'EXES Data Handbook'
 docrev = 'E'
 
 # This does not *have* to match the package name, but typically does
-project = setup_cfg['name']
-author = setup_cfg['author']
+project = pyproject['name']
+author = pyproject['authors'][0]['name']
 copyright = '{0}, {1}'.format(
-    datetime.datetime.now().year, setup_cfg['author'])
+    datetime.datetime.now().year, author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
