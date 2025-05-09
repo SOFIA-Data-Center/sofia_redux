@@ -440,6 +440,7 @@ def pol_bgs_data(idx=0, empty=False):
     new_hdul = fits.HDUList()
     for i, stokes in enumerate(['I', 'Q', 'U']):
         im = hdul[0].copy()
+        im.data += i * 10
         im.data[:, 32:] = np.nan
         im.header['EXTNAME'] = 'STOKES {}'.format(stokes)
         err = hdul[1].copy()
