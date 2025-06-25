@@ -39,8 +39,8 @@ or `docs/install.rst <docs/install.rst>`__ in the source distribution.
 License
 -------
 
-This project is Copyright (c) SOFIA Data Center, University of Stuttgart
-formerly maintained by Universities Space Research Association
+This project is Copyright (c) SOFIA Data Center, Institute of Space Systems, University of Stuttgart
+formerly maintained by the Universities Space Research Association
 under Government Prime Contract Number NNA17BF53C and licensed under
 the terms of the BSD 3-Clause license.
 
