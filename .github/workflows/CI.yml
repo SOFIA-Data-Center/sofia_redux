@@ -10,6 +10,7 @@ on:
       - sdc-dev
   pull_request:
     branches:
+      - fifi-pointing-discard
       - sdc-dev
 
 jobs:

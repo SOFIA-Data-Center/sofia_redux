@@ -319,6 +319,16 @@ Some key parameters to note are listed below.
      allowed ramp-averaged deviation from the expected grating position.
      Set to -1 to turn off filtering.
 
+   - *Pointing discard*: If set, ramps during a chop cycle with bad pointing
+     are discarded.
+
+   - *Pointing directory*: Path to the directory containing the pointing error
+     files used if pointing discard is set.
+
+   - *Pointing threshold*: The pointing threshold is specified as a fraction
+     of the FWHM of the PSF. The slopes of ramps with a pointing error greater
+     than the defined threshold are set to NaN.
+
 -  **Combine Nods**
 
    -  *Method for combining off-beam images*: For C2NC2 only: 'nearest'

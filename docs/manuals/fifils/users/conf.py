@@ -71,8 +71,8 @@ rst_epilog += """
 # -- Project information ------------------------------------------------------
 
 # NASA document number and revision
-docnumber = 'SOF-US-HBK-OP10-2007'
-docrev = 'L'
+docnumber = 'SDC-MAN-0001'
+issue = '01'
 
 # This does not *have* to match the package name, but typically does
 project = pyproject['name']
@@ -85,7 +85,7 @@ copyright = '{0}, {1}'.format(
 # built documents.
 
 package = docnumber
-version = 'Rev. %s' % docrev
+version = 'Iss. %s' % issue
 release = ': %s %s' % (package, version)
 
 
@@ -97,13 +97,13 @@ release = ': %s %s' % (package, version)
 latex_documents = [('users',
                     'fifils_users.tex',
                     "FIFI-LS Redux User's Manual",
-                    "M. Clarke, W. Vacca, D. Fadda, R. Minchin, E. Chambers",
+                    r"""From Iss. 01: B. Knieling\and\large{Until Rev. L: M. Clarke, W. Vacca, D. Fadda, R. Minchin, E. Chambers}""",
                     'howto')]
 
 # Fix environment error, make one-sided document,
 # add NASA header and footer
 latex_elements = {
-    'classoptions': ',openany,oneside',
+    'classoptions': ',a4paper,openany,oneside',
     'babel': r'\usepackage[english]{babel}',
     'maxlistdepth': 20,
     'printindex': r'\footnotesize\raggedright\printindex',
@@ -113,11 +113,11 @@ latex_elements = {
 \usepackage{fancyhdr}
 \fancypagestyle{normal}{
 \fancyhf{}
-\fancyhead[R]{%s\\Rev. %s}
+\fancyhead[R]{%s\\Iss. %s}
 \fancyfoot[C]{\textbf{VERIFY THAT THIS IS THE CORRECT REVISION BEFORE USE}\\\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}}
-''' % (docnumber, docrev),
+''' % (docnumber, issue),
 }
 
 # number figures for manuals

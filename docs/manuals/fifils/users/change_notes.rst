@@ -13,6 +13,13 @@ pipeline version used.
 
 
 
+FIFI-LS Redux v2.9.0
+~~~~~~~~~~~~~~~~~~~~
+*User manual: Iss. 01*
+
+- Maintainer changed from USRA to SDC.
+- Pointing discard feature added.
+
 FIFI-LS Redux v2.8.0
 ~~~~~~~~~~~~~~~~~~~~
 *User manual: Rev. L*

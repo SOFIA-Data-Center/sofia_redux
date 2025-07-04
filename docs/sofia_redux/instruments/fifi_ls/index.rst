@@ -28,6 +28,7 @@ Reference/API
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_response
 .. automodapi:: sofia_redux.instruments.fifi_ls.lambda_calibrate
 .. automodapi:: sofia_redux.instruments.fifi_ls.make_header
+.. automodapi:: sofia_redux.instruments.fifi_ls.pointing_discard
 .. automodapi:: sofia_redux.instruments.fifi_ls.readfits
 .. automodapi:: sofia_redux.instruments.fifi_ls.resample
 .. automodapi:: sofia_redux.instruments.fifi_ls.spatial_calibrate
