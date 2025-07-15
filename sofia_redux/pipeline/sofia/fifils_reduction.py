@@ -494,6 +494,7 @@ class FIFILSReduction(Reduction):
         # get parameters
         param = self.get_parameter_set()
         save = param.get_value('save')
+        add_only = param.get_value('add_only')
         parallel = param.get_value('parallel')
         if parallel:
             jobs = self.max_cores
@@ -512,7 +513,8 @@ class FIFILSReduction(Reduction):
 
         result = wrap_subtract_chops(input_list, write=False,
                                      jobs=jobs,
-                                     allow_errors=True)
+                                     allow_errors=True,
+                                     add_only=add_only)
         if not result:
             msg = 'Problem in fifi_ls.subtract_chops.'
             log.error(msg)

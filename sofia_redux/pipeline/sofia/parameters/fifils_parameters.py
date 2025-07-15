@@ -139,6 +139,14 @@ DEFAULT = {
                         'distributed across multiple cores.',
          'dtype': 'bool',
          'wtype': 'check_box'},
+        {'key': 'add_only',
+         'name': 'Chop addition only',
+         'value': False,
+         'description': 'If set, chops will be added '
+                        'instead of subtracted. '
+                        'Used for flat fields, telluric scans, etc.',
+         'dtype': 'bool',
+         'wtype': 'check_box'},
     ],
     'combine_nods': [
         {'key': 'save',
