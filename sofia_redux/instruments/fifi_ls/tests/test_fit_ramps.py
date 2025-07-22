@@ -8,11 +8,8 @@ from astropy.table import Table
 import numpy as np
 
 import sofia_redux.instruments.fifi_ls.fit_ramps as u
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_split_files
 
-
-class TestFitRamps(FIFITestCase):
+class TestFitRamps:
 
     def test_get_readout_range(self):
         header = fits.Header()
@@ -82,8 +79,8 @@ class TestFitRamps(FIFITestCase):
         assert np.isnan(slopes2).any()
         assert np.any(mvar2 == 0)
 
-    def test_process_extension(self):
-        filename = get_split_files()[0]
+    def test_process_extension(self, test_files):
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
         hdu = hdul[1]
         readout_range = u.get_readout_range(hdul[0].header)
@@ -109,8 +106,8 @@ class TestFitRamps(FIFITestCase):
         assert np.isnan(result[0].data).all()
         assert np.isnan(result[1].data).all()
 
-    def test_process_bad_extension(self, capsys):
-        filename = get_split_files()[0]
+    def test_process_bad_extension(self, capsys, test_files):
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
         readout_range = u.get_readout_range(hdul[0].header)
 
@@ -120,8 +117,8 @@ class TestFitRamps(FIFITestCase):
         capt = capsys.readouterr()
         assert 'No data in HDU' in capt.err
 
-    def test_process_extension_posdata(self, capsys):
-        filename = get_split_files()[0]
+    def test_process_extension_posdata(self, capsys, test_files):
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
         readout_range = u.get_readout_range(hdul[0].header)
 
@@ -162,8 +159,8 @@ class TestFitRamps(FIFITestCase):
         assert isinstance(result[1], fits.ImageHDU)
         assert isinstance(result[2], fits.BinTableHDU)
 
-    def test_bad_parameters(self, capsys):
-        files = get_split_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('split')
 
         # bad output directory
         result = u.fit_ramps(files[0], outdir='badval')
@@ -177,14 +174,14 @@ class TestFitRamps(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_hdul_input(self):
-        filename = get_split_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
         result = u.fit_ramps(hdul)
         assert isinstance(result, fits.HDUList)
 
-    def test_fit_ramps(self):
-        filename = get_split_files()[0]
+    def test_fit_ramps(self, test_files):
+        filename = test_files('split')[0]
         result = u.fit_ramps(filename)
         assert isinstance(result, fits.HDUList)
         assert len(result) > 1
@@ -195,8 +192,8 @@ class TestFitRamps(FIFITestCase):
         for ext in result[1:]:
             assert ext.header['BUNIT'] == 'adu/s'
 
-    def test_fit_failure(self, mocker, capsys):
-        filename = get_split_files()[0]
+    def test_fit_failure(self, mocker, capsys, test_files):
+        filename = test_files('split')[0]
 
         # mock failure in resize data
         mocker.patch(
@@ -225,9 +222,9 @@ class TestFitRamps(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Invalid readout range' in capt.err
 
-    def test_wrap_fit_ramps(self, tmpdir):
+    def test_wrap_fit_ramps(self, tmpdir, test_files):
         # for this case
-        filenames = get_split_files() * 2
+        filenames = test_files('split') * 2
         assert len(filenames) > 1
         t0 = time.time()
         result = u.wrap_fit_ramps(filenames, outdir=str(tmpdir), jobs=None)
@@ -246,7 +243,7 @@ class TestFitRamps(FIFITestCase):
         dparallel = (t3 - t2)
         print("parallel time = %f seconds" % (dparallel))
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.fit_ramps.multitask',
@@ -259,7 +256,7 @@ class TestFitRamps(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_split_files()
+        files = test_files('split')
         u.wrap_fit_ramps(files[0], write=False,
                          allow_errors=False)
 
@@ -276,8 +273,8 @@ class TestFitRamps(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_otf_ramps(self, capsys):
-        filename = get_split_files()[0]
+    def test_otf_ramps(self, capsys, test_files):
+        filename = test_files('split')[0]
 
         # mock OTF data
         hdul = fits.open(filename)
@@ -328,8 +325,8 @@ class TestFitRamps(FIFITestCase):
         assert newlen == trimmed['FLUX_G0'].data.shape[0]
         assert newlen == trimmed['STDDEV_G0'].data.shape[0]
 
-    def test_subtract_bias(self):
-        filename = get_split_files()[0]
+    def test_subtract_bias(self, test_files):
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
 
         # make some data with known slopes
@@ -364,9 +361,9 @@ class TestFitRamps(FIFITestCase):
         assert np.all(no_sub['STDDEV_G0'].data[good]
                       > sub['STDDEV_G0'].data[good])
 
-    def test_grating_instability_rejection(self, capsys):
+    def test_grating_instability_rejection(self, capsys, test_files):
         rand = np.random.RandomState(42)
-        filename = get_split_files()[0]
+        filename = test_files('split')[0]
         hdul = fits.open(filename)
         # make indpos small to make the math easier
         indpos = np.int64(40000)
@@ -471,8 +468,8 @@ class TestFitRamps(FIFITestCase):
         assert np.all(no_rej['STDDEV_G0'].data[good]
                       < rej['STDDEV_G0'].data[good])
 
-    def test_write(self, tmpdir):
-        filename = get_split_files()
+    def test_write(self, tmpdir, test_files):
+        filename = test_files('split')
         result = u.wrap_fit_ramps(filename, write=True, outdir=str(tmpdir))
         for fn in result:
             assert isinstance(fn, str)

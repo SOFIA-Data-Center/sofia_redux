@@ -9,10 +9,10 @@ import numpy as np
 import sofia_redux.instruments.fifi_ls.split_grating_and_chop as u
 from sofia_redux.instruments.fifi_ls.make_header import make_header
 from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, test_files, get_wxy_files, MockHDU
+    import MockHDU
 
 
-class TestSplitGratingAndChop(FIFITestCase):
+class TestSplitGratingAndChop:
 
     def fake_hdul(self):
         """
@@ -262,10 +262,10 @@ class TestSplitGratingAndChop(FIFITestCase):
         assert isinstance(result[0], fits.HDUList)
         assert len(result[0]) > 1
 
-    def test_total_power(self):
+    def test_total_power(self, test_files):
         # total power mode:
         # when c_amp = 0, should get back only a CP0 file
-        filename = test_files()[0]
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         hdul[0].header['C_AMP'] = 0
         result = u.split_grating_and_chop(hdul)
@@ -274,8 +274,8 @@ class TestSplitGratingAndChop(FIFITestCase):
         assert isinstance(result[0], fits.HDUList)
         assert 'CP0' in result[0][0].header['FILENAME']
 
-    def test_hdul_input(self):
-        filename = test_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         result = u.split_grating_and_chop(hdul)
         assert isinstance(result, list)
@@ -286,8 +286,8 @@ class TestSplitGratingAndChop(FIFITestCase):
             for ext in hdul[1:]:
                 assert ext.header['BUNIT'] == 'adu'
 
-    def test_bad_parameters(self, capsys):
-        files = test_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('raw')
 
         # bad output directory
         result = u.split_grating_and_chop(files[0], outdir='badval')
@@ -301,8 +301,8 @@ class TestSplitGratingAndChop(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_split_failure(self, mocker, capsys):
-        filename = test_files()[0]
+    def test_split_failure(self, mocker, capsys, test_files):
+        filename = test_files('raw')[0]
 
         # test bad data
 
@@ -314,7 +314,7 @@ class TestSplitGratingAndChop(FIFITestCase):
         assert 'HDUList missing extension' in capt.err
 
         # wrong extension type
-        imgfile = get_wxy_files()[0]
+        imgfile = test_files('wxy')[0]
         result = u.split_grating_and_chop(imgfile)
         assert result is None
         capt = capsys.readouterr()
@@ -375,8 +375,8 @@ class TestSplitGratingAndChop(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Problem updating header' in capt.err
 
-    def test_wrapper(self, tmpdir):
-        files = test_files()
+    def test_wrapper(self, tmpdir, test_files):
+        files = test_files('raw')
         for _ in range(3):
             files += files
         t0 = time.time()
@@ -398,7 +398,7 @@ class TestSplitGratingAndChop(FIFITestCase):
         print("processing time in parallel: %f seconds" % d1)
         assert len(result) > 0
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.split_grating_and_chop.multitask',
@@ -411,7 +411,7 @@ class TestSplitGratingAndChop(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = test_files()
+        files = test_files('raw')
         u.wrap_split_grating_and_chop(files[0], write=False,
                                       allow_errors=False)
 
@@ -428,8 +428,8 @@ class TestSplitGratingAndChop(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_otf_posdata(self, capsys):
-        filename = test_files()[0]
+    def test_otf_posdata(self, capsys, test_files):
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         hdul[0].header['INSTMODE'] = 'OTF_TP'
         hdul[0].header['C_AMP'] = 0
@@ -453,8 +453,8 @@ class TestSplitGratingAndChop(FIFITestCase):
             assert isinstance(hdul['SCANPOS_G0'], fits.BinTableHDU)
             assert hdul['SCANPOS_G0'].data.shape[0] == hdul[1].data.shape[0]
 
-    def test_derive_positions(self, capsys):
-        filename = test_files()[0]
+    def test_derive_positions(self, capsys, test_files):
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         nsamp = hdul[1].data.shape[0]
         header = hdul[0].header

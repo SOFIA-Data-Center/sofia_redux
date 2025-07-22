@@ -11,14 +11,12 @@ from sofia_redux.instruments.fifi_ls.spatial_calibrate \
     import (spatial_calibrate, wrap_spatial_calibrate, clear_spatial_cache,
             get_spatial_from_cache, store_spatial_in_cache, offset_xy,
             get_deltavec_coeffs, calculate_offsets)
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_wav_files
 
 
-class TestSpatialCalibrate(FIFITestCase):
+class TestSpatialCalibrate:
 
-    def test_success(self):
-        files = get_wav_files()
+    def test_success(self, test_files):
+        files = test_files('wav')
         result = spatial_calibrate(
             files[0], write=False, outdir=None, obsdate=None, rotate=False,
             flipsign=False)
@@ -26,8 +24,8 @@ class TestSpatialCalibrate(FIFITestCase):
         assert result['XS_G0'].data.shape == (25,)
         assert result['YS_G0'].data.shape == (25,)
 
-    def test_write(self, tmpdir):
-        files = get_wav_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('wav')
         result = spatial_calibrate(
             files[0], write=True, outdir=str(tmpdir), obsdate=None)
         assert os.path.isfile(result)
@@ -35,24 +33,24 @@ class TestSpatialCalibrate(FIFITestCase):
             files[0], write=False, outdir=str(tmpdir), obsdate=None)
         assert isinstance(result, fits.HDUList)
 
-    def test_parallel(self, tmpdir):
-        files = get_wav_files()
+    def test_parallel(self, tmpdir, test_files):
+        files = test_files('wav')
         result = wrap_spatial_calibrate(
             files, outdir=str(tmpdir), obsdate=None,
             jobs=-1, allow_errors=False, write=True)
         for f in result:
             assert os.path.isfile(f)
 
-    def test_serial(self, tmpdir):
-        files = get_wav_files()
+    def test_serial(self, tmpdir, test_files):
+        files = test_files('wav')
         result = wrap_spatial_calibrate(
             files, outdir=str(tmpdir), obsdate=None, jobs=None,
             allow_errors=False, write=True)
         for f in result:
             assert os.path.isfile(f)
 
-    def test_flipsign(self):
-        files = get_wav_files()
+    def test_flipsign(self, test_files):
+        files = test_files('wav')
         result1 = spatial_calibrate(
             files[0], write=False, outdir=None, obsdate=None, rotate=False,
             flipsign=False)
@@ -64,8 +62,8 @@ class TestSpatialCalibrate(FIFITestCase):
         x1x2 = x1 * x2
         assert (x1x2 < 0).all()
 
-    def test_rotate(self):
-        files = get_wav_files()
+    def test_rotate(self, test_files):
+        files = test_files('wav')
         result1 = spatial_calibrate(
             files[0], write=False, outdir=None, obsdate=None, rotate=False,
             flipsign=False)
@@ -139,8 +137,8 @@ class TestSpatialCalibrate(FIFITestCase):
         assert get_deltavec_coeffs(fits.Header(), obsdate) is None
         assert 'not a file' in capsys.readouterr().err
 
-    def test_calculate_offsets(self, capsys, mocker):
-        filename = get_wav_files()[0]
+    def test_calculate_offsets(self, capsys, mocker, test_files):
+        filename = test_files('wav')[0]
         hdul = fits.open(filename)
 
         result = calculate_offsets(hdul)
@@ -174,9 +172,9 @@ class TestSpatialCalibrate(FIFITestCase):
         assert calculate_offsets(hdul) is None
         assert 'Invalid number of XY offsets' in capsys.readouterr().err
 
-    def test_telsim(self):
+    def test_telsim(self, test_files):
         # check that telsim data produces something reasonable
-        filename = get_wav_files()[0]
+        filename = test_files('wav')[0]
         hdul = fits.open(filename)
         hdul[0].header['OBJECT'] = 'telsim'
         del hdul[0].header['DLAM_MAP']
@@ -188,8 +186,8 @@ class TestSpatialCalibrate(FIFITestCase):
         assert result['XS_G0'].data.size == 25
         assert result['YS_G0'].data.size == 25
 
-    def test_hdul_input(self):
-        filename = get_wav_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('wav')[0]
         hdul = fits.open(filename)
         result = spatial_calibrate(hdul)
         assert isinstance(result, fits.HDUList)
@@ -208,8 +206,8 @@ class TestSpatialCalibrate(FIFITestCase):
             else:
                 assert ext.header['BUNIT'] == 'adu/(Hz s)'
 
-    def test_bad_parameters(self, capsys):
-        files = get_wav_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('wav')
 
         # bad output directory
         result = spatial_calibrate(files[0], outdir='badval')
@@ -223,8 +221,8 @@ class TestSpatialCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_cal_failure(self, mocker, capsys):
-        filename = get_wav_files()[0]
+    def test_cal_failure(self, mocker, capsys, test_files):
+        filename = test_files('wav')[0]
 
         # mock failure in calculate offsets
         mocker.patch(
@@ -290,8 +288,8 @@ class TestSpatialCalibrate(FIFITestCase):
         os.remove(spatialfile)
         assert get_spatial_from_cache(spatialfile, obsdate) is None
 
-    def test_wrap(self):
-        files = get_wav_files()
+    def test_wrap(self, test_files):
+        files = test_files('wav')
 
         # serial
         result = wrap_spatial_calibrate(files, write=False)
@@ -303,7 +301,7 @@ class TestSpatialCalibrate(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.spatial_calibrate.multitask',
@@ -316,7 +314,7 @@ class TestSpatialCalibrate(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_wav_files()
+        files = test_files('wav')
         wrap_spatial_calibrate(files[0], write=False,
                                allow_errors=False)
 
@@ -333,8 +331,8 @@ class TestSpatialCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_scanpos(self):
-        filename = get_wav_files()[0]
+    def test_scanpos(self, test_files):
+        filename = test_files('wav')[0]
         hdul = fits.open(filename)
         # attach a scanpos extension, as for OTF data
         header = hdul[0].header

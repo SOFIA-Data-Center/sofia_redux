@@ -11,11 +11,9 @@ from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.get_atran \
     import (clear_atran_cache, get_atran_from_cache,
             store_atran_in_cache, get_atran)
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_scm_files
 
 
-class TestGetAtran(FIFITestCase):
+class TestGetAtran:
 
     def test_atran_cache(self, tmpdir):
 
@@ -74,10 +72,10 @@ class TestGetAtran(FIFITestCase):
         os.remove(atranfile)
         assert get_atran_from_cache(atranfile, res) is None
 
-    def test_filename(self, tmpdir, capsys):
+    def test_filename(self, tmpdir, capsys, test_files):
         atranfile = tmpdir.join('test_file.fits')
 
-        filename = get_scm_files()[0]
+        filename = test_files('scm')[0]
         header = fits.open(filename)[0].header
 
         # default: gets alt/za/resolution from header, no unsmoothed data
@@ -108,8 +106,8 @@ class TestGetAtran(FIFITestCase):
         # data will be all nan
         assert np.all(np.isnan(result[1]))
 
-    def test_header(self, capsys):
-        filename = get_scm_files()[0]
+    def test_header(self, capsys, test_files):
+        filename = test_files('scm')[0]
         header = fits.open(filename)[0].header
 
         # default
@@ -160,8 +158,8 @@ class TestGetAtran(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Bad WV value' in capt.err
 
-    def test_header_no_wv(self, capsys, tmp_path):
-        filename = get_scm_files()[0]
+    def test_header_no_wv(self, capsys, tmp_path, test_files):
+        filename = test_files('scm')[0]
         header = fits.open(filename)[0].header
 
         # make ATRAN repo without WV files
@@ -214,8 +212,8 @@ class TestGetAtran(FIFITestCase):
         capt = capsys.readouterr()
         assert "Alt, ZA, WV: 41.00 45.00 7.00" in capt.out
 
-    def test_atran_dir(self, tmpdir, capsys):
-        filename = get_scm_files()[0]
+    def test_atran_dir(self, tmpdir, capsys, test_files):
+        filename = test_files('scm')[0]
         header = fits.open(filename)[0].header
 
         default = get_atran(header)

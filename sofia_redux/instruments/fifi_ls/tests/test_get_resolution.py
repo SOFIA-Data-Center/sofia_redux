@@ -10,10 +10,9 @@ import pytest
 from sofia_redux.instruments.fifi_ls.get_resolution \
     import (get_resolution, clear_resolution_cache,
             get_resolution_from_cache, store_resolution_in_cache)
-from sofia_redux.instruments.fifi_ls.tests.resources import FIFITestCase
 
 
-class TestGetResolution(FIFITestCase):
+class TestGetResolution:
 
     def get_header(self):
         header = fits.Header()

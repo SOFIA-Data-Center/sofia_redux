@@ -7,14 +7,12 @@ import numpy as np
 
 from sofia_redux.instruments.fifi_ls.combine_grating_scans \
     import combine_grating_scans, wrap_combine_grating_scans
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_flf_files
 
 
-class TestCombineGratingScans(FIFITestCase):
+class TestCombineGratingScans:
 
-    def test_success(self):
-        files = get_flf_files()
+    def test_success(self, test_files):
+        files = test_files('flf')
         result = combine_grating_scans(
             files[0], write=False, outdir=None, correct_bias=False)
         assert isinstance(result, fits.HDUList)
@@ -37,8 +35,8 @@ class TestCombineGratingScans(FIFITestCase):
         assert result2['RA'].header['BUNIT'] == 'hourangle'
         assert result2['DEC'].header['BUNIT'] == 'degree'
 
-    def test_write(self, tmpdir):
-        files = get_flf_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('flf')
         result = combine_grating_scans(
             files[0], write=True, outdir=str(tmpdir), correct_bias=False)
         failure = False
@@ -47,8 +45,8 @@ class TestCombineGratingScans(FIFITestCase):
             failure = True
         assert not failure
 
-    def test_correct_bias(self):
-        files = get_flf_files()
+    def test_correct_bias(self, test_files):
+        files = test_files('flf')
         r1 = combine_grating_scans(
             files[0], write=False, outdir=None, correct_bias=False)
         r2 = combine_grating_scans(
@@ -59,13 +57,13 @@ class TestCombineGratingScans(FIFITestCase):
         v2 = np.nansum(np.abs(d2))
         assert v2 <= v1
 
-    def test_no_bias(self, capsys, mocker):
+    def test_no_bias(self, capsys, mocker, test_files):
         # mock no overlap
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.combine_grating_scans.'
             'get_lambda_overlap',
             return_value=(10, 10))
-        files = get_flf_files()
+        files = test_files('flf')
         r1 = combine_grating_scans(
             files[0], write=False, outdir=None, correct_bias=False)
         capsys.readouterr()
@@ -88,8 +86,8 @@ class TestCombineGratingScans(FIFITestCase):
         d3 = r3[1].data
         assert np.allclose(d2, d3, equal_nan=True)
 
-    def test_wrap_combine_grating_scans(self):
-        files = get_flf_files()
+    def test_wrap_combine_grating_scans(self, test_files):
+        files = test_files('flf')
 
         # serial
         result = wrap_combine_grating_scans(files, write=False)
@@ -101,8 +99,8 @@ class TestCombineGratingScans(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_bad_parameters(self, tmpdir, capsys, mocker):
-        files = get_flf_files()
+    def test_bad_parameters(self, tmpdir, capsys, mocker, test_files):
+        files = test_files('flf')
 
         # bad output directory
         result = combine_grating_scans(files[0], outdir='badval')
@@ -126,7 +124,7 @@ class TestCombineGratingScans(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Combination failed' in capt.err
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.combine_grating_scans.'
@@ -140,7 +138,7 @@ class TestCombineGratingScans(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_flf_files()
+        files = test_files('flf')
         wrap_combine_grating_scans(files[0], write=False,
                                    allow_errors=False)
 
@@ -157,8 +155,8 @@ class TestCombineGratingScans(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_otf_combine(self, capsys):
-        files = get_flf_files()
+    def test_otf_combine(self, capsys, test_files):
+        files = test_files('flf')
         hdul = fits.open(files[0])
 
         # mock OTF data with multiple grating scans

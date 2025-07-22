@@ -6,10 +6,9 @@ import numpy as np
 import pytest
 
 from sofia_redux.instruments.fifi_ls.get_lines import get_lines
-from sofia_redux.instruments.fifi_ls.tests.resources import FIFITestCase
 
 
-class TestGetLines(FIFITestCase):
+class TestGetLines:
 
     def test_errors(self, capsys, tmpdir, mocker):
         # test for missing/bad defaults file

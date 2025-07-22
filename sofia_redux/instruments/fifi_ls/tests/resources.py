@@ -2,36 +2,18 @@
 
 import glob
 import os
+from pathlib import Path
 
 from astropy import log
 from astropy.io import fits
 import numpy as np
-import pytest
 
 from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.make_header import make_header
 
 seed = 42
 
-
-class FIFITestCase(object):
-    """Base class for FIFI test cases.
-
-    Sets the log level to DEBUG on test entry.
-    """
-    @pytest.fixture(autouse=True, scope='function')
-    def set_debug_level(self):
-        # set log level to debug
-        orig_level = log.level
-        log.setLevel('DEBUG')
-        # let tests run
-        yield
-        # reset log level
-        log.setLevel(orig_level)
-
-
 # classes used to mock a FIFI data HDU
-
 class MockCols(object):
     def __init__(self):
         self.names = ['DATA', 'HEADER']
@@ -53,7 +35,7 @@ class MockHDU(object):
 
 def raw_testdata(nod='A', obsid=None):
     """
-    Make raw FIFI-LS data fpr testing purposes
+    Make raw FIFI-LS data for testing purposes
 
     Returns
     -------
@@ -183,13 +165,103 @@ def raw_testdata(nod='A', obsid=None):
     hdulist[1].header['EXTNAME'] = 'FIFILS_rawdata'
     return hdulist
 
+FIFI_LS_TESTPATH = Path(__file__).parent / 'data'
+FIFI_LS_TESTFILES = {
+    'raw': [
+        '00001_123456_00001_TEST_A_lw.fits',
+        '00002_123456_00001_TEST_B_lw.fits',
+        '00003_123456_00001_TEST_A_lw.fits',
+        '00004_123456_00001_TEST_B_lw.fits',
+    ],
+    'split': [
+        'F0282_FI_IFS_90000101_RED_CP0_001.fits',
+        'F0282_FI_IFS_90000101_RED_CP0_002.fits',
+        'F0282_FI_IFS_90000101_RED_CP0_003.fits',
+        'F0282_FI_IFS_90000101_RED_CP0_004.fits',
+        'F0282_FI_IFS_90000101_RED_CP1_001.fits',
+        'F0282_FI_IFS_90000101_RED_CP1_002.fits',
+        'F0282_FI_IFS_90000101_RED_CP1_003.fits',
+        'F0282_FI_IFS_90000101_RED_CP1_004.fits',
+    ],
+    'chop': [
+        'F0282_FI_IFS_90000101_RED_RP0_001.fits',
+        'F0282_FI_IFS_90000101_RED_RP0_002.fits',
+        'F0282_FI_IFS_90000101_RED_RP0_003.fits',
+        'F0282_FI_IFS_90000101_RED_RP0_004.fits',
+    ],
+    'chop1': [  # not queried but used in subtraction
+        'F0282_FI_IFS_90000101_RED_RP1_001.fits',
+        'F0282_FI_IFS_90000101_RED_RP1_002.fits',
+        'F0282_FI_IFS_90000101_RED_RP1_003.fits',
+        'F0282_FI_IFS_90000101_RED_RP1_004.fits',
+    ],
+    'csb': [
+        'F0282_FI_IFS_90000101_RED_CSB_001.fits',
+        'F0282_FI_IFS_90000101_RED_CSB_002.fits',
+        'F0282_FI_IFS_90000101_RED_CSB_003.fits',
+        'F0282_FI_IFS_90000101_RED_CSB_004.fits',
+    ],
+    'ncm': [
+        'F0282_FI_IFS_90000101_RED_NCM_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_NCM_003-004.fits',
+    ],
+    'wav': [
+        'F0282_FI_IFS_90000101_RED_WAV_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_WAV_003-004.fits',
+    ],
+    'xyc': [
+        'F0282_FI_IFS_90000101_RED_XYC_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_XYC_003-004.fits',
+    ],
+    'flf': [
+        'F0282_FI_IFS_90000101_RED_FLF_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_FLF_003-004.fits',
+    ],
+    'scm': [
+        'F0282_FI_IFS_90000101_RED_SCM_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_SCM_003-004.fits',
+    ],
+    'tel': [
+        'F0282_FI_IFS_90000101_RED_TEL_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_TEL_003-004.fits',
+    ],
+    'cal': [
+        'F0282_FI_IFS_90000101_RED_CAL_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_CAL_003-004.fits',
+    ],
+    'wsh': [
+        'F0282_FI_IFS_90000101_RED_WSH_001-002.fits',
+        'F0282_FI_IFS_90000101_RED_WSH_003-004.fits',
+    ],
+    'wxy': [
+        'F0282_FI_IFS_90000101_RED_WXY_001-004.fits',
+    ],
+}
+FIFI_LS_TESTFILES = {
+    k: [str(FIFI_LS_TESTPATH / f) for f in v]
+    for k, v in FIFI_LS_TESTFILES.items()
+}
+FIFI_LS_FILEPATTERN = {
+    'raw': '0*',
+    'split': '*_CP*_*',
+    'chop': '*_RP0_*',
+    'chop1': '*_RP1_*',
+    'csb': '*_CSB_*',
+    'ncm': '*_NCM_*',
+    'wav': '*_WAV_*',
+    'xyc': '*_XYC_*',
+    'flf': '*_FLF_*',
+    'scm': '*_SCM_*',
+    'tel': '*_TEL_*',
+    'cal': '*_CAL_*',
+    'wsh': '*_WSH_*',
+    'wxy': '*_WXY_*',
+}
+
 
 def create_files():
-    data_path = os.path.join(os.path.dirname(fifi_ls.__file__),
-                             'tests', 'data', '')
-
-    nfiles = 4
-    for i in range(nfiles):
+    """Create raw data files and products for testing."""
+    for i in range(4):
         obsid = 'R{:03d}'.format(i + 1)
         if i % 2 == 0:
             nod = 'A'
@@ -204,69 +276,69 @@ def create_files():
             hdul[0].header['DLAM_MAP'] *= -1
             hdul[0].header['DBET_MAP'] *= -1
 
-        datafile = os.path.join(data_path, fn)
-        hdul.writeto(datafile, overwrite=True)
+        hdul.writeto(FIFI_LS_TESTPATH / fn, overwrite=True)
 
     # run default steps in order
     current_dir = os.getcwd()
-    os.chdir(data_path)
+    FIFI_LS_TESTPATH.mkdir(exist_ok=True)
+    os.chdir(FIFI_LS_TESTPATH)
 
-    input_files = glob.glob(data_path + '00*.fits')
+    input_files = FIFI_LS_TESTFILES['raw']
     from sofia_redux.instruments.fifi_ls.split_grating_and_chop \
         import wrap_split_grating_and_chop
     wrap_split_grating_and_chop(input_files, write=True)
 
-    split_files = glob.glob(data_path + '*CP*.fits')
+    split_files = FIFI_LS_TESTFILES['split']
     from sofia_redux.instruments.fifi_ls.fit_ramps \
         import wrap_fit_ramps
     wrap_fit_ramps(split_files, write=True)
 
-    ramp0_files = glob.glob(data_path + '*RP0*.fits')
+    ramp0_files = FIFI_LS_TESTFILES['chop']
     from sofia_redux.instruments.fifi_ls.subtract_chops \
         import wrap_subtract_chops
     wrap_subtract_chops(ramp0_files, write=True)
 
-    csb_files = glob.glob(data_path + '*CSB*.fits')
+    csb_files = FIFI_LS_TESTFILES['csb']
     from sofia_redux.instruments.fifi_ls.combine_nods \
         import combine_nods
     combine_nods(csb_files, write=True)
 
-    ncm_files = glob.glob(data_path + '*NCM*.fits')
+    ncm_files = FIFI_LS_TESTFILES['ncm']
     from sofia_redux.instruments.fifi_ls.lambda_calibrate \
         import wrap_lambda_calibrate
     wrap_lambda_calibrate(ncm_files, write=True)
 
-    wav_files = glob.glob(data_path + '*WAV*.fits')
+    wav_files = FIFI_LS_TESTFILES['wav']
     from sofia_redux.instruments.fifi_ls.spatial_calibrate \
         import wrap_spatial_calibrate
     wrap_spatial_calibrate(wav_files, rotate=True, write=True)
 
-    xyc_files = glob.glob(data_path + '*XYC*.fits')
+    xyc_files = FIFI_LS_TESTFILES['xyc']
     from sofia_redux.instruments.fifi_ls.apply_static_flat \
         import wrap_apply_static_flat
     wrap_apply_static_flat(xyc_files, write=True)
 
-    flf_files = glob.glob(data_path + '*FLF*.fits')
+    flf_files = FIFI_LS_TESTFILES['flf']
     from sofia_redux.instruments.fifi_ls.combine_grating_scans \
         import wrap_combine_grating_scans
     wrap_combine_grating_scans(flf_files, write=True)
 
-    scm_files = glob.glob(data_path + '*SCM*.fits')
+    scm_files = FIFI_LS_TESTFILES['scm']
     from sofia_redux.instruments.fifi_ls.telluric_correct \
         import wrap_telluric_correct
     wrap_telluric_correct(scm_files, write=True)
 
-    tel_files = glob.glob(data_path + '*TEL*.fits')
+    tel_files = FIFI_LS_TESTFILES['tel']
     from sofia_redux.instruments.fifi_ls.flux_calibrate \
         import wrap_flux_calibrate
     wrap_flux_calibrate(tel_files, write=True)
 
-    cal_files = glob.glob(data_path + '*CAL*.fits')
+    cal_files = FIFI_LS_TESTFILES['cal']
     from sofia_redux.instruments.fifi_ls.correct_wave_shift \
         import wrap_correct_wave_shift
     wrap_correct_wave_shift(cal_files, write=True)
 
-    wsh_files = glob.glob(data_path + '*WSH*.fits')
+    wsh_files = FIFI_LS_TESTFILES['wsh']
     from sofia_redux.instruments.fifi_ls.resample import resample
     resample(wsh_files, write=True)
 
@@ -274,79 +346,19 @@ def create_files():
     os.chdir(current_dir)
 
 
-def test_files(prodtype=None):
-    data_path = os.path.join(os.path.dirname(fifi_ls.__file__),
-                             'tests', 'data')
-
-    raw_files = glob.glob('{}/0*.fits'.format(data_path))
-
-    if len(raw_files) == 0:
-        create_files()
-        raw_files = glob.glob('{}/0*.fits'.format(data_path))
-    else:
-        # check that version matches current
-        pipevers = fits.getval(raw_files[0], 'PIPEVERS')
-        if pipevers != fifi_ls.__version__.replace('.', '_'):
-            # if not, recreate the files
-            for filename in glob.glob('{}/*.fits'.format(data_path)):
-                os.remove(filename)
-            create_files()
-            raw_files = glob.glob('{}/0*.fits'.format(data_path))
-
-    if prodtype is None:
-        test_file_names = raw_files
-    else:
-        test_file_names = glob.glob('{}/*{}*.fits'.format(data_path, prodtype))
-    return sorted(test_file_names)
-
-
-def get_split_files():
-    return test_files('CP')
-
-
-def get_chop0_file():
-    return test_files('RP0')[0]
-
-
-def get_chop_files():
-    return test_files('RP0')
-
-
-def get_csb_files():
-    return test_files('CSB')
-
-
-def get_ncm_files():
-    return test_files('NCM')
-
-
-def get_wav_files():
-    return test_files('WAV')
-
-
-def get_xyc_files():
-    return test_files('XYC')
-
-
-def get_flf_files():
-    return test_files('FLF')
-
-
-def get_scm_files():
-    return test_files('SCM')
-
-
-def get_tel_files():
-    return test_files('TEL')
-
-
-def get_cal_files():
-    return test_files('CAL')
-
-
-def get_wsh_files():
-    return test_files('WSH')
-
-
-def get_wxy_files():
-    return test_files('WXY')
+def check_test_files():
+    """Check whether test data files exist in the current pipeline version."""
+    for prodtype, expected_files in FIFI_LS_TESTFILES.items():
+        existing_files = glob.glob(f'{FIFI_LS_TESTPATH}'
+                                   f'/{FIFI_LS_FILEPATTERN[prodtype]}.fits')
+        if sorted(existing_files) != expected_files:
+            log.debug(f'Expected test files: {expected_files}')
+            log.debug(f'Found test files: {existing_files}')
+            return False
+    expected_pipevers =  fifi_ls.__version__.replace('.', '_')
+    pipevers = fits.getval(FIFI_LS_TESTFILES['raw'][0], 'PIPEVERS')
+    if pipevers != expected_pipevers:
+        log.debug(f'Expected pipeline version: {expected_pipevers}')
+        log.debug(f'Found pipeline version: {pipevers}')
+        return False
+    return True
