@@ -429,6 +429,7 @@ def get_atran_interpolated(header, resolution=None,
 
     # load all files
     atran_data = {}
+    atrnfile_fits_keyword = ''
     for key, value in current_atran_filenames.items():
         filename = value[0]
         _za = value[1]  # the ZA value of this file
@@ -452,6 +453,7 @@ def get_atran_interpolated(header, resolution=None,
 
             atran_data[key] = (atranfile, wave, unsmoothed, smoothed), _za, _wv
 
+            atrnfile_fits_keyword += filename + ', '
             store_atran_in_cache(os.path.join(atran_dir, filename), resolution, atranfile,
                                 data[0], data[1], smoothed)
 
@@ -475,6 +477,8 @@ def get_atran_interpolated(header, resolution=None,
     wave = interpolated[0][1]
     unsmoothed = interpolated[0][2]
     smoothed = smoothres(wave, unsmoothed, resolution)
+
+    hdinsert(header, 'ATRNFILE', atrnfile_fits_keyword[:-2])
 
     if not get_unsmoothed:
         return np.vstack((wave, smoothed))
