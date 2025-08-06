@@ -383,19 +383,35 @@ def get_atran_interpolated(header, resolution=None,
                 14, 15, 16, 17, 18, 20,
                 22, 25, 27, 30, 32, 35,
                 37, 40, 45, 50]
+    
+    # clip values to atran data range
+    if not za_values[-1] >= za >= za_values[0]:
+        log.warning('za={} outside of available ATRAN data.'.format(za))
+        za = np.clip(za, a_min=za_values[0], a_max=za_values[-1])
+        log.warning('Setting zenith angle to {} deg'.format(za))
+
+    if use_wv and not wv_values[-1] >= wv >= wv_values[0]:
+        log.warning('wv={} outside of available ATRAN data.'.format(wv))
+        wv = np.clip(wv, a_min=wv_values[0], a_max=wv_values[-1])
+        log.warning('Setting water vaper to {} um'.format(wv))
+
+    if not 45 >= alt >= 38:
+        log.warning('alt={} outside of available ATRAN data.'.format(alt))
+        alt = np.clip(alt, a_min=38, a_max=45)
+        log.warning('Setting altitude to {}K ft'.format(alt))
 
     za_high, za_low = np.inf, np.inf
     wv_high, wv_low = np.inf, np.inf
 
     # find the higher and lower boundaries
     for i, w in enumerate(wv_values):
-        if w > wv:
+        if w >= wv:
             wv_high = w
             wv_low = wv_values[i-1]
             break
 
     for i, z in enumerate(za_values):
-        if z > za:
+        if z >= za:
             za_high = z
             za_low = za_values[i-1]
             break
