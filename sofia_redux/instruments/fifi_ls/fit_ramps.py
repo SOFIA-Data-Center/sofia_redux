@@ -16,6 +16,9 @@ from scipy.stats import linregress
 
 from sofia_redux.instruments.fifi_ls.get_badpix \
     import get_badpix, clear_badpix_cache
+from sofia_redux.instruments.fifi_ls.get_resolution import get_resolution
+from sofia_redux.instruments.fifi_ls.pointing_discard \
+    import get_timing, load_pointing_data, get_pointing_mask
 from sofia_redux.toolkit.stats import meancomb
 from sofia_redux.toolkit.utilities \
     import (hdinsert, gethdul, write_hdul, multitask)
@@ -278,7 +281,7 @@ def calculate_fit(data, maxidx, rmplngth):   # pragma: no cover
 
 
 def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
-             average_ramps=True, bad_ramps=None):
+             average_ramps=True, bad_ramps=None, pointing_mask=None):
     """
     Applies linear fit (y = ax + b) over the second dimension of a 4D array.
 
@@ -310,6 +313,8 @@ def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
         If provided, should be an array of bool, matching the number
         of ramps/spaxel (data.shape[0]) where True indicates a bad ramp
         (e.g. due to grating position instability).
+    pointing_mask : pandas.Series, optional
+        Boolean mask used to discard ramps with bad pointing.
 
     Returns
     -------
@@ -333,6 +338,11 @@ def fit_data(data, rmplngth=2, s2n=10, threshold=5, allow_zero_variance=True,
             if allow_zero_variance:
                 setnan[var == 0] = False
             slopes[setnan] = np.nan
+
+    # set ramps with bad pointing to NaN
+    if pointing_mask is not None:
+        slopes[~pointing_mask] = np.nan
+        var[~pointing_mask] = np.nan
 
     info = {}
     flux, mvar = meancomb(slopes, robust=threshold, variance=var,
@@ -401,7 +411,7 @@ def process_extension(hdu, readout_range, rmplngth=2, threshold=5,
                       s2n=10, remove_first=None,
                       subtract_bias=True, badmask=None,
                       average_ramps=True, posdata=None,
-                      indpos_sigma=3.0):
+                      indpos_sigma=3.0, pointing_mask=None):
     """
     Wrapper to process a single HDU extension.
 
@@ -441,6 +451,8 @@ def process_extension(hdu, readout_range, rmplngth=2, threshold=5,
         If >0, will be used to discard samples with grating
         position that deviates from the expected INDPOS value by this
         many sigma.
+    pointing_mask : pandas.Series, optional
+        Boolean mask used to discard ramps with bad pointing.
 
     Returns
     -------
@@ -465,11 +477,15 @@ def process_extension(hdu, readout_range, rmplngth=2, threshold=5,
     nramp = flux.shape[0]
     nread = readout_range[1]
 
+    if pointing_mask is not None and remove_first and len(pointing_mask)>nramp:
+        pointing_mask = pointing_mask.iloc[2:]
+
     # fit slopes to ramps, average if desired
     # Different dimensions for different OBS Modes!!!
     flux, stddev = fit_data(flux, s2n=s2n, threshold=threshold,
                             average_ramps=average_ramps,
-                            bad_ramps=bad_ramps, rmplngth=rmplngth)
+                            bad_ramps=bad_ramps, rmplngth=rmplngth,
+                            pointing_mask=pointing_mask)
 
     # apply bad mask to spaxels/spexels
     if isinstance(badmask, np.ndarray):
@@ -547,7 +563,8 @@ def process_extension(hdu, readout_range, rmplngth=2, threshold=5,
 
 def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
               write=False, outdir=None, remove_first=True,
-              subtract_bias=True, indpos_sigma=3.0):
+              subtract_bias=True, indpos_sigma=3.0, pointing_discard=False,
+              pointing_directory=None, pointing_threshold_psf_frac=0.1):
     """
     Fit straight lines to raw voltage ramps to calculate corresponding flux.
 
@@ -617,6 +634,15 @@ def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
         If >0, will be used to discard samples with grating
         position that deviates from the expected INDPOS value by this
         many sigma.
+    pointing_discard : bool, optional
+        If true, discard ramps with bad pointing.
+    pointing_directory : str, optional
+        Path to the directory containing the pointing error files used if
+        pointing discard is set to true.
+    pointing_threshold_psf_frac : float, optional
+        The relative pointing threshold is specified as a fraction of the FWHM
+        of the mean PSF within the respective nod phase. The slopes of ramps
+        with a pointing error greater than the defined threshold are set to NaN.
 
     Returns
     -------
@@ -645,7 +671,7 @@ def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
     if not isinstance(outdir, str):
         outdir = os.path.dirname(filename)
 
-    if DEBUG:  # pragma: no cover
+    if DEBUG or pointing_discard:  # pragma: no cover
         log.info(f'Working on: {filename}')
     else:
         log.debug(f'Working on: {filename}')
@@ -654,6 +680,12 @@ def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
     primehead = hdul[0].header.copy()
     hdinsert(primehead, 'FILENAME', outfile)
     hdinsert(primehead, 'PRODTYPE', 'ramps_fit')
+
+    if pointing_discard:
+        timing_params = get_timing(primehead)
+        df_pointing_error = load_pointing_data(primehead, pointing_directory)
+        fwhm_psf = get_resolution(header=primehead, spatial=True)
+        pointing_threshold = pointing_threshold_psf_frac * fwhm_psf
 
     badmask = get_badpix(primehead, filename=badpix_file)
     hdul_new = fits.HDUList([fits.PrimaryHDU(header=primehead)])
@@ -667,17 +699,29 @@ def fit_ramps(filename, rmplngth=2, s2n=10, threshold=5, badpix_file=None,
             average_ramps = False
             remove_first = False
             posdata = hdul[f'SCANPOS_G{idx}'].data
+            pointing_mask = None # no ramps are discard for OTF scans
         else:
             average_ramps = True
             remove_first = remove_first_passed
             posdata = None
+
+            if pointing_discard:
+                pointing_mask = get_pointing_mask(primehead, pointing_threshold,
+                                                  idx, *timing_params,
+                                                  df_pointing_error)
+                log.info('%i ramps discarded at grating position %i ' \
+                         'based on a pointing threshold of %.2f arcsec' %
+                         (np.sum(~pointing_mask), idx, pointing_threshold))
+            else:
+                pointing_mask = None
 
         ext = process_extension(
             hdu, readout_range, threshold=threshold,
             s2n=s2n, remove_first=remove_first,
             subtract_bias=subtract_bias, badmask=badmask,
             average_ramps=average_ramps, posdata=posdata,
-            indpos_sigma=indpos_sigma, rmplngth=rmplngth)
+            indpos_sigma=indpos_sigma, rmplngth=rmplngth,
+            pointing_mask=pointing_mask)
         if ext is None:
             log.error("Failed to process extension %i: %s" %
                       (idx + 1, filename))
@@ -711,7 +755,8 @@ def fit_ramps_wrap_helper(_, kwargs, filename):
 def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
                    outdir=None, remove_first=True, subtract_bias=True,
                    indpos_sigma=3.0, allow_errors=False,
-                   write=False, jobs=None, rmplngth=2):
+                   write=False, jobs=None, rmplngth=2, pointing_discard=False,
+                   pointing_directory=None, pointing_threshold_psf_frac=0.1):
     """
     Wrapper for fit_ramps over multiple files.
 
@@ -739,6 +784,15 @@ def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
         all cpus, and -2 would use all but one cpu.
     rmplngth : int, optional
         Minimum ramp length
+    pointing_discard : bool, optional
+        If true, discard ramps with bad pointing.
+    pointing_directory : str, optional
+        Path to the directory containing the pointing error files used if
+        pointing discard is set to true.
+    pointing_threshold_psf_frac : float, optional
+        The relative pointing threshold is specified as a fraction of the FWHM
+        of the mean PSF within the respective nod phase. The slopes of ramps
+        with a pointing error greater than the defined threshold are set to NaN.
 
     Returns
     -------
@@ -757,7 +811,10 @@ def wrap_fit_ramps(files, s2n=30, threshold=5, badpix_file=None,
         's2n': s2n, 'threshold': threshold, 'badpix_file': badpix_file,
         'outdir': outdir, 'remove_first': remove_first,
         'subtract_bias': subtract_bias, 'indpos_sigma': indpos_sigma,
-        'write': write, 'rmplngth': rmplngth}
+        'write': write, 'rmplngth': rmplngth,
+        'pointing_discard': pointing_discard,
+        'pointing_directory': pointing_directory,
+        'pointing_threshold_psf_frac': pointing_threshold_psf_frac}
 
     if DEBUG:  # pragma: no cover
         jobs = 1

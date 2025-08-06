@@ -8,8 +8,6 @@ import numpy as np
 import pytest
 
 from sofia_redux.instruments.fifi_ls.get_resolution import get_resolution
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_wsh_files, get_scm_files, get_cal_files
 from sofia_redux.instruments.fifi_ls.resample \
     import (resample, combine_files, get_grid_info, extract_info_from_file,
             generate_exposure_map, make_hdul, rbf_mean_combine,
@@ -18,16 +16,16 @@ from sofia_redux.instruments.fifi_ls.resample \
 from sofia_redux.toolkit.utilities.fits import gethdul
 
 
-class TestResample(FIFITestCase):
+class TestResample:
 
-    def test_extract_info_from_file(self):
+    def test_extract_info_from_file(self, test_files):
 
         with pytest.raises(ValueError) as err:
             extract_info_from_file(None)
         assert 'Could not read file' in str(err.value)
 
         # Check flip sign
-        filename = get_wsh_files()[0]
+        filename = test_files('wsh')[0]
         hdul = fits.open(filename)
         hdul[0].header['DATE-OBS'] = '2020-01-01T12:00:00'
         assert not extract_info_from_file(hdul)['flip_sign']
@@ -57,8 +55,8 @@ class TestResample(FIFITestCase):
         for i_key in ['u_flux', 'u_error', 'u_wave', 'atran']:
             assert info[i_key] is None
 
-    def test_analyze_input_files(self):
-        files = get_wsh_files()
+    def test_analyze_input_files(self, test_files):
+        files = test_files('wsh')
         filename = files[0]
 
         with pytest.raises(ValueError) as err:
@@ -126,8 +124,8 @@ class TestResample(FIFITestCase):
                             [0.52, -0.48, -1.48, -2.48, -3.48]],
                            atol=1e-2)
 
-    def test_success(self):
-        files = get_wsh_files()
+    def test_success(self, test_files):
+        files = test_files('wsh')
         result = resample(files, write=False)
         assert isinstance(result, fits.HDUList)
         assert result[0].header['PRODTYPE'] == 'resampled'
@@ -140,13 +138,13 @@ class TestResample(FIFITestCase):
             assert extname in result
         assert not np.all(np.isnan(result[1].data))
 
-    def test_write(self, tmpdir):
-        files = get_wsh_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('wsh')
         result = resample(files, write=True, outdir=str(tmpdir))
         assert os.path.isfile(result)
 
-    def test_interp(self):
-        files = get_wsh_files()
+    def test_interp(self, test_files):
+        files = test_files('wsh')
         rsmp = resample(files, write=False, edge_threshold=0, order=(2, 2, 0))
         interp = resample(files, write=False, interp=True, order=0)
 
@@ -168,8 +166,8 @@ class TestResample(FIFITestCase):
                                    rtol=5)
 
     @pytest.mark.parametrize('algorithm', ['shaped', 'scaled'])
-    def test_adaptive(self, algorithm):
-        files = get_wsh_files()
+    def test_adaptive(self, algorithm, test_files):
+        files = test_files('wsh')
 
         # default smoothing: spatial sigma = 1.0 FWHM for the channel
         rsmp = resample(files, write=False, smoothing=(1.0, 1.0, 0.25),
@@ -199,9 +197,9 @@ class TestResample(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Could not read file' in capt.err
 
-    def test_combine_files_method(self):
+    def test_combine_files_method(self, test_files):
         # default files
-        files = [get_wsh_files()[0]]
+        files = [test_files('wsh')[0]]
         default = combine_files(files)
         assert isinstance(default, dict)
         keys = ['PRIMEHEAD', 'method', 'RA', 'DEC', 'FLUX', 'ERROR',
@@ -218,7 +216,7 @@ class TestResample(FIFITestCase):
                 assert isinstance(default[key], (list, np.ndarray))
 
         # multiple uncal files
-        files = get_scm_files()
+        files = test_files('scm')
         uncal_fit = combine_files(files)
         assert isinstance(uncal_fit, dict)
         for key in keys:
@@ -245,7 +243,7 @@ class TestResample(FIFITestCase):
         dmap_zero = combine_files(inp)
         assert dmap_zero['method'] == 'interpolate'
 
-        files = get_wsh_files()
+        files = test_files('wsh')
         inp = []
         for i, f in enumerate(files):
             hdul = fits.open(f)
@@ -255,9 +253,9 @@ class TestResample(FIFITestCase):
         bad_uncor = combine_files(inp)
         assert bad_uncor.get('UNCORRECTED_FLUX') is None
 
-    def test_combine_files_rotate(self):
+    def test_combine_files_rotate(self, test_files):
         # check for appropriate behavior when SKY_ANGL is not zero
-        files = get_wsh_files()
+        files = test_files('wsh')
         default = combine_files([files[0]])
 
         # set a non-zero angle
@@ -276,8 +274,8 @@ class TestResample(FIFITestCase):
             else:
                 assert np.allclose(default[key], rotated[key], equal_nan=True)
 
-    def test_grid_info(self, capsys, mocker):
-        files = [get_wsh_files()[0]]
+    def test_grid_info(self, capsys, mocker, test_files):
+        files = [test_files('wsh')[0]]
         combined = combine_files(files)
 
         # mock resolution to return constant value for spatial grid
@@ -349,8 +347,8 @@ class TestResample(FIFITestCase):
         assert wcs['CDELT1'] > 0
         assert grid_info['delta'][2] > 0
 
-    def test_exposure_map(self):
-        files = [get_wsh_files()[0]]
+    def test_exposure_map(self, test_files):
+        files = test_files('wsh')[0:1]
         combined = combine_files(files)
         grid = get_grid_info(combined)
 
@@ -386,8 +384,8 @@ class TestResample(FIFITestCase):
         filled.fill(0)
         assert np.allclose(plane, 0)
 
-    def test_rbf_parameters(self):
-        files = [get_wsh_files()[0]]
+    def test_rbf_parameters(self, test_files):
+        files = test_files('wsh')[0:1]
         combined = combine_files(files)
         grid_info = get_grid_info(combined)
 
@@ -407,8 +405,8 @@ class TestResample(FIFITestCase):
                          smoothing=(2, 2, 2), order=(3, 3, 3))
         assert not np.allclose(combined['GRID_FLUX'], default, equal_nan=True)
 
-    def test_rbf_errors(self, mocker, capsys):
-        files = [get_wsh_files()[0]]
+    def test_rbf_errors(self, mocker, capsys, test_files):
+        files = test_files('wsh')[0:1]
         combined = combine_files(files)
         grid_info = get_grid_info(combined)
 
@@ -432,9 +430,9 @@ class TestResample(FIFITestCase):
         capt = capsys.readouterr()
         assert 'No good values' in capt.out
 
-    def test_make_hdul(self, mocker, capsys):
+    def test_make_hdul(self, mocker, capsys, test_files):
         # resample a single file with defaults
-        files = [get_wsh_files()[0]]
+        files = test_files('wsh')[0:1]
         combined = combine_files(files)
         grid_info = get_grid_info(combined)
         rbf_mean_combine(combined, grid_info)
@@ -489,9 +487,9 @@ class TestResample(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Problem in interpolation' in capt.err
 
-    def test_uncalib(self):
+    def test_uncalib(self, test_files):
         # check that uncalibrated files still resample okay
-        files = get_scm_files()
+        files = test_files('scm')
 
         # with local fits
         result = resample(files, write=False)
@@ -510,7 +508,7 @@ class TestResample(FIFITestCase):
 
         # check that un-wave-shifted files also resample okay,
         # but BUNIT is Jy
-        files = get_cal_files()
+        files = test_files('cal')
         result = resample(files, write=False)
         assert isinstance(result, fits.HDUList)
         assert result[1].header['BUNIT'] == 'Jy/pixel'
@@ -521,7 +519,7 @@ class TestResample(FIFITestCase):
         # check that mix of files with and without uncor
         # extension do not include uncor flux; resampling
         # otherwise succeeds
-        files = get_wsh_files()
+        files = test_files('wsh')
         hdul = gethdul(files[0])
         del hdul['UNCORRECTED_LAMBDA']
         files[0] = hdul
@@ -532,7 +530,7 @@ class TestResample(FIFITestCase):
         assert 'UNCORRECTED_ERROR' in result
         assert 'UNCORRECTED_WAVE' not in result
 
-    def test_resample_failure(self, capsys, mocker):
+    def test_resample_failure(self, capsys, mocker, test_files):
         # bad files
         result = resample(None, write=False)
         assert result is None
@@ -540,7 +538,7 @@ class TestResample(FIFITestCase):
         assert "Invalid input" in capt.err
 
         # single file, bad outdir
-        files = get_wsh_files()
+        files = test_files('wsh')
         result = resample(files[0], write=False, outdir='badval')
         assert result is None
         capt = capsys.readouterr()
@@ -575,13 +573,13 @@ class TestResample(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Problem in grid calculation' in capt.err
 
-    def test_resample_nancube(self, capsys):
+    def test_resample_nancube(self, capsys, test_files):
         # test for the case where all input data is NaN -- this
         # can happen after telluric correction in particular wavelength
         # ranges
 
         # set all corrected data to NaN, leave uncorrected data
-        files = get_cal_files()
+        files = test_files('cal')
         inp = []
         for f in files:
             hdul = fits.open(f)
@@ -628,8 +626,8 @@ class TestResample(FIFITestCase):
         assert 'Primary flux cube contains only NaN' in capt.err
         assert 'Uncorrected flux cube contains only NaN' in capt.err
 
-    def test_resample_detector_coordinates(self, capsys):
-        filename = get_wsh_files()[0]
+    def test_resample_detector_coordinates(self, capsys, test_files):
+        filename = test_files('wsh')[0]
         hdul = fits.open(filename)
         h = hdul[0].header
         h['NAIF_ID'] = 'foo'
@@ -657,8 +655,8 @@ class TestResample(FIFITestCase):
         capt = capsys.readouterr()
         assert "Resampling using equatorial coordinates" in capt.out
 
-    def test_output_pixel_size(self, capsys, mocker):
-        files = get_wsh_files()
+    def test_output_pixel_size(self, capsys, mocker, test_files):
+        files = test_files('wsh')
 
         # test default: oversample (5.0, 8.0) assumed
         result = resample(files, write=False, oversample=None,
@@ -715,8 +713,8 @@ class TestResample(FIFITestCase):
                           spectral_size=0.05, spatial_size=1.0)
         assert result[1].data.shape == (23, 76, 93)
 
-    def test_otf_resample(self):
-        files = get_wsh_files()
+    def test_otf_resample(self, test_files):
+        files = test_files('wsh')
         hdul = fits.open(files[0])
 
         # mock OTF data: should have 3D flux, stddev, xs, ys
@@ -768,8 +766,8 @@ class TestResample(FIFITestCase):
         assert not np.allclose(result2['FLUX'].data, result['FLUX'].data,
                                equal_nan=True)
 
-    def test_append_weights(self):
-        files = [get_wsh_files()[0]]
+    def test_append_weights(self, test_files):
+        files = test_files('wsh')[0:1]
         combined = combine_files(files)
         grid = get_grid_info(combined)
         # fake resample step
@@ -800,8 +798,8 @@ class TestResample(FIFITestCase):
         assert np.all(with_wts['UNCORRECTED_IMAGE_WEIGHTS'].data
                       == np.arange(10) + 10)
 
-    def test_large_data(self, capsys, mocker):
-        files = get_wsh_files()
+    def test_large_data(self, capsys, mocker, test_files):
+        files = test_files('wsh')
 
         # mock resample to return faster
         mocker.patch(

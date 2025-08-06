@@ -9,10 +9,9 @@ import numpy as np
 from sofia_redux.instruments.fifi_ls.get_response \
     import (clear_response_cache, get_response_from_cache,
             store_response_in_cache, get_response)
-from sofia_redux.instruments.fifi_ls.tests.resources import FIFITestCase
 
 
-class TestGetResponse(FIFITestCase):
+class TestGetResponse:
 
     def get_header(self):
         header = fits.Header()

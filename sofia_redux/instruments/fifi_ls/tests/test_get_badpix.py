@@ -11,10 +11,8 @@ from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.get_badpix \
     import (get_badpix, clear_badpix_cache, get_badpix_from_cache,
             store_badpix_in_cache, read_defaults_table)
-from sofia_redux.instruments.fifi_ls.tests.resources import FIFITestCase
 
-
-class TestGetBadpix(FIFITestCase):
+class TestGetBadpix:
 
     def test_errors(self, capsys, tmpdir):
         # bad header

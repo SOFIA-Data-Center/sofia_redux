@@ -14,11 +14,9 @@ from sofia_redux.instruments.fifi_ls.lambda_calibrate \
     import (read_wavecal, wave, lambda_calibrate,
             wrap_lambda_calibrate, clear_wavecal_cache,
             get_wavecal_from_cache, store_wavecal_in_cache)
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_ncm_files
 
 
-class TestLambdaCalibrate(FIFITestCase):
+class TestLambdaCalibrate:
 
     def test_read_wavecal(self, tmpdir):
         # non-existent file
@@ -88,9 +86,9 @@ class TestLambdaCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'R200 wavecal data not found' in capt.err
 
-    def test_success(self):
+    def test_success(self, test_files):
         # red 105 file
-        filename = get_ncm_files()[0]
+        filename = test_files('ncm')[0]
         hdul = fits.open(filename)
         hdul[0].header['CHANNEL'] = 'RED'
         hdul[0].header['DICHROIC'] = 105
@@ -148,8 +146,8 @@ class TestLambdaCalibrate(FIFITestCase):
         assert np.mean(bwave1) > np.mean(bwave3)
         assert np.allclose(bwave3, bwave4)
 
-    def test_error(self, capsys):
-        filename = get_ncm_files()[0]
+    def test_error(self, capsys, test_files):
+        filename = test_files('ncm')[0]
 
         # invalid blue order
         hdul = fits.open(filename)
@@ -170,14 +168,14 @@ class TestLambdaCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Invalid DATE-OBS' in capt.err
 
-    def test_write(self, tmpdir):
-        files = get_ncm_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('ncm')
         result = lambda_calibrate(
             files[0], write=True, outdir=str(tmpdir), obsdate=None)
         assert os.path.isfile(result)
 
-    def test_hdul_input(self):
-        filename = get_ncm_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('ncm')[0]
         hdul = fits.open(filename)
         result = lambda_calibrate(hdul)
         assert isinstance(result, fits.HDUList)
@@ -189,8 +187,8 @@ class TestLambdaCalibrate(FIFITestCase):
             else:
                 assert ext.header['BUNIT'] == 'adu/(Hz s)'
 
-    def test_bad_parameters(self, capsys):
-        files = get_ncm_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('ncm')
 
         # bad output directory
         result = lambda_calibrate(files[0], outdir='badval')
@@ -204,8 +202,8 @@ class TestLambdaCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_cal_failure(self, mocker, capsys):
-        filename = get_ncm_files()[0]
+    def test_cal_failure(self, mocker, capsys, test_files):
+        filename = test_files('ncm')[0]
 
         # mock failure in wave
         mocker.patch(
@@ -273,8 +271,8 @@ class TestLambdaCalibrate(FIFITestCase):
         os.remove(wavecalfile)
         assert get_wavecal_from_cache(wavecalfile) is None
 
-    def test_wrap(self, tmpdir):
-        files = get_ncm_files()
+    def test_wrap(self, tmpdir, test_files):
+        files = test_files('ncm')
 
         # serial
         result = wrap_lambda_calibrate(files, outdir=str(tmpdir), write=False)
@@ -287,7 +285,7 @@ class TestLambdaCalibrate(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.lambda_calibrate.multitask',
@@ -300,7 +298,7 @@ class TestLambdaCalibrate(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_ncm_files()
+        files = test_files('ncm')
         wrap_lambda_calibrate(files[0], write=False,
                               allow_errors=False)
 
@@ -317,9 +315,9 @@ class TestLambdaCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_scanpos(self):
+    def test_scanpos(self, test_files):
         # if no scanpos data present, no errors, nothing propagated
-        filename = get_ncm_files()[0]
+        filename = test_files('ncm')[0]
         result = lambda_calibrate(filename, write=False)
         assert isinstance(result, fits.HDUList)
         for i in range(result[0].header['NGRATING']):
@@ -327,11 +325,9 @@ class TestLambdaCalibrate(FIFITestCase):
 
         # if scanpos data present, it should be passed forward
         # unmodified
-        filename = get_ncm_files()[0]
         hdul = fits.open(filename)
         for i in range(hdul[0].header['NGRATING']):
             hdul.append(fits.ImageHDU(np.arange(i + 10), name=f'SCANPOS_G{i}'))
-
         result = lambda_calibrate(hdul, write=False)
         assert isinstance(result, fits.HDUList)
         for i in range(result[0].header['NGRATING']):

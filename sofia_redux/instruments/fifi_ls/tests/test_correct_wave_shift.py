@@ -5,14 +5,11 @@ from astropy.io import fits
 
 from sofia_redux.instruments.fifi_ls.correct_wave_shift \
     import correct_wave_shift, wrap_correct_wave_shift, correct_lambda
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_cal_files, get_scm_files
 
+class TestCorrectWaveShift:
 
-class TestCorrectWaveShift(FIFITestCase):
-
-    def test_success(self):
-        files = get_cal_files()
+    def test_success(self, test_files):
+        files = test_files('cal')
         result = correct_wave_shift(files[0], write=False, outdir=None)
         assert isinstance(result, fits.HDUList)
         assert result[0].header['PRODTYPE'] == 'wavelength_shifted'
@@ -33,8 +30,8 @@ class TestCorrectWaveShift(FIFITestCase):
         assert np.allclose(lsrvel, 3.438e-5)
         assert np.allclose(baryvel * ulam, dw)
 
-    def test_write(self, tmpdir):
-        files = get_cal_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('cal')
         for write in [False, True]:
             result = correct_wave_shift(files[0], write=write,
                                         outdir=str(tmpdir))
@@ -43,9 +40,9 @@ class TestCorrectWaveShift(FIFITestCase):
             else:
                 assert isinstance(result, fits.HDUList)
 
-    def test_no_telluric(self, capsys):
+    def test_no_telluric(self, capsys, test_files):
         # get an uncorrected file
-        scm = get_scm_files()[0]
+        scm = test_files('scm')[0]
 
         # test correct_lambda directly
         hdul = fits.open(scm)
@@ -61,8 +58,8 @@ class TestCorrectWaveShift(FIFITestCase):
         result = wrap_correct_wave_shift(hdul)
         assert len(result) == 0
 
-    def test_bad_parameters(self, capsys):
-        files = get_cal_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('cal')
 
         # bad output directory
         result = correct_wave_shift(files[0], outdir='badval')
@@ -76,8 +73,8 @@ class TestCorrectWaveShift(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_wrap(self):
-        files = get_cal_files()
+    def test_wrap(self, test_files):
+        files = test_files('cal')
 
         # serial
         result = wrap_correct_wave_shift(files, write=False)
@@ -89,7 +86,7 @@ class TestCorrectWaveShift(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.correct_wave_shift.multitask',
@@ -102,7 +99,7 @@ class TestCorrectWaveShift(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_cal_files()
+        files = test_files('cal')
         wrap_correct_wave_shift(files[0], write=False,
                                 allow_errors=False)
 

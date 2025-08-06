@@ -6,8 +6,6 @@ import numpy as np
 import pandas
 import pytest
 
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, test_files
 from sofia_redux.instruments.fifi_ls import make_header as u
 
 
@@ -37,7 +35,8 @@ def dummy_table():
 
     return make_dummy_table
 
-class TestMakeHeader(FIFITestCase):
+
+class TestMakeHeader:
 
     def test_order_single(self):
         h = fits.Header()
@@ -140,9 +139,9 @@ class TestMakeHeader(FIFITestCase):
         assert table.apply(
             lambda row: isinstance(row.comment, str), axis=1).all()
 
-    def test_clear_values(self):
+    def test_clear_values(self, test_files):
         # set some values from a header
-        filename = test_files()[0]
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         header = hdul[0].header
 

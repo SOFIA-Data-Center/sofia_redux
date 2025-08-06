@@ -6,27 +6,26 @@ from astropy.io import fits
 import numpy as np
 
 import sofia_redux.instruments.fifi_ls.subtract_chops as u
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_chop0_file, get_chop_files
 
 
-class TestSubtractChops(FIFITestCase):
+class TestSubtractChops:
 
-    def test_subtract_chops(self):
-        chop0_file = get_chop0_file()
+    def test_subtract_chops(self, test_files):
+        chop0_file = test_files('chop')[0]
         u.subtract_chops(chop0_file)
 
-    def test_write(self, tmpdir):
-        files = get_chop0_file()
+    def test_write(self, tmp_path_factory, test_files):
+        files = test_files('chop')[0]
+        outdir = tmp_path_factory.mktemp('subtract_chops_out')
         result = u.subtract_chops(
-            files, write=True, outdir=str(tmpdir))
+            files, write=True, outdir=str(outdir))
         assert os.path.isfile(result)
         result = u.subtract_chops(
-            files, write=False, outdir=str(tmpdir))
+            files, write=False, outdir=str(outdir))
         assert isinstance(result, fits.HDUList)
 
-    def test_get_chop_pair(self, tmpdir, capsys):
-        chop0_file = get_chop0_file()
+    def test_get_chop_pair(self, tmpdir, capsys, test_files):
+        chop0_file = test_files('chop')[0]
         hduls = u.get_chop_pair(chop0_file)
         assert len(hduls) == 2
         for hdul in hduls:
@@ -82,8 +81,8 @@ class TestSubtractChops(FIFITestCase):
         assert u.get_chop_pair(str(rp0)) is None
         assert 'Differing number of inductosyn' in capsys.readouterr().err
 
-    def test_subtract_extensions(self, capsys):
-        chop0_file = get_chop0_file()
+    def test_subtract_extensions(self, capsys, test_files):
+        chop0_file = test_files('chop')[0]
         hduls = u.get_chop_pair(chop0_file)
 
         # default result
@@ -111,8 +110,8 @@ class TestSubtractChops(FIFITestCase):
         pos_val = np.nanmean(result[1].data)
         assert np.allclose(pos_val, -mean_val)
 
-    def test_total_power(self, capsys, tmpdir):
-        files = get_chop_files()
+    def test_total_power(self, capsys, tmpdir, test_files):
+        files = test_files('chop')
 
         # make files with c_amp = 0
         inp = []
@@ -157,8 +156,8 @@ class TestSubtractChops(FIFITestCase):
         result = u.subtract_chops(fname, write=True, outdir=str(tmpdir))
         assert result[0] == fname
 
-    def test_hdul_input(self):
-        filename = get_chop_files()
+    def test_hdul_input(self, test_files):
+        filename = test_files('chop')
         inp = []
         for fn in filename[0:2]:
             inp.append(fits.open(fn))
@@ -168,8 +167,8 @@ class TestSubtractChops(FIFITestCase):
         for ext in result[1:]:
             assert ext.header['BUNIT'] == 'adu/s'
 
-    def test_bad_parameters(self, capsys):
-        files = get_chop_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('chop')
 
         # bad output directory
         result = u.subtract_chops(files[0], outdir='badval')
@@ -183,8 +182,8 @@ class TestSubtractChops(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_subtract_failure(self, mocker, capsys):
-        filename = get_chop_files()[0]
+    def test_subtract_failure(self, mocker, capsys, test_files):
+        filename = test_files('chop')[0]
 
         # mock failure in calculate offsets
         mocker.patch(
@@ -205,14 +204,14 @@ class TestSubtractChops(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Problem retrieving chop pair' in capt.err
 
-    def test_wrap(self):
-        files = get_chop_files()
+    def test_wrap(self, test_files):
+        files = test_files('chop')
         output = u.wrap_subtract_chops(files, write=False)
         assert len(output) > 0
         output = u.wrap_subtract_chops(files, write=False, jobs=-1)
         assert len(output) > 0
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.subtract_chops.multitask',
@@ -225,7 +224,7 @@ class TestSubtractChops(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_chop_files()
+        files = test_files('chop')
         u.wrap_subtract_chops(files[0], write=False,
                               allow_errors=False)
 

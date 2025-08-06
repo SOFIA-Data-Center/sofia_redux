@@ -443,6 +443,11 @@ class FIFILSReduction(Reduction):
         indpos_sigma = param.get_value('indpos_sigma')
         badpix_file = param.get_value('badpix_file')
         full_ramps = param.get_value('full_ramps')
+        pointing_discard = param.get_value('pointing_discard')
+        pointing_directory = param.get_value('pointing_directory')
+        pointing_threshold_psf_frac = param.get_value(
+            'pointing_threshold_psf_frac')
+
         if full_ramps:
             rmplngth = 27
         else:
@@ -455,12 +460,18 @@ class FIFILSReduction(Reduction):
         else:
             jobs = None
 
+        if pointing_directory == '':
+            pointing_directory = None
+
         result = wrap_fit_ramps(self.input, write=False, jobs=jobs,
                                 allow_errors=True, s2n=s2n,
                                 threshold=thresh, remove_first=remove,
                                 subtract_bias=subtract_bias,
                                 indpos_sigma=indpos_sigma,
-                                badpix_file=badpix_file, rmplngth=rmplngth)
+                                badpix_file=badpix_file, rmplngth=rmplngth,
+                                pointing_discard=pointing_discard,
+                                pointing_directory=pointing_directory,
+                                pointing_threshold_psf_frac=pointing_threshold_psf_frac)
         if not result:
             msg = 'Problem in fifi_ls.fit_ramps.'
             log.error(msg)
@@ -483,6 +494,7 @@ class FIFILSReduction(Reduction):
         # get parameters
         param = self.get_parameter_set()
         save = param.get_value('save')
+        add_only = param.get_value('add_only')
         parallel = param.get_value('parallel')
         if parallel:
             jobs = self.max_cores
@@ -501,7 +513,8 @@ class FIFILSReduction(Reduction):
 
         result = wrap_subtract_chops(input_list, write=False,
                                      jobs=jobs,
-                                     allow_errors=True)
+                                     allow_errors=True,
+                                     add_only=add_only)
         if not result:
             msg = 'Problem in fifi_ls.subtract_chops.'
             log.error(msg)

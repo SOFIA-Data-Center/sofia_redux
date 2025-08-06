@@ -294,6 +294,13 @@ are either known bad detector pixels, or pixels for which the ramp fits
 did not have sufficient signal-to-noise. These pixels will be ignored in
 all further reduction steps.
 
+If the *pointing_discard* parameter is set to true, an entire set of data points
+can be set to NaN. During the exposure time of a single chop cycle, if the
+pointing error exceeds the defined threshold specified by the
+*pointing_threshold* parameter, the slopes of all ramps in that chop cycle are
+set to NaN and discarded from further analysis. This is done to mitigate the
+risk of low-quality data influencing the final product.
+
 .. Data source: flight 280, folder 1, file 547-548 lw
    Full reduction set (for resample) is 471-578
 

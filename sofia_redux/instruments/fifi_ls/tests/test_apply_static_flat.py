@@ -7,10 +7,10 @@ from astropy.io import fits
 import numpy as np
 
 from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, raw_testdata, get_xyc_files
+    import raw_testdata
 
 
-class TestApplyStaticFlat(FIFITestCase):
+class TestApplyStaticFlat:
 
     def test_flat_cache(self, tmpdir):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
@@ -233,10 +233,10 @@ class TestApplyStaticFlat(FIFITestCase):
         capt = capsys.readouterr()
         assert 'No spatial flat found' in capt.err
 
-    def test_success(self):
+    def test_success(self, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
 
         # test on a filename
         result = apply_static_flat(
@@ -272,10 +272,10 @@ class TestApplyStaticFlat(FIFITestCase):
             assert result2[f'FLAT_G{i}'].header['BUNIT'] == ''
             assert result2[f'FLATERR_G{i}'].header['BUNIT'] == ''
 
-    def test_write(self, tmpdir):
+    def test_write(self, tmpdir, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
         result = apply_static_flat(
             files[0], write=True, outdir=str(tmpdir))
         failure = False
@@ -284,10 +284,10 @@ class TestApplyStaticFlat(FIFITestCase):
             failure = True
         assert not failure
 
-    def test_parallel(self, tmpdir):
+    def test_parallel(self, tmpdir, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import wrap_apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
         result = wrap_apply_static_flat(files, outdir=str(tmpdir),
                                         allow_errors=False,
                                         jobs=-1, write=True)
@@ -298,10 +298,10 @@ class TestApplyStaticFlat(FIFITestCase):
                 failure = True
         assert not failure
 
-    def test_serial(self, tmpdir):
+    def test_serial(self, tmpdir, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import wrap_apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
         result = wrap_apply_static_flat(
             files, outdir=str(tmpdir),
             allow_errors=False, write=True)
@@ -377,10 +377,10 @@ class TestApplyStaticFlat(FIFITestCase):
         assert np.allclose(result[2], flat_store, equal_nan=True)
         assert np.allclose(result[3], flat_err_store, equal_nan=True)
 
-    def test_bad_parameters(self, capsys, mocker):
+    def test_bad_parameters(self, capsys, mocker, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
 
         # bad output directory
         result = apply_static_flat(files[0], outdir='badval')
@@ -403,7 +403,7 @@ class TestApplyStaticFlat(FIFITestCase):
         capt = capsys.readouterr()
         assert 'No flat found' in capt.err
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import wrap_apply_static_flat
 
@@ -419,7 +419,7 @@ class TestApplyStaticFlat(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_xyc_files()
+        files = test_files('xyc')
         wrap_apply_static_flat(files[0], write=False,
                                allow_errors=False)
 
@@ -436,10 +436,10 @@ class TestApplyStaticFlat(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_otf_reshape(self):
+    def test_otf_reshape(self, test_files):
         from sofia_redux.instruments.fifi_ls.apply_static_flat \
             import apply_static_flat
-        files = get_xyc_files()
+        files = test_files('xyc')
         hdul = fits.open(files[0])
 
         # mock OTF data: should have 3D flux, stddev that get modified;

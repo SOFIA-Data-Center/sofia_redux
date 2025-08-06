@@ -310,6 +310,9 @@ def wrap_subtract_chops(files, outdir=None, add_only=False, write=False,
 
     kwargs = {'outdir': outdir, 'add_only': add_only, 'write': write}
 
+    if add_only:
+        log.info('Adding all chop files')
+
     output = multitask(subtract_chops_wrap_helper, files, None, kwargs,
                        jobs=jobs)
 

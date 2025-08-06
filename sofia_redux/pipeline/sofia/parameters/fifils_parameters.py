@@ -102,6 +102,27 @@ DEFAULT = {
                         'Incomplete ramps are filled with NaN.',
          'dtype': 'bool',
          'wtype': 'check_box'},
+        {'key': 'pointing_discard',
+         'name': 'Discard ramps with bad pointing',
+         'value': False,
+         'description': 'If set, data with bad pointing will be discarded.',
+         'dtype': 'bool',
+         'wtype': 'check_box'},
+        {'key': 'pointing_directory',
+         'name': 'Pointing directory',
+         'value': '',
+         'description': 'Override default directory of pointing files',
+         'dtype': 'str',
+         'wtype': 'pick_directory'},
+        {'key': 'pointing_threshold_psf_frac',
+         'name': 'Relative pointing threshold',
+         'value': 0.1,
+         'description': 'Specified as a fraction of the FWHM of the mean PSF '
+                        'within the respective nod phase. The slopes of ramps '
+                        'with a pointing error greater than the defined '
+                        'threshold are set to NaN.',
+         'dtype': 'float',
+         'wtype': 'text_box'},
     ],
     'subtract_chops': [
         {'key': 'save',
@@ -116,6 +137,14 @@ DEFAULT = {
          'hidden': True,
          'description': 'If set, processing will be '
                         'distributed across multiple cores.',
+         'dtype': 'bool',
+         'wtype': 'check_box'},
+        {'key': 'add_only',
+         'name': 'Chop addition only',
+         'value': False,
+         'description': 'If set, chops will be added '
+                        'instead of subtracted. '
+                        'Used for flat fields, telluric scans, etc.',
          'dtype': 'bool',
          'wtype': 'check_box'},
     ],

@@ -6,52 +6,54 @@ from astropy.io import fits
 import numpy as np
 import pytest
 
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_csb_files
 from sofia_redux.instruments.fifi_ls.combine_nods \
     import (combine_nods, _mjd, _unix, _read_exthdrs,
             classify_files, combine_extensions)
 
 
-class TestCombineNods(FIFITestCase):
+@pytest.fixture
+def nodstyles(test_files):
+    # default files are NMC
+    files = test_files('csb')
 
-    def make_nodstyles(self):
-        # default files are NMC
-        files = get_csb_files()
+    # modify files to be C2NC2
+    asym = []
+    c2nc2 = []
+    sym = []
+    for fn in files:
+        hdul = fits.open(fn)
+        sym.append(hdul)
 
-        # modify files to be C2NC2
-        asym = []
-        c2nc2 = []
-        sym = []
-        for fn in files:
-            hdul = fits.open(fn)
-            sym.append(hdul)
+        asym_hdul = fits.HDUList([hdu.copy() for hdu in hdul])
+        asym_hdul[0].header['NODSTYLE'] = 'ASYMMETRIC'
+        asym_hdul[0].header['FILENAME'] += '.asym.fits'
+        asym.append(asym_hdul)
 
-            asym_hdul = fits.HDUList([hdu.copy() for hdu in hdul])
-            asym_hdul[0].header['NODSTYLE'] = 'ASYMMETRIC'
-            asym_hdul[0].header['FILENAME'] += '.asym.fits'
-            asym.append(asym_hdul)
+        c2nc2_hdul = fits.HDUList([hdu.copy() for hdu in hdul])
+        c2nc2_hdul[0].header['NODSTYLE'] = 'C2NC2'
+        c2nc2_hdul[0].header['FILENAME'] += '.c2nc2.fits'
+        c2nc2.append(c2nc2_hdul)
 
-            c2nc2_hdul = fits.HDUList([hdu.copy() for hdu in hdul])
-            c2nc2_hdul[0].header['NODSTYLE'] = 'C2NC2'
-            c2nc2_hdul[0].header['FILENAME'] += '.c2nc2.fits'
-            c2nc2.append(c2nc2_hdul)
+    return sym, asym, c2nc2
 
-        return sym, asym, c2nc2
 
-    def test_nowrite(self, tmpdir):
-        files = get_csb_files()
-        df = combine_nods(files, offbeam=False, outdir=str(tmpdir),
+class TestCombineNods:
+
+    def test_nowrite(self, tmp_path_factory, test_files):
+        files = test_files('csb')
+        outdir = tmp_path_factory.mktemp('combine_nods_out_nowrite')
+        df = combine_nods(files, offbeam=False, outdir=str(outdir),
                           write=False)
         noda = df[df['nodbeam'] == 'A']
         for _, row in noda.iterrows():
             assert row['chdul'] is not None
             assert not os.path.isfile(row['outfile'])
 
-    def test_write(self, tmpdir):
-        files = get_csb_files()
+    def test_write(self, tmp_path_factory, test_files):
+        files = test_files('csb')
+        outdir = tmp_path_factory.mktemp('combine_nods_out_write')
         df = combine_nods(
-            files, offbeam=False, outdir=str(tmpdir), write=True)
+            files, offbeam=False, outdir=str(outdir), write=True)
         noda = df[df['nodbeam'] == 'A']
         failure = False
         for _, row in noda.iterrows():
@@ -63,8 +65,8 @@ class TestCombineNods(FIFITestCase):
                 print("file %s not found" % row['outfile'])
         assert not failure
 
-    def test_offbeam(self):
-        files = get_csb_files()
+    def test_offbeam(self, test_files):
+        files = test_files('csb')
         df_a = combine_nods(files, offbeam=False, outdir=None, write=False)
         df_b = combine_nods(files, offbeam=True, outdir=None, write=False)
         assert (df_a[df_b['nodbeam'] == 'B']['nodbeam'] == 'A').all()
@@ -85,8 +87,8 @@ class TestCombineNods(FIFITestCase):
         dateobs = 'BADVAL'
         assert _unix(dateobs) == 0
 
-    def test_read_exthdrs(self):
-        test_file = get_csb_files()[0]
+    def test_read_exthdrs(self, test_files):
+        test_file = test_files('csb')[0]
         hdul = fits.open(test_file)
 
         # first extension only -- returns empty array
@@ -97,14 +99,14 @@ class TestCombineNods(FIFITestCase):
         result = _read_exthdrs(hdul, 'INDPOS')
         assert np.allclose(result, [463923, 464433, 464943, 465453])
 
-    def test_classify_nodstyles(self, capsys):
+    def test_classify_nodstyles(self, capsys, test_files, nodstyles):
         # default files are NMC
-        files = get_csb_files()
+        files = test_files('csb')
         df = classify_files(files)
         assert (df['nodstyle'] == 'NMC').all()
         assert not df['asymmetric'].any()
 
-        sym, asym, c2nc2 = self.make_nodstyles()
+        sym, asym, c2nc2 = nodstyles
 
         df = classify_files(sym)
         assert (df['nodstyle'] == 'NMC').all()
@@ -140,7 +142,7 @@ class TestCombineNods(FIFITestCase):
         assert not np.any(np.isclose(exptimes, 0))
         assert not np.any(np.isclose(nexps, 0))
 
-    def test_classify_errors(self, capsys):
+    def test_classify_errors(self, capsys, test_files):
         # bad filenames only
         result = classify_files(['badfile1.fits', 'badfile2.fits'])
         assert result is None
@@ -148,7 +150,7 @@ class TestCombineNods(FIFITestCase):
         assert 'Invalid HDUList' in capt.err
 
         # mixed good and bad: continues with good
-        files = get_csb_files()
+        files = test_files('csb')
         result = classify_files(['badfile1.fits', 'badfile2.fits'] + files)
         assert len(result) == len(files)
         capt = capsys.readouterr()
@@ -166,9 +168,9 @@ class TestCombineNods(FIFITestCase):
         capt = capsys.readouterr()
         assert 'DATE-OBS in header is BADVAL' in capt.err
 
-    def test_combine_nodstyles(self, capsys):
+    def test_combine_nodstyles(self, capsys, nodstyles):
         # make 2 A, 2B in each of sym and asym styles
-        sym, asym, _ = self.make_nodstyles()
+        sym, asym, _ = nodstyles
 
         # sym
         # expect that file 1 matches with 2, 3 matches with 4
@@ -227,7 +229,7 @@ class TestCombineNods(FIFITestCase):
             combine_extensions([1, 2, 3], b_nod_method='wrong')
         assert 'Bad b_nod_method' in str(err)
 
-    def test_combine_nods_failure(self, capsys, mocker):
+    def test_combine_nods_failure(self, capsys, mocker, test_files):
         # bad files
         result = combine_nods(None, write=False)
         assert result is None
@@ -235,7 +237,7 @@ class TestCombineNods(FIFITestCase):
         assert "Invalid input" in capt.err
 
         # single file, bad outdir
-        files = get_csb_files()
+        files = test_files('csb')
         result = combine_nods(files[0], write=False, outdir='badval')
         assert result is None
         capt = capsys.readouterr()
@@ -250,8 +252,8 @@ class TestCombineNods(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Problem in file classification' in capt.err
 
-    def test_combined_header(self):
-        sym, asym, _ = self.make_nodstyles()
+    def test_combined_header(self, nodstyles):
+        sym, asym, _ = nodstyles
 
         # test that for asym headers, the A is the basehead,
         # even if the B is earlier
@@ -272,8 +274,8 @@ class TestCombineNods(FIFITestCase):
         for ext in chdul[1:]:
             assert ext.header['BUNIT'] == 'adu/s'
 
-    def test_scanpos(self):
-        _, _, c2nc2 = self.make_nodstyles()
+    def test_scanpos(self, nodstyles):
+        _, _, c2nc2 = nodstyles
 
         # if no scanpos data present, no errors, nothing propagated
         result = combine_nods(c2nc2, write=False)
@@ -300,8 +302,8 @@ class TestCombineNods(FIFITestCase):
                 assert np.allclose(hdul[f'SCANPOS_G{i}'].data,
                                    orig_hdul[f'SCANPOS_G{i}'].data)
 
-    def test_average_two(self, capsys):
-        _, _, c2nc2_2files = self.make_nodstyles()
+    def test_average_two(self, capsys, nodstyles):
+        _, _, c2nc2_2files = nodstyles
 
         # add a couple more files to combine
         c2nc2 = [c2nc2_2files[0], c2nc2_2files[1],
@@ -368,8 +370,8 @@ class TestCombineNods(FIFITestCase):
         hdul = result[result['nodbeam'] == 'A']['chdul'][1]
         assert np.allclose(hdul['FLUX_G0'].data, 20)
 
-    def test_interpolate_two(self, capsys):
-        _, _, c2nc2_2files = self.make_nodstyles()
+    def test_interpolate_two(self, capsys, nodstyles):
+        _, _, c2nc2_2files = nodstyles
 
         # add a couple more files to combine
         c2nc2 = [c2nc2_2files[0], c2nc2_2files[1],
@@ -456,12 +458,12 @@ class TestCombineNods(FIFITestCase):
         del c2nc2[2][0].header['C_CHOPLN']
         result = combine_nods(c2nc2, write=False, b_nod_method='nearest')
         assert result is not None
-        with pytest.raises(ValueError) as err:
-            combine_nods(c2nc2, write=False, b_nod_method='interpolate')        
-        assert 'Missing DATE-OBS, C_CHOPLN or C_CYC keys in headers.' in str(err)
+        with pytest.raises(
+            ValueError, match='Missing DATE-OBS, C_CHOPLN or C_CYC'):
+                combine_nods(c2nc2, write=False, b_nod_method='interpolate')
 
         # check error if OTF-style data and offbeam selected
-        with pytest.raises(ValueError) as err:
-            combine_nods(c2nc2, write=False, offbeam=True,
-                         b_nod_method='nearest')
-        assert 'Offbeam option is not available for OTF mode' in str(err)
+        with pytest.raises(
+            ValueError, match='Offbeam option is not available for OTF mode'):
+                combine_nods(c2nc2, write=False, offbeam=True,
+                             b_nod_method='nearest')

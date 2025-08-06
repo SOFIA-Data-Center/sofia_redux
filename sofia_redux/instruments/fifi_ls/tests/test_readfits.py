@@ -3,19 +3,17 @@
 from astropy.io import fits
 
 from sofia_redux.instruments.fifi_ls.readfits import readfits
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, test_files
 
 
-class TestReadfits(FIFITestCase):
-    def test_success(self):
-        filename = test_files()[0]
+class TestReadfits:
+    def test_success(self, test_files):
+        filename = test_files('raw')[0]
         hdul = readfits(filename, checkheader=False)
         assert isinstance(hdul, fits.HDUList)
 
-    def test_checkhead(self, tmpdir):
+    def test_checkhead(self, tmpdir, test_files):
         # default file passes
-        filename = test_files()[0]
+        filename = test_files('raw')[0]
         hdul, success = readfits(filename, checkheader=True)
         assert isinstance(hdul, fits.HDUList)
         assert success is True
@@ -28,7 +26,7 @@ class TestReadfits(FIFITestCase):
         assert isinstance(hdul, fits.HDUList)
         assert success is False
 
-    def test_errors(self, capsys, tmpdir):
+    def test_errors(self, capsys, tmpdir, test_files):
         # invalid filename
         result = readfits('badfile.fits', checkheader=False)
         assert result is None
@@ -43,7 +41,7 @@ class TestReadfits(FIFITestCase):
         assert 'not a file' in capt.err
 
         # not a fifi file
-        filename = test_files()[0]
+        filename = test_files('raw')[0]
         hdul = fits.open(filename)
         hdul[0].header['INSTRUME'] = 'TESTVAL'
         badfile = str(tmpdir.join('badfile.fits'))

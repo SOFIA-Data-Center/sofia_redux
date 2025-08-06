@@ -8,14 +8,11 @@ import numpy as np
 from sofia_redux.instruments.fifi_ls.get_response import get_response
 from sofia_redux.instruments.fifi_ls.flux_calibrate \
     import flux_calibrate, wrap_flux_calibrate, apply_response
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_tel_files, get_scm_files
 
+class TestFluxCalibrate:
 
-class TestFluxCalibrate(FIFITestCase):
-
-    def test_success(self):
-        files = get_tel_files()
+    def test_success(self, test_files):
+        files = test_files('tel')
         result = flux_calibrate(files[0], write=False, outdir=None)
         assert isinstance(result, fits.HDUList)
         assert result[0].header['PRODTYPE'] == 'flux_calibrated'
@@ -28,9 +25,9 @@ class TestFluxCalibrate(FIFITestCase):
             assert extname in result
             assert result[extname].header['BUNIT'] == bunit[i]
 
-    def test_no_tell(self):
+    def test_no_tell(self, test_files):
         # check that a non-telluric-corrected file still calibrates okay
-        filename = get_scm_files()[0]
+        filename = test_files('scm')[0]
         result = flux_calibrate(filename)
         assert isinstance(result, fits.HDUList)
         for extname in ['FLUX', 'STDDEV', 'LAMBDA', 'XS', 'YS', 'RA', 'DEC',
@@ -39,8 +36,8 @@ class TestFluxCalibrate(FIFITestCase):
         assert 'ATRAN' not in result
         assert 'UNSMOOTHED_ATRAN' not in result
 
-    def test_invalid_response(self, capsys):
-        filename = get_tel_files()[0]
+    def test_invalid_response(self, capsys, test_files):
+        filename = test_files('tel')[0]
         hdul = fits.open(filename)
         response = get_response(hdul[0].header)
         invalid_response = response.copy()
@@ -50,21 +47,21 @@ class TestFluxCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'No valid response data' in capt.err
 
-    def test_write(self, tmpdir):
-        files = get_tel_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('tel')
         result = flux_calibrate(files[0], write=True, outdir=str(tmpdir))
         assert os.path.isfile(result)
         result = flux_calibrate(files[0], write=False, outdir=str(tmpdir))
         assert isinstance(result, fits.HDUList)
 
-    def test_hdul_input(self):
-        filename = get_tel_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('tel')[0]
         hdul = fits.open(filename)
         result = flux_calibrate(hdul)
         assert isinstance(result, fits.HDUList)
 
-    def test_bad_parameters(self, capsys):
-        files = get_tel_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('tel')
 
         # bad output directory
         result = flux_calibrate(files[0], outdir='badval')
@@ -78,8 +75,8 @@ class TestFluxCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'not a file' in capt.err
 
-    def test_cal_failure(self, mocker, capsys):
-        filename = get_tel_files()[0]
+    def test_cal_failure(self, mocker, capsys, test_files):
+        filename = test_files('tel')[0]
 
         # mock failure in apply response
         mocker.patch(
@@ -99,8 +96,8 @@ class TestFluxCalibrate(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Failed to get response' in capt.err
 
-    def test_wrap(self):
-        files = get_tel_files()
+    def test_wrap(self, test_files):
+        files = test_files('tel')
 
         # serial
         result = wrap_flux_calibrate(files, write=False)
@@ -112,7 +109,7 @@ class TestFluxCalibrate(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.flux_calibrate.multitask',
@@ -125,7 +122,7 @@ class TestFluxCalibrate(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_tel_files()
+        files = test_files('tel')
         wrap_flux_calibrate(files[0], write=False,
                             allow_errors=False)
 

@@ -8,14 +8,12 @@ import pytest
 
 from sofia_redux.instruments.fifi_ls.telluric_correct \
     import telluric_correct, wrap_telluric_correct, apply_atran_correction
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import FIFITestCase, get_scm_files
 
 
-class TestTelluricCorrect(FIFITestCase):
+class TestTelluricCorrect:
 
-    def test_success(self):
-        files = get_scm_files()
+    def test_success(self, test_files):
+        files = test_files('scm')
         result = telluric_correct(files[0], write=False, outdir=None)
         assert isinstance(result, fits.HDUList)
         assert result[0].header['PRODTYPE'] == 'telluric_corrected'
@@ -29,15 +27,15 @@ class TestTelluricCorrect(FIFITestCase):
             assert extname in result
             assert result[extname].header['BUNIT'] == bunit[i]
 
-    def test_write(self, tmpdir):
-        files = get_scm_files()
+    def test_write(self, tmpdir, test_files):
+        files = test_files('scm')
         result = telluric_correct(files[0], write=True, outdir=str(tmpdir))
         assert os.path.isfile(result)
         result = telluric_correct(files[0], write=False, outdir=str(tmpdir))
         assert isinstance(result, fits.HDUList)
 
-    def test_cutoff(self):
-        files = get_scm_files()
+    def test_cutoff(self, test_files):
+        files = test_files('scm')
         result1 = telluric_correct(
             files[0], write=False, outdir=None, cutoff=0)
         result2 = telluric_correct(
@@ -46,8 +44,8 @@ class TestTelluricCorrect(FIFITestCase):
         n2 = np.isnan(result2['FLUX'].data).sum()
         assert n2 > n1
 
-    def test_no_correction(self):
-        filename = get_scm_files()[0]
+    def test_no_correction(self, test_files):
+        filename = test_files('scm')[0]
         default = telluric_correct(filename, skip_corr=False, cutoff=0.8)
         result = telluric_correct(filename, skip_corr=True, cutoff=0.8)
 
@@ -75,14 +73,14 @@ class TestTelluricCorrect(FIFITestCase):
                            default['UNCORRECTED_STDDEV'].data,
                            equal_nan=True)
 
-    def test_hdul_input(self):
-        filename = get_scm_files()[0]
+    def test_hdul_input(self, test_files):
+        filename = test_files('scm')[0]
         hdul = fits.open(filename)
         result = telluric_correct(hdul)
         assert isinstance(result, fits.HDUList)
 
-    def test_bad_parameters(self, capsys):
-        files = get_scm_files()
+    def test_bad_parameters(self, capsys, test_files):
+        files = test_files('scm')
 
         # bad output directory
         result = telluric_correct(files[0], outdir='badval')
@@ -102,8 +100,8 @@ class TestTelluricCorrect(FIFITestCase):
         [('apply_atran', 'Unable to apply ATRAN'),
          ('get_atran_interpolated', 'Unable to get ATRAN'),
          ('get_resolution', 'Unable to determine spectral resolution')])
-    def test_cal_failure(self, mocker, capsys, sub, msg):
-        filename = get_scm_files()[0]
+    def test_cal_failure(self, mocker, capsys, sub, msg, test_files):
+        filename = test_files('scm')[0]
 
         # mock failures in subroutines
         mocker.patch(
@@ -115,8 +113,8 @@ class TestTelluricCorrect(FIFITestCase):
         assert msg in capt.err
 
 
-    def test_wrap(self):
-        files = get_scm_files()
+    def test_wrap(self, test_files):
+        files = test_files('scm')
 
         # serial
         result = wrap_telluric_correct(files, write=False)
@@ -128,7 +126,7 @@ class TestTelluricCorrect(FIFITestCase):
         assert len(result) > 0
         assert isinstance(result[0], fits.HDUList)
 
-    def test_wrap_failure(self, capsys, mocker):
+    def test_wrap_failure(self, capsys, mocker, test_files):
         # mock a partial failure
         mocker.patch(
             'sofia_redux.instruments.fifi_ls.telluric_correct.multitask',
@@ -141,7 +139,7 @@ class TestTelluricCorrect(FIFITestCase):
         assert "Invalid input files type" in capt.err
 
         # real files, but pass only one
-        files = get_scm_files()
+        files = test_files('scm')
         wrap_telluric_correct(files[0], write=False,
                               allow_errors=False)
 
@@ -158,8 +156,8 @@ class TestTelluricCorrect(FIFITestCase):
         capt = capsys.readouterr()
         assert 'Errors were encountered' in capt.err
 
-    def test_otf_reshape(self):
-        files = get_scm_files()
+    def test_otf_reshape(self, test_files):
+        files = test_files('scm')
         hdul = fits.open(files[0])
 
         # mock OTF data: should have 3D flux, stddev that get modified;
@@ -226,8 +224,8 @@ class TestTelluricCorrect(FIFITestCase):
         # variance should be divided by it, squared
         assert np.allclose(var_corr, 1 / expected_atran ** 2)
 
-    def test_unsmoothed_atran_trim(self):
-        files = get_scm_files()
+    def test_unsmoothed_atran_trim(self, test_files):
+        files = test_files('scm')
         hdul = fits.open(files[0])
 
         # for blue data, unsmoothed atran should have wavelengths < 130

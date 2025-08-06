@@ -45,6 +45,7 @@ readme = "README.rst"
 
 [project.optional-dependencies]
 test = [
+    "filelock",
     "pytest>=5.3.5",
     "pytest-astropy>=0.8.0",
     "pytest-astropy-header>=0.1.2",
