@@ -395,7 +395,7 @@ def get_atran_interpolated(header, resolution=None,
     if use_wv and not wv_values[-1] >= wv >= wv_values[0]:
         log.warning('wv={} outside of available ATRAN data.'.format(wv))
         wv = np.clip(wv, a_min=wv_values[0], a_max=wv_values[-1])
-        log.warning('Setting water vaper to {} um'.format(wv))
+        log.warning('Setting water vapor to {} um'.format(wv))
         wv_high, wv_low = wv_values[-1], wv_values[-2]
     else:
         wv_high, wv_low = np.inf, np.inf
@@ -403,7 +403,7 @@ def get_atran_interpolated(header, resolution=None,
     if not 45 >= alt >= 38:
         log.warning('alt={} outside of available ATRAN data.'.format(alt))
         alt = np.clip(alt, a_min=38, a_max=45)
-        log.warning('Setting altitude to {}K ft'.format(alt))
+        log.warning('Setting altitude to {}K ft'.format(round(alt)))
 
 
     # find the higher and lower boundaries
