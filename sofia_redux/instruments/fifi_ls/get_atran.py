@@ -3,7 +3,6 @@
 import glob
 import os
 import re
-import warnings
 
 from astropy import log
 from astropy.io import fits
@@ -384,8 +383,28 @@ def get_atran_interpolated(header, resolution=None,
                 22, 25, 27, 30, 32, 35,
                 37, 40, 45, 50]
 
-    za_high, za_low = np.inf, np.inf
-    wv_high, wv_low = np.inf, np.inf
+    # clip values to atran data range
+    if not za_values[-1] >= za >= za_values[0]:
+        log.warning('za={} outside of available ATRAN data.'.format(za))
+        za = np.clip(za, a_min=za_values[0], a_max=za_values[-1])
+        log.warning('Setting zenith angle to {} deg'.format(za))
+        za_high, za_low = za_values[-1], za_values[-2]
+    else:
+        za_high, za_low = np.inf, np.inf
+
+    if use_wv and not wv_values[-1] >= wv >= wv_values[0]:
+        log.warning('wv={} outside of available ATRAN data.'.format(wv))
+        wv = np.clip(wv, a_min=wv_values[0], a_max=wv_values[-1])
+        log.warning('Setting water vapor to {} um'.format(wv))
+        wv_high, wv_low = wv_values[-1], wv_values[-2]
+    else:
+        wv_high, wv_low = np.inf, np.inf
+
+    if not 45 >= alt >= 38:
+        log.warning('alt={} outside of available ATRAN data.'.format(alt))
+        alt = np.clip(alt, a_min=38, a_max=45)
+        log.warning('Setting altitude to {}K ft'.format(round(alt)))
+
 
     # find the higher and lower boundaries
     for i, w in enumerate(wv_values):
@@ -403,16 +422,29 @@ def get_atran_interpolated(header, resolution=None,
     # build filenames
     current_atran_filenames = {}
     if use_wv:
-        current_atran_filenames["za1_wv1"] = ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(round(alt), za_low, wv_low), za_low, wv_low)
-        current_atran_filenames["za1_wv2"] = ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(round(alt), za_low, wv_high), za_low, wv_high)
-        current_atran_filenames["za2_wv1"] = ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(round(alt), za_high, wv_low), za_high, wv_low)
-        current_atran_filenames["za2_wv2"] = ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(round(alt), za_high, wv_high), za_high, wv_high)
+        current_atran_filenames["za1_wv1"] = \
+            ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(
+            round(alt), za_low, wv_low), za_low, wv_low)
+        current_atran_filenames["za1_wv2"] = \
+            ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(
+            round(alt), za_low, wv_high), za_low, wv_high)
+        current_atran_filenames["za2_wv1"] = \
+            ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(
+            round(alt), za_high, wv_low), za_high, wv_low)
+        current_atran_filenames["za2_wv2"] = \
+            ("atran_{}K_{}deg_{}pwv_40-300mum.fits".format(
+            round(alt), za_high, wv_high), za_high, wv_high)
     else:
-        current_atran_filenames["za1"] = ("atran_{}K_{}deg_40-300mum.fits".format(round(alt), za_low,), za_low, None)
-        current_atran_filenames["za2"] = ("atran_{}K_{}deg_40-300mum.fits".format(round(alt), za_high), za_high, None)
+        current_atran_filenames["za1"] = \
+            ("atran_{}K_{}deg_40-300mum.fits".format(
+            round(alt), za_low,), za_low, None)
+        current_atran_filenames["za2"] = \
+            ("atran_{}K_{}deg_40-300mum.fits".format(
+            round(alt), za_high), za_high, None)
 
     # load all files
     atran_data = {}
+    atrnfile_fits_keyword = ''
     for key, value in current_atran_filenames.items():
         filename = value[0]
         _za = value[1]  # the ZA value of this file
@@ -436,8 +468,9 @@ def get_atran_interpolated(header, resolution=None,
 
             atran_data[key] = (atranfile, wave, unsmoothed, smoothed), _za, _wv
 
-            store_atran_in_cache(os.path.join(atran_dir, filename), resolution, atranfile,
-                                data[0], data[1], smoothed)
+            atrnfile_fits_keyword += filename + ', '
+            store_atran_in_cache(os.path.join(atran_dir, filename), resolution,
+                                 atranfile, data[0], data[1], smoothed)
 
     if use_wv:
         # interpolate za for two pwv
@@ -459,6 +492,8 @@ def get_atran_interpolated(header, resolution=None,
     wave = interpolated[0][1]
     unsmoothed = interpolated[0][2]
     smoothed = smoothres(wave, unsmoothed, resolution)
+
+    hdinsert(header, 'ATRNFILE', atrnfile_fits_keyword[:-2])
 
     if not get_unsmoothed:
         return np.vstack((wave, smoothed))
