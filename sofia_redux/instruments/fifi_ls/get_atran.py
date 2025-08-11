@@ -360,12 +360,6 @@ def get_atran_interpolated(header, resolution=None,
         else:
             wv = 0.5 * (wv_start + wv_end)
 
-    if use_wv and wv < 2:
-        log.warning(f'Bad WV value: {wv}')
-        log.warning('Using default ATRAN file.')
-        use_wv = False
-
-    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
 
     if atran_dir is not None:
         if not os.path.isdir(str(atran_dir)):
@@ -405,6 +399,7 @@ def get_atran_interpolated(header, resolution=None,
         alt = np.clip(alt, a_min=38, a_max=45)
         log.warning('Setting altitude to {}K ft'.format(round(alt)))
 
+    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
 
     # find the higher and lower boundaries
     for i, w in enumerate(wv_values):
