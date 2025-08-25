@@ -1,17 +1,15 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import math
-import sys
 import warnings
-import numpy as np
+
 import numba as nb
+import numpy as np
 from numba import njit
-from numba.typed import List, Dict
 from numba.core import boxing
+from numba.typed import Dict, List
 from scipy.integrate import nquad
 from scipy.special import gamma
-from types import ModuleType, FunctionType
-from gc import get_referents
 
 from sofia_redux.toolkit.utilities.func import taylor
 
@@ -5702,33 +5700,3 @@ def convert_to_list(thing):
     for x in thing:
         new_list.append(x)
     return new_list
-
-
-def get_object_size(obj):
-    """
-    Return the size of an object and all members in bytes.
-
-    Parameters
-    ----------
-    obj : object
-
-    Returns
-    -------
-    bytes : int
-    """
-    blacklist = type, ModuleType, FunctionType
-    if isinstance(obj, blacklist):
-        raise TypeError('get_object_size() does not take argument of type: %s'
-                        % type(obj))
-    seen_ids = set()
-    size = 0
-    objects = [obj]
-    while objects:
-        need_referents = []
-        for obj in objects:
-            if not isinstance(obj, blacklist) and id(obj) not in seen_ids:
-                seen_ids.add(id(obj))
-                size += sys.getsizeof(obj)
-                need_referents.append(obj)
-        objects = get_referents(*need_referents)
-    return size
