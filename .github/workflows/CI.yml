@@ -41,10 +41,14 @@ jobs:
             echo "No python files changed"
           fi
     
-  test-small:
-    name: Unit Tests (without scan)
+  unit-tests:
+    name: Unit Tests ${{ matrix.toxenv }}
     runs-on: self-hosted
-
+    strategy:
+      matrix:
+        toxenv:
+          - test-small-xdist
+          - test-oldestdeps-small-xdist
     steps:
       - name: checkout git
         uses: actions/checkout@v4
@@ -55,5 +59,4 @@ jobs:
       - name: Install dependencies
         run: pip install tox
       - name: Run tests
-        run: tox -e test-small-xdist
-
+        run: tox -e ${{ matrix.toxenv }}
