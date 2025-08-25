@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          pip install '.[docs]'
+          pip install '.[docs]' PyQt5
       - name: Sphinx build
         run: |
           sphinx-build docs docs/_build
