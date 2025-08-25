@@ -7,8 +7,8 @@ try:
     import astroquery.jplhorizons as aj
 except ImportError:  # pragma: no cover
     print('\nAstroquery.jplhorizons not found.')
-    print('Install with:')
-    print('\tconda install -c conda-forge astroquery\n')
+    print('Install for example with:')
+    print('\tpip install astroquery\n')
     sys.exit()
 
 from astropy.time import Time

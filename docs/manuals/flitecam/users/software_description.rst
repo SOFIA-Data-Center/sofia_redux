@@ -97,10 +97,9 @@ matplotlib, pandas, astropy, configobj, numba, bottleneck, joblib,
 and photutils.
 Some display functions for the graphical user interface (GUI)
 additionally require the PyQt5, pyds9, and regions packages.
-All required external packages are available to install via the
-pip or conda package managers.  See the Anaconda environment file
-(environment.yml), or the pip requirements file (requirements.txt)
-distributed with `sofia_redux` for up-to-date version requirements.
+All required external packages are available to install via
+PyPI.  See the `pyproject.toml` distributed with `sofia_redux`
+for up-to-date version dependencies.
 
 Running the pipeline interactively also requires an installation of
 SAO DS9 for FITS image display. See http://ds9.si.edu/ for download
@@ -122,7 +121,7 @@ data in any observation mode.
 After obtaining the source code, install the package with
 the command::
 
-    python setup.py install
+    pip install .
 
 from the top-level directory.
 

@@ -5,63 +5,21 @@ Installation
 Stable release
 --------------
 
-The `sofia_redux` package is available via anaconda or pip::
+The `sofia_redux` package is available via PyPI::
 
-   conda install -c sofia-usra -c conda-forge sofia_redux
-
-or::
-
-   pip install sofia_redux
+   pip install sofia-redux
 
 
 From source
 -----------
 
 Obtain the source code for this package from the `SOFIA Redux GitHub project
-<https://github.com/SOFIA-USRA/sofia_redux>`__, then install via one of the
-two methods below.
+<https://github.com/SOFIA-USRA/sofia_redux>`__, then install it from the
+source directory:
 
-Via Anaconda
-^^^^^^^^^^^^
+pip install .
 
-We recommend Anaconda for managing your Python environment.  A conda
-environment specification is included with this package, as
-`environment.yml <https://raw.githubusercontent.com/SOFIA-USRA/sofia_redux/main/environment.yml>`__.
-
-To install a ``sofia_redux`` environment with Anaconda from the package directory::
-
-
-   conda env create -f environment.yml
-
-
-Activate the environment::
-
-   conda activate sofia_redux
-
-
-Install an editable copy of the `sofia_redux` package::
-
-   pip install -e .
-
-
-Deactivate the environment when done::
-
-   conda deactivate
-
-
-Remove the environment if necessary::
-
-   conda remove --name sofia_redux --all
-
-
-Via Pip
-^^^^^^^
-
-Alternately, prerequisites for the package can be installed with::
-
-  pip install -r requirements.txt
-
-and the package can then be installed as usual::
+or for development the package can be installed *editable*::
 
    pip install -e .
 
@@ -77,14 +35,12 @@ To use the GUI tools, install PyQt5 via pip::
 
   pip install PyQt5
 
-or conda::
+or use the [all] extra::
 
-  conda install pyqt
+  pip install 'sofia-redux[all]'
 
 Please note that there may be some incompatibilities between some versions
 of PyQt5, some versions of the package dependencies, and some host OS versions.
-If you run into difficulty, we recommend using the Anaconda installation
-method.
 
 DS9
 ^^^
@@ -97,9 +53,9 @@ install pyds9 and regions directly via pip::
 
   pip install pyds9 regions
 
-or using the provided optional requirements file::
+or using the [display] extra::
 
-  pip install -r optional_requirements.txt
+  pip install 'sofia-redux[display]'
 
 Please note that pyds9 requires gcc to compile, and is not available
 on the Windows platform.  On MacOS, you will need to make a `ds9`
@@ -197,13 +153,13 @@ FLITECAM and EXES auxiliary data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The default auxiliary calibration and reference data for FLITECAM and
 EXES reductions are too large to be included in the software packages
-provided via PyPI or Anaconda.
+provided via PyPI.
 
 These files are provided in full in the
 `source distribution <https://github.com/SOFIA-USRA/sofia_redux>`__ of
 this package.  Since they are required for most data reductions for these
 instruments, they may also be automatically downloaded as needed for
-non-source installations (i.e. via pip or conda).  Downloaded calibration
+non-source installations.  Downloaded calibration
 files are cached for later use in a '.sofia_redux' directory in the user's
 home directory. For offline pipeline reductions, the source installation
 is recommended.
@@ -217,25 +173,16 @@ reset dark files, and nonlinearity correction coefficients.
 Troubleshooting
 ---------------
 
-Please note that direct support for this project will end in September 2023.
-
-Prior to this time, please submit a ticket on the GitHub issues page for
-installation assistance.
-
-After this time, the source distribution of this package will remain available,
-but it will not be maintained for the latest versions of all dependencies. It
-is recommended that users fork their own copies of this package for continued
-maintenance and development.
-
 The last working set of installed versions of all dependencies is recorded in the
-`freeze_requirements.txt <https://raw.githubusercontent.com/SOFIA-USRA/sofia_redux/main/freeze_requirements.txt>`__
+`freeze_requirements.txt`
 file in this package. If errors are encountered in the other listed installation
 methods, it may be useful to install the frozen versions directly. For example, to install
-from source using conda to create a new Python environment from the sofia_redux package
+from source create a new Python environment from the sofia_redux package
 directory::
 
-   conda create --name sofia_redux python=3.10
-   pip install -r freeze_requirements.txt
-   pip install -e .
+   python -v venv .redux_troubleshoot_venv
+   source .redux_troubleshoot_venv/bin/activate
+   python -m pip install -r freeze_requirements.txt
+   python -m pip install -e .
 
 
