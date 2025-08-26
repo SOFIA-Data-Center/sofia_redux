@@ -19,21 +19,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install dependencies
+      - name: Install tox
         run: |
-          pip install '.[docs]' PyQt5
-      - name: Sphinx build
+          pip install tox
+      - name: Run tox to build docs
         run: |
-          sphinx-build docs docs/_build
+          tox -e build-docs
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: docs/_build/
+          path: docs/_build/html
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3

@@ -33,7 +33,7 @@ spacing is regular since the default window is taken from stochastic analysis
 of the sample distribution.
 
 In the second plot, a fit is generated using a much wider window
-(:math:`\pi / 2 \approx 25 \text{ samples}`) and a :ref:`distance weighting`
+(:math:`\pi / 2 \approx 25 \text{ samples}`) and a `distance weighting`
 parameter of 0.4 (:math:`\alpha = 0.4`) which is more representative of the
 true sine function.
 
@@ -137,13 +137,13 @@ Order limits and edge clipping
 
 The following example uses a 3rd order polynomial to resample an image
 (top-left) onto a finer resolution grid.  The top-right image was generated
-using the default edge mode `'com_distance'` (see :ref:`order mode`)  which
+using the default edge mode `'com_distance'` which
 only permits resampling if enough samples bound a resampling point in both the
 x and y directions.  This is the safest option but does result a NaN border.
 The bottom-left image uses `order_algorithm='extrapolate'` to permit resampling
 regardless of the sample distribution so long as enough unique samples exist to perform
 fitting.  Finally, the bottom-right image uses the "com_distance" edge mode
-(see :ref:`edge clipping`) to only perform fits if the samples are within a
+to only perform fits if the samples are within a
 certain threshold from the coordinate center-of-mass of samples within the
 window.
 
@@ -203,9 +203,6 @@ has been used to preserve detail.
 
 Adaptive Weighting
 ==================
-
-Please see :ref:`adaptive_weighting` for details on the adaptive weighting
-algorithm.
 
 The following images and associated weighting maps are generated using the same
 second order polynomial resampler from a coarse input image (not displayed).
@@ -304,7 +301,7 @@ dimensions for a second order polynomial (requires `order` + 1).
 The left-most images display the result and associated weight map using these
 parameters without adaptive weighting.  Note however, that `smoothing=1/3`
 conveys a different meaning depending on whether adaptive weighting is enabled
-or not (see :ref:`enabling_adaptive` for details).  The middle image and weight
+or not.  The middle image and weight
 map were generated using a very fine resolution weighting parameter of 0.01
 resulting in something very close to the original image.  Here, pixel-to-pixel
 noise variation can clearly be seen.

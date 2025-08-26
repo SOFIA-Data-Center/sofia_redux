@@ -8,10 +8,14 @@ try:
     from sofia_redux.visualization.display.ui import cursor_location as cl
 except ImportError:
     HAS_PYQT5 = False
-    QtWidgets, QtGui, QtCore = None, None, None
+    QtCore = None
 
     class QtWidgets:
         class QDialog:
+            pass
+
+    class QtGui:
+        class QCloseEvent:
             pass
 
     class cl:

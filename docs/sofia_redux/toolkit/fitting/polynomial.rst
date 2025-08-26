@@ -499,7 +499,7 @@ matrix is provided, or the diagonal of the covariance matrix is given.
     plt.figure(figsize=(7, 5))
     plt.plot(x, y, '.', markersize=3, label='data', color='blue')
     plt.fill_between(x, yfit - error, yfit + error, color='red',
-                     label='$1\sigma$ fit error')
+                     label=r'$1\sigma$ fit error')
     plt.plot(x, yfit, label='fit', color='lime')
     plt.legend(loc='lower left')
     plt.title("7th order polynomial fit and fit error")

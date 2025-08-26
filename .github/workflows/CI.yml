@@ -52,7 +52,9 @@ jobs:
     steps:
       - name: checkout git
         uses: actions/checkout@v4
-      - name: Set up python
+        with:
+          fetch-depth: 0
+      - name: Set up python      
         uses: actions/setup-python@v5
         with:
           python-version: 3.11

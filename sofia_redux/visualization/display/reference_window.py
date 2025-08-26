@@ -10,7 +10,7 @@ try:
     from sofia_redux.visualization.display.ui import reference_data as rd
 except ImportError:  # pragma: no cover
     HAS_PYQT5 = False
-    QtWidgets, QtGui, QtCore = None, None, None
+    QtGui, QtCore = None, None
 
     class QtWidgets:
         class QDialog:

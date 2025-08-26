@@ -46,7 +46,7 @@ subtracts the median y value and then returns absolute values:
     ax[1].plot(x, y_prime)
     ax[1].set_title("Processed Data")
     ax[1].set_xlabel("X")
-    ax[1].set_ylabel("$Y^{\prime}$")
+    ax[1].set_ylabel(r"$Y^{\prime}$")
 
 The default :func:`medabs_baseline` function is just designed to be a
 general usage quick function to handle positive and negative peaked signals.
@@ -93,7 +93,7 @@ other. :func:`medabs_baseline` returns the following:
              label="$(x_{peak}, y_{peak})$")
     plt.title("Most prominent peak")
     plt.xlabel("x")
-    plt.ylabel("$y^{\prime}$")
+    plt.ylabel(r"$y^{\prime}$")
 
 3. Rough Initial Parameter Estimation and the Box Function
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -145,14 +145,14 @@ without the boxing function.
     ax[0].plot(x, fit_box(x))
     ax[0].set_title("Fit with box function")
     ax[0].set_xlabel("x")
-    ax[0].set_ylabel("$y^{\prime}$")
+    ax[0].set_ylabel(r"$y^{\prime}$")
     ax[0].set_xlim(3, 6)
 
     ax[1].plot(x, y_prime)
     ax[1].plot(x, fit_nobox(x))
     ax[1].set_title("Fit without box function")
     ax[1].set_xlabel("x")
-    ax[1].set_ylabel("$y^{\prime}$")
+    ax[1].set_ylabel(r"$y^{\prime}$")
     ax[1].set_xlim(3, 6)
 
 There are a couple of things to note above.  Firstly, the fit on the right
@@ -230,13 +230,13 @@ were supplied by the user, peaks will be fit in the supplied order.
 
     plt.figure(figsize=(7, 5))
     plt.plot(x, y_prime, color='blue',
-             label='$y^{\prime}$ with 1st peak removed')
+             label=r'$y^{\prime}$ with 1st peak removed')
     plt.plot(x, fit(x), color='limegreen',
              label='Fit to 2nd peak')
     plt.plot(x_peak, y_peak, 'x', color='red', markersize=10,
              label='2nd peak guess position')
     plt.xlabel('x')
-    plt.ylabel('$y^{\prime}$')
+    plt.ylabel(r'$y^{\prime}$')
     plt.title('Second peak initial parameterization')
     plt.legend()
 

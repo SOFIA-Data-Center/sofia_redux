@@ -260,52 +260,96 @@ sofia_redux.instruments.fifi_ls
 -------------------------------
 
 .. automodapi:: sofia_redux.instruments.fifi_ls.apply_static_flat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.combine_grating_scans
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.combine_nods
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.correct_wave_shift
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.fit_ramps
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.flux_calibrate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_atran
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_badpix
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_lines
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_resolution
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.get_response
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.lambda_calibrate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.make_header
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.readfits
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.resample
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.spatial_calibrate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.split_grating_and_chop
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.subtract_chops
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.fifi_ls.telluric_correct
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.toolkit
 -------------------
 
 .. automodapi:: sofia_redux.toolkit.utilities.fits
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.utilities.multiprocessing
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.resampling
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
    :no-inheritance-diagram:
 
@@ -313,51 +357,89 @@ sofia_redux.spectroscopy
 ------------------------
 
 .. automodapi:: sofia_redux.spectroscopy.earthvelocity
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.radvel
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.smoothres
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.calibration
 -----------------------
 
 .. automodapi:: sofia_redux.calibration.pipecal_photometry
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.scan
 ----------------
 
 .. automodapi:: sofia_redux.scan.reduction.reduction
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.channels.channels
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.channels.channel_numba_functions
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.channels.channel_data.channel_data
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.channels.channel_group.channel_group
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.frames.frames
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.frames.fifi_ls_frame_numba_functions
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.info.info
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.info.astrometry
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.info.detector_array
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.info.instrument
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.info.telescope
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.integration.integration
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.integration.fifi_ls_integration_numba_functions
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.fifi_ls.scan.scan
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 
@@ -365,6 +447,8 @@ sofia_redux.visualization
 -------------------------
 
 .. automodapi:: sofia_redux.visualization.quicklook
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.pipeline

@@ -574,104 +574,202 @@ sofia_redux.instruments.hawc
 ----------------------------
 
 .. automodapi:: sofia_redux.instruments.hawc.datafits
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.dataparent
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.datatext
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steploadaux
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.stepmiparent
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.stepmoparent
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.stepparent
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepbgsubtract
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepbinpixels
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepcalibrate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepcheckhead
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepcombine
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepdemodulate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepdmdcut
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepdmdplot
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepflat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepfluxjump
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepfocus
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepimgmap
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepip
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steplabchop
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steplabpolplots
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepmerge
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepmkflat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepnodpolsub
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepnoisefft
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepnoiseplots
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepopacity
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steppoldip
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steppolmap
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steppolvec
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepprepare
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepregion
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.steprotate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepscanmap
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepscanmapflat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepscanmapfocus
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepscanmappol
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepscanstokes
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepshift
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepskycal
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepskydip
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepsplit
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepstdphotcal
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepstokes
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepwcs
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.stepzerolevel
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 .. automodapi:: sofia_redux.instruments.hawc.steps.basehawc
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.hawc.steps.basemap
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 
@@ -679,51 +777,97 @@ sofia_redux.scan
 ----------------
 
 .. automodapi:: sofia_redux.scan.channels.channels
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.channels.channel_data.channel_data
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.channels.channel_group.channel_group
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.channels.division.division
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.channels.modality.modality
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.channels.mode.mode
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.configuration.configuration
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.frames.frames
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.info.info
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.integration.integration
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.integration.dependents.dependents
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.pipeline.pipeline
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.reduction.reduction
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.scan.scan
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.signal.signal
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.source_models.source_model
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.channels.channels
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.channels.channel_data.channel_data
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.channels.channel_group.channel_group
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.frames.frames
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.info.info
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.integration.integration
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.scan.custom.hawc_plus.scan.scan
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 
@@ -731,20 +875,36 @@ sofia_redux.calibration
 -----------------------
 
 .. automodapi:: sofia_redux.calibration.pipecal_applyphot
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_calfac
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_config
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_fitpeak
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_photometry
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_rratio
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_util
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_error
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
    :no-inheritance-diagram:
 
@@ -753,14 +913,20 @@ sofia_redux.toolkit
 -------------------
 
 .. automodapi:: sofia_redux.toolkit.image.adjust
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.resampling
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.visualization
 -------------------------
 
 .. automodapi:: sofia_redux.visualization.quicklook
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 

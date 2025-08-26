@@ -73,26 +73,19 @@ Manuals
 
 User's Manuals:
 
-.. toctree::
-   :maxdepth: 1
-
-   ../manuals/exes/users/users
-   ../manuals/fifils/users/users
-   ../manuals/flitecam/users/users
-   ../manuals/forcast/users/users
-   ../manuals/hawc/users/users
+- :doc:`../manuals/exes/users/users`
+- :doc:`../manuals/fifils/users/users`
+- :doc:`../manuals/flitecam/users/users`
+- :doc:`../manuals/forcast/users/users`
+- :doc:`../manuals/hawc/users/users`
 
 Developer's Manuals:
 
-.. toctree::
-   :maxdepth: 1
-
-   ../manuals/exes/developers/developers
-   ../manuals/fifils/developers/developers
-   ../manuals/flitecam/developers/developers
-   ../manuals/forcast/developers/developers
-   ../manuals/hawc/developers/developers
-
+- :doc:`../manuals/exes/developers/developers`
+- :doc:`../manuals/fifils/developers/developers`
+- :doc:`../manuals/flitecam/developers/developers`
+- :doc:`../manuals/forcast/developers/developers`
+- :doc:`../manuals/hawc/developers/developers`
 
 Submodules
 ==========

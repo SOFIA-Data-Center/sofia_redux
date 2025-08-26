@@ -174,7 +174,7 @@ Troubleshooting
 ---------------
 
 The last working set of installed versions of all dependencies is recorded in the
-`freeze_requirements.txt`
+`requirements-min.txt`
 file in this package. If errors are encountered in the other listed installation
 methods, it may be useful to install the frozen versions directly. For example, to install
 from source create a new Python environment from the sofia_redux package
@@ -182,7 +182,7 @@ directory::
 
    python -v venv .redux_troubleshoot_venv
    source .redux_troubleshoot_venv/bin/activate
-   python -m pip install -r freeze_requirements.txt
+   python -m pip install -r requirements-min.txt
    python -m pip install -e .
 
 

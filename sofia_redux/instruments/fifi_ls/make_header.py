@@ -503,10 +503,11 @@ def order_headers(headers):
 
     Returns
     -------
-    2-tuple
-       fits.Header : earliest header
-       list of fits.Header : ordered headers
-       nodstyle : str
+    basehead : fits.Header
+        earliest header
+    sorted_headeres : list of fits.Header
+        ordered headers
+    nodstyle : str
         Nod style. C2CNC2, ASYMMETRIC: asymmetric. NMC: symmetric.
     """
     nhead = len(headers)

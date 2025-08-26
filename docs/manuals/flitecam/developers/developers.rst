@@ -368,145 +368,269 @@ procedures most likely to be of interest to the developer.
 sofia_redux.instruments.flitecam
 --------------------------------
 .. automodapi:: sofia_redux.instruments.flitecam.backsub
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.calcvar
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.clipimg
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.expmap
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.gaincor
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.getcalpath
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.hdcheck
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.lincor
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.maskbp
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.mkflat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.mkspecimg
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.readfits
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.flitecam.split_input
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.instruments.forcast
 -------------------------------
 
 .. automodapi:: sofia_redux.instruments.forcast.getatran
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.forcast.getmodel
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.forcast.hdmerge
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.forcast.peakfind
+   :noindex:
+   :no-main-docstr:
    :no-inheritance-diagram:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.forcast.register
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.instruments.forcast.register_datasets
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.toolkit
 -------------------
 
 .. automodapi:: sofia_redux.toolkit.convolve.base
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.convolve.kernel
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.convolve.filter
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.fitting.fitpeaks1d
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.fitting.polynomial
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.adjust
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.coadd
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.combine
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.fill
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.resize
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.smooth
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.utilities
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.image.warp
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.interpolate.interpolate
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.stats.stats
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.utilities.base
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.utilities.fits
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.utilities.func
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.toolkit.utilities.multiprocessing
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.spectroscopy
 ------------------------
 
 .. automodapi:: sofia_redux.spectroscopy.binspec
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.earthvelocity
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.extspec
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.findapertures
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.fluxcal
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.getapertures
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.getspecscale
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.mkapmask
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.mkspatprof
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.radvel
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.readflat
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.readwavecal
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.rectify
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.rectifyorder
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.smoothres
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.spectroscopy.tracespec
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.calibration
 -----------------------
 
 .. automodapi:: sofia_redux.calibration.pipecal_applyphot
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_calfac
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_config
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_fitpeak
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_photometry
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_rratio
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_util
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.calibration.pipecal_error
+   :noindex:
+   :no-main-docstr:
    :no-inheritance-diagram:
    :headings: ~^
 
@@ -514,12 +638,20 @@ sofia_redux.visualization
 -------------------------
 
 .. automodapi:: sofia_redux.visualization.quicklook
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.visualization.redux_viewer
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.visualization.controller
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 .. automodapi:: sofia_redux.visualization.eye
+   :noindex:
+   :no-main-docstr:
    :headings: ~^
 
 sofia_redux.pipeline
