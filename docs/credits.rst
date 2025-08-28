@@ -2,8 +2,17 @@
 Authors and Credits
 *******************
 
-Current SOFIA DPS team
-======================
+SOFIA Data Center Redux Software team
+=====================================
+
+* Benjamin Greiner, software and database architect
+* Aaron Bryant, FIFI instrument scientist
+* Jonas Früh, developer
+* Bastian Knieling, developer
+
+
+SOFIA DPS team
+==============
 
 * Melanie Clarke, development lead
 * Ed Chambers, science lead
@@ -19,6 +28,7 @@ SOFIA Pipeline Contributors
 
 * Ryan Arneson
 * Karishma Bansal
+* Aaron Bryant
 * Ed Chambers
 * Melanie Clarke
 * Sebastian Colditz
@@ -27,7 +37,11 @@ SOFIA Pipeline Contributors
 * Sarah Eftekharzadeh
 * Dario Fadda
 * Christian Fischer
+* Nadine Fischer
+* Jonas Früh
+* Benjamin Greiner
 * Nicole Karnath
+* Bastian Knieling
 * Mark Langer
 * Enrique Lopez-Rodriguez
 * Robert Minchin
@@ -38,11 +52,12 @@ SOFIA Pipeline Contributors
 * Maisie Rashman
 * Sachin Shenoy
 * William Vacca
+* Rainer Valek
 * Rachel Vander Vliet
 
 If you have contributed to the sofia_redux package code, reference data,
 or documentation and your name is missing, please send an email to the
-SOFIA DPS lead.
+SOFIA Data Center.
 
 Acknowledgements
 ================
