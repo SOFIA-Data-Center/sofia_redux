@@ -13,7 +13,7 @@
             "@type": "Organization",
             "givenName": "SOFIA-USRA",
             "email": "mclarke@sofia.usra.edu"
-        }
+        },
         {
             "@type": "Organization",
             "givenName": "SOFIA Data Center",
@@ -27,5 +27,5 @@
         "url": "https://pypi.org"
     },
     "runtimePlatform": "Python 3",
-    "url": "https://github.com/SOFIA-USRA/sofia_redux"
+    "url": "https://github.com/SOFIA-Data-Center/sofia_redux"
 }

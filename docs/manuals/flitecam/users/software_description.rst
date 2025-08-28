@@ -112,8 +112,8 @@ Source Code Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The source code for the FLITECAM pipeline maintained by the SOFIA Data
-Processing Systems (DPS) team can be obtained directly from the
-DPS, or from the external `GitHub repository <https://github.com/SOFIA-USRA/sofia_redux>`__.
+Center (SDC)  team can be obtained directly from the
+DPS, or from the external `GitHub repository <https://github.com/SOFIA-Data-Center/sofia_redux>`__.
 This repository contains all needed configuration
 files, auxiliary files, and Python code to run the pipeline on FLITECAM
 data in any observation mode.

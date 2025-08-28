@@ -7,4 +7,4 @@ alphaboo_2015012908_*.fits, and placed in a directory named alphaboo.
 Note that the default files are included in the source repository of this
 package, but not in the sdists and wheels from PyPI or GitHub.
 They may be downloaded separately, if desired, from the
-`GitHub repository <https://github.com/SOFIA-USRA/sofia_redux>`__.
+`GitHub repository <https://github.com/SOFIA-Data-Center/sofia_redux>`__.

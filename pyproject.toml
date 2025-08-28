@@ -69,7 +69,7 @@ display = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/SOFIA-USRA/sofia_redux"
+Homepage = "https://github.com/SOFIA-Data-Center/sofia_redux"
 
 [project.scripts]
 redux_pipe = "sofia_redux.pipeline.sofia.sofia_pipe:main"
