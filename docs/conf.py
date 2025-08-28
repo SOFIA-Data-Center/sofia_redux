@@ -67,7 +67,7 @@ rst_epilog += """
 
 # This does not *have* to match the package name, but typically does
 project = "sofia_redux"
-author ="SOFIA-USRA"
+author ="SOFIA Data Center"
 copyright = '{0}, {1}'.format(
     datetime.datetime.now().year, author)
 
