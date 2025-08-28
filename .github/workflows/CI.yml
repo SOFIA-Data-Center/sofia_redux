@@ -36,7 +36,7 @@ jobs:
           ref=${ref+"origin/$ref"}
           changedpyfiles=$(git diff --name-status ${ref:-HEAD~} -- '*.py' | grep -v '^D' | cut -f 2-)
           if [ -n "$changedpyfiles" ]; then
-            tox -e check-style -- $changedpyfiles
+            tox -e check-style -- --force-exclude $changedpyfiles
           else
             echo "No python files changed"
           fi
