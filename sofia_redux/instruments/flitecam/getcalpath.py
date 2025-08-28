@@ -12,7 +12,8 @@ from sofia_redux.instruments import flitecam as fdrp
 __all__ = ['getcalpath']
 
 # back up download URL for non-source installs
-DATA_URL = 'https://sofia-flitecam-reference.s3-us-gov-west-1.amazonaws.com/'
+# TODO: Change to a public SOFIA Data Center URL when available
+DATA_URL = 'https://irsa.ipac.caltech.edu/data/SOFIA/PIPELINE_REFERENCE/FLITECAM/'
 
 
 def getcalpath(header):
