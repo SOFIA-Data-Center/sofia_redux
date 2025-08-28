@@ -127,7 +127,7 @@ Source Code Installation
 
 The source code for the FORCAST pipeline maintained by the SOFIA Data
 Center (SDC)  team can be obtained directly from the
-DPS, or from the external `GitHub repository <https://github.com/SOFIA-Data-Center/sofia_redux>`.
+external `GitHub repository <https://github.com/SOFIA-Data-Center/sofia_redux>`.
 This repository contains all needed configuration
 files, auxiliary files, and Python code to run the pipeline on FORCAST
 data in any observation mode.
