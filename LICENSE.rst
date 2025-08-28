@@ -1,4 +1,7 @@
-Copyright 2023 Universities Space Research Association
+Copyright (c) SOFIA Data Center,
+Institute of Space Systems, University of Stuttgart,
+funded through the German Aerospace Agency DLR under grant 50OK2404,
+formerly maintained by the Universities Space Research Association
 under Government Prime Contract Number NNA17BF53C
 
 Redistribution and use in source and binary forms, with or without
