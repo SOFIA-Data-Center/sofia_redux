@@ -14,7 +14,7 @@ From source
 -----------
 
 Obtain the source code for this package from the `SOFIA Redux GitHub project
-<https://github.com/SOFIA-USRA/sofia_redux>`__, then install it from the
+<https://github.com/SOFIA-Data-Center/sofia_redux>`__, then install it from the
 source directory:
 
 pip install .
@@ -145,7 +145,7 @@ response curves. This should be rarely needed for standard scientific reductions
 since reference response curves are provided for most data.  If needed for
 re-deriving spectral flux calibrations, the standard model spectra are
 provided in the
-`source distribution <https://github.com/SOFIA-USRA/sofia_redux>`__ of
+`source distribution <https://github.com/SOFIA-Data-Center/sofia_redux>`__ of
 this package, at sofia_redux/instruments/forcast/data/grism/standard_models
 or sofia_redux/instruments/flitecam/data/grism/standard_models.
 
@@ -156,7 +156,7 @@ EXES reductions are too large to be included in the software packages
 provided via PyPI.
 
 These files are provided in full in the
-`source distribution <https://github.com/SOFIA-USRA/sofia_redux>`__ of
+`source distribution <https://github.com/SOFIA-Data-Center/sofia_redux>`__ of
 this package.  Since they are required for most data reductions for these
 instruments, they may also be automatically downloaded as needed for
 non-source installations.  Downloaded calibration
