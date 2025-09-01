@@ -19,7 +19,9 @@ from sofia_redux.toolkit.utilities.func import goodfile, robust_bool
 __all__ = ['readhdr']
 
 # back up download URL for non-source installs
-DATA_URL = 'https://sofia-exes-reference.s3-us-gov-west-1.amazonaws.com/'
+# TODO: Change to a public SOFIA Data Center URL when available
+# ghtik#IRS-SOFIA-Data-Center/sofia_redux#77
+DATA_URL = 'https://irsa.ipac.caltech.edu/data/SOFIA/PIPELINE_REFERENCE/EXES/'
 
 
 def readhdr(header, check_header=True,
