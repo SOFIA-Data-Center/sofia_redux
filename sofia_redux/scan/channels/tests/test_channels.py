@@ -717,8 +717,7 @@ class TestChannels(object):
         # flag fields
         m1 = mocker.patch.object(channels.data, 'flag_field')
         channels.flag_field('test', None)
-        assert m1.call_count == 1
-        assert m1.called_with('test', None)
+        m1.assert_called_once_with('test', None)
 
         # not called for non-dict fields
         fields = ['test']
@@ -729,61 +728,55 @@ class TestChannels(object):
         fields = {'test1': None, 'test2': None}
         channels.flag_fields(fields)
         assert m1.call_count == 3
-        assert m1.called_with('test1', None)
-        assert m1.called_with('test2', None)
+        m1.assert_any_call('test1', None)
+        m1.assert_any_call('test2', None)
 
         # flag channel list
         m2 = mocker.patch.object(channels.data, 'flag_channel_list')
         channels.flag_channel_list(None)
-        assert m2.call_count == 1
-        assert m2.called_with(None)
+        m2.assert_called_once_with(None)
 
         # kill channels
         m3 = mocker.patch.object(channels.data, 'kill_channels')
         channels.kill_channels(None)
-        assert m3.call_count == 1
-        assert m3.called_with(flag=None)
+        m3.assert_called_once_with(flag=None)
 
         # set blind channels
         m4 = mocker.patch.object(channels.data, 'set_blind_channels')
         channels.set_blind_channels(None)
-        assert m4.call_count == 1
-        assert m4.called_with(None)
+        m4.assert_called_once_with(None)
 
         # get gain magnitude
         m5 = mocker.patch.object(channels.data,
                                  'get_typical_gain_magnitude')
         channels.get_typical_gain_magnitude(None)
-        assert m5.call_count == 1
-        assert m5.called_with(None)
+        m5.assert_called_once_with(None,
+            keep_flag=None, discard_flag=None, match_flag=None)
 
         # get mapping pixels
         m6 = mocker.patch.object(channels.data,
                                  'get_mapping_pixels')
         channels.get_mapping_pixels(None)
-        assert m6.call_count == 1
-        assert m6.called_with(discard_flag=None)
+        m6.assert_called_once_with(
+            discard_flag=None, keep_flag=None, match_flag=None)
 
         # remove dependents
         m7 = mocker.patch.object(channels.data,
                                  'remove_dependents')
         channels.remove_dependents(None)
-        assert m7.call_count == 1
-        assert m7.called_with(None)
+        m7.assert_called_once_with(None)
 
         # add dependents
         m8 = mocker.patch.object(channels.data,
                                  'add_dependents')
         channels.add_dependents(None)
-        assert m8.call_count == 1
-        assert m8.called_with(None)
+        m8.assert_called_once_with(None)
 
         # get filtering
         m9 = mocker.patch.object(channels.data,
                                  'get_filtering')
         channels.get_filtering(None)
-        assert m9.call_count == 1
-        assert m9.called_with(None)
+        m9.assert_called_once_with(None)
 
     def test_load_channel_data(self, mocker, tmpdir, capsys,
                                populated_channels):

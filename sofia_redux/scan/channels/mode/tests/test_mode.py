@@ -221,9 +221,8 @@ class TestMode(object):
 
         sum_wc2 = np.arange(mode.size)
         mode.sync_all_gains(integ, sum_wc2)
-        assert m1.call_count == 1
-        assert m2.call_count == 1
-        assert m2.called_with(integ)
+        m1.assert_called_once()
+        m2.assert_called_once_with(integ)
 
     def test_frame_resolution(self, populated_integration):
         mode = Mode()

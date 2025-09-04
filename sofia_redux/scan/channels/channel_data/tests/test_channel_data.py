@@ -70,11 +70,10 @@ class TestChannelData(object):
         m4 = mocker.patch.object(data, 'validate_pixel_data')
 
         data.read_pixel_data('test.file')
-        assert m1.called_with('test.file')
-        assert m1.call_count == 1
-        assert m2.call_count == 1
+        m1.assert_called_once_with('test.file')
+        m2.assert_called_once()
         assert m3.call_count == 3
-        assert m4.call_count == 1
+        m4.assert_called_once()
 
     def test_set_channel_data(self):
         data = ChannelDataCheck()
@@ -241,8 +240,7 @@ class TestChannelData(object):
         data = ChannelDataCheck()
         m1 = mocker.patch.object(data, 'set_hardware_gain')
         data.apply_info('test')
-        assert m1.called_with('test')
-        assert m1.call_count == 1
+        m1.assert_called_once_with('test')
 
     def test_get_typical_gain_magnitude(self, populated_data):
         nchannel = populated_data.size
@@ -296,12 +294,9 @@ class TestChannelData(object):
         m3 = mocker.patch.object(data, 'calculate_overlap_values')
 
         data.calculate_overlaps(1.0 * units.arcsec)
-        assert m1.call_count == 1
-        assert m1.called_with(2.0 * units.arcsec)
-        assert m2.call_count == 1
-        assert m2.called_with([1, 2, 3])
-        assert m3.call_count == 1
-        assert m3.called_with('test', 1.0 * units.arcsec)
+        m1.assert_called_once_with(2.0 * units.arcsec)
+        m2.assert_called_once_with([1, 2, 3])
+        m3.assert_called_once_with('test', 1.0 * units.arcsec)
 
     def test_add_dependents(self):
         data = ChannelDataCheck()
