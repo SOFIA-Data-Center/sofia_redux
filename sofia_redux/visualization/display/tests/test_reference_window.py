@@ -7,7 +7,7 @@ from sofia_redux.visualization.display.text_view import TextView
 from sofia_redux.visualization.display.reference_window import ReferenceWindow
 from sofia_redux.visualization.models.reference_model import ReferenceData
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestReferenceWindow(object):
@@ -27,7 +27,7 @@ class TestReferenceWindow(object):
         parent = empty_view
 
         rw = ReferenceWindow(parent)
-        assert isinstance(rw, PyQt5.QtWidgets.QDialog)
+        assert isinstance(rw, PyQt6.QtWidgets.QDialog)
 
         rw.load_file_button.clicked.emit()
         assert mock_load_line.called
@@ -43,11 +43,11 @@ class TestReferenceWindow(object):
 
         # mock some item - QT specific class
         rw.loaded_files_list.itemDoubleClicked.emit(
-            PyQt5.QtWidgets.QListWidgetItem())
+            PyQt6.QtWidgets.QListWidgetItem())
         assert mock_show_text.called
 
     def test_load_lines(self, empty_view, line_list_csv, qtbot, mocker):
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog, 'getOpenFileName',
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog, 'getOpenFileName',
                             return_value=[line_list_csv])
         parent = empty_view
         rw = ReferenceWindow(parent)
@@ -75,7 +75,7 @@ class TestReferenceWindow(object):
                              )
     def test_load_lines_nofile(self, output, empty_view, line_list_csv, qtbot,
                                mocker):
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog, 'getOpenFileName',
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog, 'getOpenFileName',
                             return_value=output)
         parent = empty_view
         rw = ReferenceWindow(parent)
@@ -83,7 +83,7 @@ class TestReferenceWindow(object):
         assert rw.load_lines() is False
 
     def test_load_lines_alt(self, empty_view, line_list_csv, qtbot, mocker):
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog, 'getOpenFileName',
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog, 'getOpenFileName',
                             return_value=[line_list_csv])
         mocker.patch.object(ReferenceData, 'add_line_list',
                             side_effect=IOError)
@@ -94,7 +94,7 @@ class TestReferenceWindow(object):
         assert rw.load_lines() is False
 
     def test_load_lines_false(self, empty_view, line_list_csv, mocker):
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog, 'getOpenFileName',
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog, 'getOpenFileName',
                             return_value=[line_list_csv])
         parent = empty_view
         rw = ReferenceWindow(parent)
@@ -132,13 +132,13 @@ class TestReferenceWindow(object):
         assert 'Invalid visibility target' in caplog.text
 
     def test_show_text(self, empty_view, line_list_csv, mocker, qtbot):
-        mocker.patch.object(PyQt5.QtWidgets.QListWidgetItem,
+        mocker.patch.object(PyQt6.QtWidgets.QListWidgetItem,
                             'data', return_value=line_list_csv)
         mock_textview_load = mocker.patch.object(TextView,
                                                  'load', return_value=None)
         mocker.patch.object(TextView, 'show', return_value=None)
 
-        QW = PyQt5.QtWidgets.QListWidgetItem()
+        QW = PyQt6.QtWidgets.QListWidgetItem()
         filename = QW.data(line_list_csv)
         assert filename == line_list_csv
 

@@ -34,9 +34,9 @@ try:
     matplotlib.use('QT5Agg')
     matplotlib.rcParams['axes.formatter.useoffset'] = False
 except ImportError:  # pragma: no cover
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['Pane', 'OneDimPane', 'TwoDimPane']
 
@@ -104,8 +104,8 @@ class Pane(object):
     """
 
     def __init__(self, signals: Signals, ax: Optional[ma.Axes] = None) -> None:
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for the Eye.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for the Eye.')
 
         self.ax = ax
         self.ax_alt = None

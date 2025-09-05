@@ -15,7 +15,7 @@ from matplotlib import collections as mc
 from sofia_redux.visualization.display import gallery, pane, drawing
 from sofia_redux.visualization import signals
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestGallery(object):

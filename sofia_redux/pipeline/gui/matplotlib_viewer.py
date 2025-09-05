@@ -12,13 +12,13 @@ import numpy as np
 from sofia_redux.pipeline.viewer import Viewer
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt6 import QtWidgets, QtGui, QtCore
     from matplotlib.backends.backend_qt5agg import \
         FigureCanvasQTAgg as FigureCanvas
     from matplotlib.backends.backend_qt5agg import \
         NavigationToolbar2QT as NavigationToolbar
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtGui, QtCore, FigureCanvas, NavigationToolbar = None, None, None, None
 
     # duck type parents to allow class definition
@@ -26,7 +26,7 @@ except ImportError:
         class QDialog:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['MatplotlibPlot', 'MatplotlibViewer']
 
@@ -42,8 +42,8 @@ class MatplotlibPlot(QtWidgets.QDialog):
         parent : QWidget, optional
             Parent widget
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__(parent)
 

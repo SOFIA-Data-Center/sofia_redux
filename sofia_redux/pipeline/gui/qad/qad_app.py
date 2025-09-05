@@ -12,12 +12,12 @@ from sofia_redux.pipeline.interface import Interface
 from sofia_redux.pipeline.gui.qad.qad_main_panel import QADMainWindow
 
 try:
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets, QtCore
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore, QtGui = None, None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['main']
 
@@ -61,8 +61,8 @@ def main():
     of header keywords.  For filter or table display, a comma-separated
     list of keys may be entered in the text box.
     """
-    if not HAS_PYQT5:  # pragma: no cover
-        raise ImportError('PyQt5 package is required for QAD.')
+    if not HAS_PYQT6:  # pragma: no cover
+        raise ImportError('PyQt6 package is required for QAD.')
 
     # suppress all runtime warnings
     if not sys.warnoptions:

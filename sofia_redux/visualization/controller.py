@@ -10,12 +10,12 @@ import warnings
 from sofia_redux.visualization import eye
 
 try:
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets, QtCore
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets, QtCore = None, None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['main', 'parse_args', 'check_args']
 
@@ -49,8 +49,8 @@ def main():
     fitting mode, to fit a Gaussian + baseline to a spectral feature.
     Press *c* to clear any current zoom modes or plot overlays.
     """
-    if not HAS_PYQT5:  # pragma: no cover
-        raise ImportError('PyQt5 package is required for the Eye.')
+    if not HAS_PYQT6:  # pragma: no cover
+        raise ImportError('PyQt6 package is required for the Eye.')
 
     args = parse_args(sys.argv[1:])
     args = check_args(args)

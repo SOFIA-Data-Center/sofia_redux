@@ -25,7 +25,7 @@ from sofia_redux.visualization.models import (high_model, reference_model,
 from sofia_redux.visualization.utils import eye_error, model_fit
 from sofia_redux.visualization import signals
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestPane(object):

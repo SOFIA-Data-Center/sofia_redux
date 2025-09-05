@@ -4,7 +4,7 @@ import pytest
 
 from sofia_redux.visualization.display.cursor_location import CursorLocation
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 @pytest.fixture(scope='function')
@@ -44,7 +44,7 @@ class TestCursorLocation(object):
 
         # default
         cl = CursorLocation(parent)
-        assert isinstance(cl, PyQt5.QtWidgets.QDialog)
+        assert isinstance(cl, PyQt6.QtWidgets.QDialog)
 
         # parent callback is called on close
         cl.close()
@@ -79,7 +79,7 @@ class TestCursorLocation(object):
                 if columns[j] == 'color':
                     assert item_text == ''
                     assert isinstance(cl.table_widget.item(i, j).icon(),
-                                      PyQt5.QtGui.QIcon)
+                                      PyQt6.QtGui.QIcon)
                 elif columns[j] == 'cursor_x':
                     value = cursor_coords[0]
                     assert item_text == f'{value:.3f}'

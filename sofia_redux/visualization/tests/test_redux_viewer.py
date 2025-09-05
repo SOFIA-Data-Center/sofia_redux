@@ -14,15 +14,15 @@ else:
     HAS_PIPELINE = True
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets = None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
-@pytest.mark.skipif(not HAS_PIPELINE or not HAS_PYQT5,
+@pytest.mark.skipif(not HAS_PIPELINE or not HAS_PYQT6,
                     reason='Missing dependencies')
 class TestReduxViewer(object):
     @pytest.fixture(autouse=True, scope='function')

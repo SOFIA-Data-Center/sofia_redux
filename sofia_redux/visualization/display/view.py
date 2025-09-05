@@ -18,12 +18,12 @@ from sofia_redux.visualization.models import high_model, reference_model
 from sofia_redux.visualization.utils.eye_error import EyeError
 
 try:
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    from PyQt5.QtWidgets import QTreeWidgetItem
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    from PyQt6.QtWidgets import QTreeWidgetItem
     from sofia_redux.visualization.display.ui import simple_spec_viewer as ssv
     from sofia_redux.visualization.display import cursor_location as cl
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtGui, cl, QTreeWidgetItem = None, None, None
     Event = TypeVar('Event', mbb.MouseEvent, mbb.LocationEvent)
 
@@ -47,7 +47,7 @@ except ImportError:
         def pyqtSlot():
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
     Event = TypeVar('Event', mbb.MouseEvent, mbb.LocationEvent,
                     QtCore.QEvent)
 
@@ -101,8 +101,8 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
     """
 
     def __init__(self, signals: vs.Signals) -> None:
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for the Eye.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for the Eye.')
 
         super(self.__class__, self).__init__()
         self.setupUi(self)

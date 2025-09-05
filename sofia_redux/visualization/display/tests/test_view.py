@@ -14,9 +14,9 @@ from sofia_redux.visualization.models import high_model
 from sofia_redux.visualization.display.ui.mplwidget import MplWidget
 
 try:
-    from PyQt5 import QtWidgets, QtCore, QtGui
+    from PyQt6 import QtWidgets, QtCore, QtGui
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets, QtGui = None, None
 
     class QtCore:
@@ -27,10 +27,10 @@ except ImportError:
             Key_Home = None
             Key_Space = None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif("not HAS_PYQT6")
 class TestView(object):
 
     @pytest.mark.parametrize('key,name',

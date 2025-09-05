@@ -5,11 +5,11 @@ import pytest
 from sofia_redux.pipeline.application import Application
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
     QtWidgets = None
 
-pytest.importorskip('PyQt5')
+pytest.importorskip('PyQt6')
 
 
 class TestApplication(object):

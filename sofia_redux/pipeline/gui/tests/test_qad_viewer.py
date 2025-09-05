@@ -14,12 +14,12 @@ from sofia_redux.pipeline.gui.qad_viewer import QADViewer
 from sofia_redux.pipeline.gui.qad.qad_imview import QADImView
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
     QtWidgets = None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 class MockDS9(object):
@@ -110,7 +110,7 @@ class MockDS9(object):
         MockDS9.data = np.zeros((10, 10))
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif("not HAS_PYQT6")
 class TestQADViewer(object):
     """Test the QADViewer and QADViewerSettings classes."""
     @pytest.fixture(autouse=True, scope='function')

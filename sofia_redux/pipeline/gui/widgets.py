@@ -15,13 +15,13 @@ from sofia_redux.pipeline.parameters import Parameters, FALSY
 from sofia_redux.pipeline.gui import textview
 
 try:
-    from PyQt5 import QtWidgets, QtCore, QtGui
+    from PyQt6 import QtWidgets, QtCore, QtGui
     from sofia_redux.pipeline.gui.ui import ui_pipe_step
     from sofia_redux.pipeline.gui.ui import ui_edit_param
     from sofia_redux.pipeline.gui.ui import ui_remove_files
     from sofia_redux.pipeline.gui.ui import ui_progress
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtGui = None
 
     # duck type parents to allow class definition
@@ -72,7 +72,7 @@ except ImportError:
             pass
 
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['PipeStep', 'ProgressFrame', 'EditParam',
            'DataTableModel', 'CustomSignals', 'TextEditLogger',
@@ -99,8 +99,8 @@ class PipeStep(QtWidgets.QWidget, ui_pipe_step.Ui_Form):
         index : int, optional
             Reduction step index.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         super().__init__(parent)
@@ -170,8 +170,8 @@ class ProgressFrame(QtWidgets.QWidget, ui_progress.Ui_ProgressFrame):
         parent : QWidget, optional
             Parent widget.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         super().__init__(parent)
@@ -226,8 +226,8 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
             Base directory for pick_file and pick_directory
             widgets.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         super().__init__(parent)
@@ -571,8 +571,8 @@ class DataTableModel(QtCore.QAbstractTableModel):
         parent : QWidget, optional
             Parent widget.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__(parent)
         self._data = data
@@ -678,8 +678,8 @@ class TextEditLogger(logging.Handler):
     """
     def __init__(self):
         """Initialize the logger."""
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__()
         self.signals = CustomSignals()
@@ -731,8 +731,8 @@ class RemoveFilesDialog(QtWidgets.QDialog,
         loaded_files : `list` of str, optional
             List of file paths that are currently loaded.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         QtWidgets.QDialog.__init__(self, parent)
@@ -769,8 +769,8 @@ class ConfigView(textview.TextView):
     """View and edit current configuration values."""
     def __init__(self, parent=None):
         """Build the widget."""
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__(parent=parent)
 
@@ -795,8 +795,8 @@ class ParamView(textview.TextView):
     """View and filter current parameter values."""
     def __init__(self, parent=None):
         """Build the widget."""
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__(parent=parent)
 
@@ -928,8 +928,8 @@ class StepRunnable(QtCore.QRunnable):
         nsteps : int
             Number of steps to run.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__()
         self.step = step_function
@@ -978,8 +978,8 @@ class LoadRunnable(QtCore.QRunnable):
         object.
     """
     def __init__(self, load_function, data, param, dirname):
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__()
         self.load = load_function
@@ -1018,8 +1018,8 @@ class GeneralRunnable(QtCore.QRunnable):
         Function to run.
     """
     def __init__(self, run_function, *args, **kwargs):
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__()
         self.run_function = run_function

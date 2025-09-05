@@ -8,12 +8,12 @@ from logging import Logger
 from astropy.utils import find_current_module
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets = None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['log', 'EyeLogger', 'StreamLogger',
            'StatusLogger', 'DialogLogger']
@@ -128,7 +128,7 @@ class StatusLogger(logging.Handler):
 
         Parameters
         ----------
-        status_bar : `PyQt5.QtWidgets.QStatusBar`
+        status_bar : `PyQt6.QtWidgets.QStatusBar`
            Status bar widget to display to.
         """
 
@@ -162,7 +162,7 @@ class DialogLogger(logging.Handler):
 
         Parameters
         ----------
-        parent : PyQt5.QtWidgets.QWidget
+        parent : PyQt6.QtWidgets.QWidget
         """
         super().__init__()
         self.parent = parent
@@ -178,7 +178,7 @@ class DialogLogger(logging.Handler):
            attached by `EyeLogger.makeRecord`.
         """
         # no op if no pyqt
-        if not HAS_PYQT5:  # pragma: no cover
+        if not HAS_PYQT6:  # pragma: no cover
             return
 
         # don't show dialog box if parent isn't up yet

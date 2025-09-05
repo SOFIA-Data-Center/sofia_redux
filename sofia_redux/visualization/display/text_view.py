@@ -2,10 +2,10 @@
 """Text viewer widget for use with the Eye of SOFIA."""
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt6 import QtWidgets, QtGui, QtCore
     from sofia_redux.visualization.display.ui import textview as tv
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtGui = None
 
     # duck type parents to allow class definition
@@ -17,7 +17,7 @@ except ImportError:
         class Ui_TextWindow:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 class TextView(QtWidgets.QDialog, tv.Ui_TextWindow):
@@ -36,8 +36,8 @@ class TextView(QtWidgets.QDialog, tv.Ui_TextWindow):
         parent : `QWidget`
             Parent widget.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required.')
 
         # parent initialization
         QtWidgets.QDialog.__init__(self, parent)

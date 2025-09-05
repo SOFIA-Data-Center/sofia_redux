@@ -19,10 +19,10 @@ except ImportError:
     import pickle
 
 try:
-    from PyQt5 import QtWidgets, QtCore, QtGui
+    from PyQt6 import QtWidgets, QtCore, QtGui
     from sofia_redux.pipeline.gui.ui import ui_main
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore, QtGui = None, None
 
     # duck type parents to allow class definition
@@ -34,7 +34,7 @@ except ImportError:
         class Ui_MainWindow:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['ReduxMainWindow']
 
@@ -66,8 +66,8 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
             and runs appropriate reduction objects for input data, as well
             as controlling any associated viewers.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         QtWidgets.QMainWindow.__init__(self)
@@ -980,7 +980,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
     def onRemoveFiles(self):
         """Remove files from the current reduction."""
         dialog = widgets.RemoveFilesDialog(self, self.loaded_files)
-        retval = dialog.exec_()
+        retval = dialog.exec()
         if retval == QtWidgets.QDialog.Accepted:
             remove_files = dialog.getValue()
             self.onOpenReduction(remove_files=remove_files)
@@ -1133,7 +1133,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         dialog = widgets.EditParam(self, name,
                                    param, default,
                                    self.base_directory)
-        retval = dialog.exec_()
+        retval = dialog.exec()
         if retval == QtWidgets.QDialog.Accepted:
             # change params
             param = dialog.getValue()

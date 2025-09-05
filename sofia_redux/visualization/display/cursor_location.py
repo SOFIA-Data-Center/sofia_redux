@@ -4,10 +4,10 @@ import os
 from typing import Any, List, Dict, Tuple, Union
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt6 import QtWidgets, QtGui, QtCore
     from sofia_redux.visualization.display.ui import cursor_location as cl
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore = None
 
     class QtWidgets:
@@ -22,9 +22,9 @@ except ImportError:
         class Ui_Dialog:
             pass
 else:
-    from PyQt5.QtWidgets import QTableWidgetItem
-    from PyQt5.QtGui import QColor
-    HAS_PYQT5 = True
+    from PyQt6.QtWidgets import QTableWidgetItem
+    from PyQt6.QtGui import QColor
+    HAS_PYQT6 = True
 
 __all__ = ['CursorLocation']
 
@@ -45,8 +45,8 @@ class CursorLocation(QtWidgets.QDialog, cl.Ui_Dialog):
     """
 
     def __init__(self, parent: Any) -> None:
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for the Eye.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for the Eye.')
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)
         self.setModal(0)

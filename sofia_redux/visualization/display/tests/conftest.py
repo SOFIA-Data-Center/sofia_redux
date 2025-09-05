@@ -5,7 +5,7 @@ import numpy as np
 from astropy.modeling import models
 from matplotlib import figure as mpf
 import matplotlib.backends.backend_qt5agg as mb
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from sofia_redux.visualization.display import (pane, blitting, gallery,
                                                figure, view, drawing)

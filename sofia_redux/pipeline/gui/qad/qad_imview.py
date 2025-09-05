@@ -33,16 +33,16 @@ else:
     HAS_EYE = True
 
 try:
-    from PyQt5 import QtCore
+    from PyQt6 import QtCore
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 
     # duck type parents to allow class definition
     class QtCore:
         class QObject:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 try:
     import regions as ar
@@ -57,7 +57,7 @@ __all__ = ['QADImView']
 
 
 class ViewerSignals(QtCore.QObject):
-    if HAS_PYQT5:
+    if HAS_PYQT6:
         make_radial_plot = QtCore.pyqtSignal()
         make_histogram_plot = QtCore.pyqtSignal()
         make_p2p_plot = QtCore.pyqtSignal()
@@ -140,14 +140,14 @@ class QADImView(object):
         os.environ["XPA_METHOD"] = "local"
 
         # signals for plot events
-        self.HAS_PYQT5 = HAS_PYQT5
-        if self.HAS_PYQT5:
+        self.HAS_PYQT6 = HAS_PYQT6
+        if self.HAS_PYQT6:
             self.signals = ViewerSignals()
             self.signals.make_radial_plot.connect(self.radial_plot)
             self.signals.make_histogram_plot.connect(self.histogram_plot)
             self.signals.make_p2p_plot.connect(self.pix2pix_plot)
         else:
-            log.warning('Plotting tools are not available. Install PyQt5 '
+            log.warning('Plotting tools are not available. Install PyQt6 '
                         'to enable plotting displays.')
             self.signals = None
 
@@ -503,7 +503,7 @@ class QADImView(object):
 
     def histogram_plot(self):
         """Plot radial fluxes in a separate window."""
-        if not self.HAS_PYQT5:
+        if not self.HAS_PYQT6:
             return
         data = self.histogram_data
         if data is None or len(data) == 0:
@@ -1780,7 +1780,7 @@ class QADImView(object):
 
     def pix2pix_plot(self):
         """Plot pixel-to-pixel comparison in a separate window."""
-        if not self.HAS_PYQT5:
+        if not self.HAS_PYQT6:
             return
         data = self.p2p_data
         if data is None or len(data) == 0:
@@ -1800,7 +1800,7 @@ class QADImView(object):
 
     def radial_plot(self):
         """Plot radial fluxes in a separate window."""
-        if not self.HAS_PYQT5:
+        if not self.HAS_PYQT6:
             return
         data = self.radial_data
         if data is None or len(data) == 0:

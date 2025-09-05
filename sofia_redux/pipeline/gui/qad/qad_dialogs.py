@@ -2,12 +2,12 @@
 """Dialogs for the QAD standalone GUI."""
 
 try:
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets, QtCore
     from sofia_redux.pipeline.gui.qad.ui import ui_qad_disp_settings
     from sofia_redux.pipeline.gui.qad.ui import ui_qad_phot_settings
     from sofia_redux.pipeline.gui.qad.ui import ui_qad_plot_settings
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore = None
 
     # duck type parents to allow class definition
@@ -28,7 +28,7 @@ except ImportError:
             pass
 
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['DispSettingsDialog', 'PhotSettingsDialog',
            'PlotSettingsDialog']
@@ -52,8 +52,8 @@ class DispSettingsDialog(QtWidgets.QDialog,
             Default display parameter dictionary
             (`QADImView.default_parameters`).
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for QAD.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for QAD.')
 
         # parent initialization
         QtWidgets.QDialog.__init__(self, parent)
@@ -217,8 +217,8 @@ class PhotSettingsDialog(QtWidgets.QDialog,
             Default photometry parameter dictionary
             (`QADImView.default_parameters`).
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for QAD.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for QAD.')
 
         # parent initialization
         QtWidgets.QDialog.__init__(self, parent)
@@ -397,8 +397,8 @@ class PlotSettingsDialog(QtWidgets.QDialog,
             Default plot parameter dictionary
             (`QADImView.default_parameters`).
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for QAD.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for QAD.')
 
         # parent initialization
         QtWidgets.QDialog.__init__(self, parent)

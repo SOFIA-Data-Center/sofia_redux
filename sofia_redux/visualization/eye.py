@@ -17,9 +17,9 @@ from sofia_redux.visualization.utils.logger import StreamLogger
 from sofia_redux.visualization.utils.eye_error import EyeError
 
 try:
-    from PyQt5 import QtCore, QtGui, QtWidgets
+    from PyQt6 import QtCore, QtGui, QtWidgets
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore, QtGui = None, None
 
     # duck type parents to allow class definition
@@ -28,7 +28,7 @@ except ImportError:
         class QWidget:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['Eye']
 
@@ -59,8 +59,8 @@ class Eye(object):
     """
 
     def __init__(self, args=None, view_=None):
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for the Eye.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for the Eye.')
 
         # set terminal log level
         if hasattr(args, 'log_level'):

@@ -16,10 +16,10 @@ from sofia_redux.pipeline.gui.qad import qad_imview
 from sofia_redux.pipeline.gui.widgets import GeneralRunnable
 
 try:
-    from PyQt5 import QtWidgets, QtCore, QtGui
+    from PyQt6 import QtWidgets, QtCore, QtGui
     from sofia_redux.pipeline.gui.qad.ui import ui_qad_main
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore, QtGui = None, None
 
     # duck type parents to allow class definition
@@ -31,7 +31,7 @@ except ImportError:
         class Ui_MainWindow:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['QADMainWindow']
 
@@ -55,8 +55,8 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
     """
     def __init__(self):
         """Build the QAD GUI window."""
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for QAD.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for QAD.')
 
         # parent initialization
         QtWidgets.QMainWindow.__init__(self)

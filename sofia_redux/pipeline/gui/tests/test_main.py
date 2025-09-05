@@ -20,12 +20,12 @@ from sofia_redux.pipeline.gui.widgets import RemoveFilesDialog, ParamView, \
     ConfigView, EditParam, StepRunnable, TextEditLogger
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
     QtWidgets = None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 # establish some non-default classes for testing
@@ -62,7 +62,7 @@ class ChooserClassForTest(Chooser):
         return ReductionClassForTest()
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif("not HAS_PYQT6")
 class TestMainWindow(object):
     """Test the ReduxMainWindow class"""
     @pytest.fixture(autouse=True, scope='function')

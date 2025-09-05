@@ -10,12 +10,12 @@ from sofia_redux.visualization import controller, eye
 from sofia_redux.visualization.display import pane
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets = None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 @pytest.fixture(scope='function')

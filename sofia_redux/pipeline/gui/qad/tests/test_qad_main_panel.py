@@ -16,15 +16,15 @@ from sofia_redux.pipeline.gui.qad.qad_dialogs \
 from sofia_redux.pipeline.gui.tests.test_qad_viewer import MockDS9
 
 try:
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets, QtCore
 except ImportError:
     QtWidgets, QtCore = None, None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif("not HAS_PYQT6")
 class TestQADMain(object):
     """Test the QADMainWindow class"""
 
@@ -563,7 +563,7 @@ class TestQADMain(object):
         self.mock_ds9(mocker)
 
         # mock warning dialog
-        warn_mock = mocker.patch('PyQt5.QtWidgets.QMessageBox.warning')
+        warn_mock = mocker.patch('PyQt6.QtWidgets.QMessageBox.warning')
         mw = self.make_window(qtbot, tmpdir)
 
         # select the first file and display it

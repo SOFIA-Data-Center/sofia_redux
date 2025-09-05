@@ -7,7 +7,7 @@ import pytest
 
 from sofia_redux.visualization import eye, log
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestAPI(object):
@@ -38,7 +38,7 @@ class TestAPI(object):
 
     def test_set_parent(self, empty_eye_app):
         # set a widget as the view parent
-        parent = PyQt5.QtWidgets.QWidget()
+        parent = PyQt6.QtWidgets.QWidget()
         empty_eye_app.set_parent(parent)
         assert empty_eye_app.view.parent is parent
 
@@ -423,9 +423,9 @@ class TestAPI(object):
         assert len(populated_spectral_eye.view.figure.panes[0].models) == 2
 
     def test_eye_logs(self, mocker, qtbot, qapp, capsys, tmpdir):
-        mocker.patch.object(PyQt5.QtWidgets.QMainWindow, 'show',
+        mocker.patch.object(PyQt6.QtWidgets.QMainWindow, 'show',
                             return_value=None)
-        mocker.patch.object(PyQt5.QtWidgets, 'QApplication',
+        mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)
         # patch home directory, as used in system log setup
         base_loc = str(tmpdir.join('event_logs'))
@@ -505,7 +505,7 @@ class TestAPI(object):
 
     def test_add_data(self, mocker, empty_eye_app, spectral_filenames, capsys):
         # no filename specified: calls filedialog
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog, 'getOpenFileNames',
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog, 'getOpenFileNames',
                             return_value=[spectral_filenames])
         empty_eye_app.add_data()
         capt = capsys.readouterr()

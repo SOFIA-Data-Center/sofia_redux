@@ -4,12 +4,12 @@ import logging
 import pytest
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtWidgets = None
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 from sofia_redux.visualization.utils import logger
 
@@ -68,7 +68,7 @@ class TestEyeLogger(object):
             hand.emit(msg)
             assert f'{level}: test {level}' in capsys.readouterr().err
 
-    @pytest.mark.skipif(not HAS_PYQT5, reason='missing dependencies')
+    @pytest.mark.skipif(not HAS_PYQT6, reason='missing dependencies')
     def test_status_handler(self, qtbot):
         status_bar = QtWidgets.QStatusBar()
         hand = logger.StatusLogger(status_bar)
@@ -92,7 +92,7 @@ class TestEyeLogger(object):
             hand.emit(msg)
             assert status_bar.currentMessage() == ''
 
-    @pytest.mark.skipif(not HAS_PYQT5, reason='missing dependencies')
+    @pytest.mark.skipif(not HAS_PYQT6, reason='missing dependencies')
     def test_dialog_handler(self, qtbot, mocker):
         # mock dialogs
         warn_mock = mocker.patch.object(logger.QtWidgets.QMessageBox,

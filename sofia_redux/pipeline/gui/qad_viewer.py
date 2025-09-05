@@ -10,10 +10,10 @@ from sofia_redux.pipeline.viewer import Viewer
 from sofia_redux.pipeline.gui.widgets import GeneralRunnable
 
 try:
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets, QtCore
     from sofia_redux.pipeline.gui.ui import ui_qad_settings
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtCore = None
 
     # duck type parents to allow class definition
@@ -25,7 +25,7 @@ except ImportError:
         class Ui_Form:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['QADViewerSettings', 'QADViewer']
 
@@ -48,8 +48,8 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         parent : `QWidget`, optional
             Parent widget.  May be any Qt Widget.
         """
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         # parent initialization
         super().__init__()
@@ -660,8 +660,8 @@ class QADViewer(Viewer):
     """
     def __init__(self):
         """Initialize the QAD Viewer."""
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for Redux GUI.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for Redux GUI.')
 
         super().__init__()
         self.name = "QADViewer"

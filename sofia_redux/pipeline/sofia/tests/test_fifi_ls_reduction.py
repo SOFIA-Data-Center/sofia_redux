@@ -28,12 +28,12 @@ except ImportError:
     FIFILSParameters = Parameters
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
     QtWidgets = None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 def bad_step(*args, **kwargs):

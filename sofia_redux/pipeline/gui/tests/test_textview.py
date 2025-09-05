@@ -6,15 +6,15 @@ import pytest
 from sofia_redux.pipeline.gui.textview import TextView
 
 try:
-    from PyQt5 import QtGui, QtWidgets
+    from PyQt6 import QtGui, QtWidgets
 except ImportError:
     QtGui, QtWidgets = None, None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
-@pytest.mark.skipif("not HAS_PYQT5")
+@pytest.mark.skipif("not HAS_PYQT6")
 class TestTextView(object):
     """Test the TextView class"""
 

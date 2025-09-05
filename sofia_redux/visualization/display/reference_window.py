@@ -6,10 +6,10 @@ from sofia_redux.visualization import log
 from sofia_redux.visualization.display.text_view import TextView
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt6 import QtWidgets, QtGui, QtCore
     from sofia_redux.visualization.display.ui import reference_data as rd
 except ImportError:  # pragma: no cover
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
     QtGui, QtCore = None, None
 
     class QtWidgets:
@@ -20,7 +20,7 @@ except ImportError:  # pragma: no cover
         class Ui_Dialog:
             pass
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
 __all__ = ['ReferenceWindow']
@@ -60,8 +60,8 @@ class ReferenceWindow(QtWidgets.QDialog, rd.Ui_Dialog):
     """
 
     def __init__(self, parent: Any) -> None:
-        if not HAS_PYQT5:  # pragma: no cover
-            raise ImportError('PyQt5 package is required for the Eye.')
+        if not HAS_PYQT6:  # pragma: no cover
+            raise ImportError('PyQt6 package is required for the Eye.')
         super(self.__class__, self).__init__(parent)
         self.setupUi(self)
         self.setModal(0)

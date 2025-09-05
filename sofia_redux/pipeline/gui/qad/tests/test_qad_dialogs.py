@@ -11,15 +11,15 @@ from sofia_redux.pipeline.gui.qad.qad_dialogs \
 from sofia_redux.pipeline.gui.tests.test_qad_viewer import MockDS9
 
 try:
-    from PyQt5 import QtWidgets
+    from PyQt6 import QtWidgets
 except ImportError:
     QtWidgets = None
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 
-@pytest.mark.skipif(not HAS_PYQT5, reason="PyQt5 not available")
+@pytest.mark.skipif(not HAS_PYQT6, reason="PyQt6 not available")
 class TestQADDialogs(object):
     """Test the QAD Settings dialogs."""
     @pytest.fixture(autouse=True, scope='function')

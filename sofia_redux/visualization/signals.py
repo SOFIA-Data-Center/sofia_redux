@@ -1,9 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 try:
-    from PyQt5 import QtCore
+    from PyQt6 import QtCore
 except ImportError:
-    HAS_PYQT5 = False
+    HAS_PYQT6 = False
 
     # duck type parents to allow class definition
     class QtCore:
@@ -15,7 +15,7 @@ except ImportError:
         def pyqtSignal():
             return
 else:
-    HAS_PYQT5 = True
+    HAS_PYQT6 = True
 
 __all__ = ['Signals']
 

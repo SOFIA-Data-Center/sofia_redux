@@ -12,7 +12,7 @@ from sofia_redux.visualization.display import drawing
 from sofia_redux.visualization.display.fitting_results import FittingResults
 from sofia_redux.visualization.utils.model_fit import ModelFit
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 @pytest.fixture(scope='function')
@@ -93,7 +93,7 @@ def expected_table():
 class TestFittingResults(object):
     def test_init(self, empty_view):
         fr = FittingResults(empty_view)
-        assert isinstance(fr, PyQt5.QtWidgets.QDialog)
+        assert isinstance(fr, PyQt6.QtWidgets.QDialog)
         assert isinstance(fr.model_fits, list)
         assert len(fr.model_fits) == 0
         assert isinstance(fr.table_header, list)
@@ -203,14 +203,14 @@ class TestFittingResults(object):
         num_columns = 17
 
         # test canceled dialog - no error
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog,
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog,
                             'getSaveFileName',
                             return_value=[''])
         fr.save_results()
 
         # mock file dialog to return tmp path
         outname = str(tmpdir.join('test.csv'))
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog,
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog,
                             'getSaveFileName',
                             return_value=[outname])
         fr.save_results()
@@ -222,7 +222,7 @@ class TestFittingResults(object):
 
         # test save with one row selected: only that row should be saved
         outname = str(tmpdir.join('test2.csv'))
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog,
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog,
                             'getSaveFileName',
                             return_value=[outname])
 

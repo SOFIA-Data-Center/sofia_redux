@@ -13,7 +13,7 @@ from sofia_redux.visualization.display import (view, pane, fitting_results,
 from sofia_redux.visualization.models import model
 from sofia_redux.visualization.utils import eye_error
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestEye(object):
@@ -34,7 +34,7 @@ class TestEye(object):
     def test_open_eye(self, mocker, qapp, log_args, capsys):
         opening = mocker.patch.object(view.View, 'open_eye',
                                       return_value=None)
-        mocker.patch.object(PyQt5.QtWidgets, 'QApplication',
+        mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)
 
         eye_app = eye.Eye(log_args)
@@ -46,11 +46,11 @@ class TestEye(object):
 
     def test_load_file(self, mocker, qtbot, qapp, spectral_filenames,
                        caplog):
-        mocker.patch.object(PyQt5.QtWidgets.QMainWindow, 'show',
+        mocker.patch.object(PyQt6.QtWidgets.QMainWindow, 'show',
                             return_value=None)
-        mocker.patch.object(PyQt5.QtWidgets, 'QApplication',
+        mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)
-        window = mocker.patch.object(PyQt5.QtWidgets.QFileDialog,
+        window = mocker.patch.object(PyQt6.QtWidgets.QFileDialog,
                                      'getOpenFileNames',
                                      return_value=[spectral_filenames])
 
@@ -58,7 +58,7 @@ class TestEye(object):
 
         assert app.view.loaded_files_table.rowCount() == 0
 
-        qtbot.mouseClick(app.view.add_file_button, PyQt5.QtCore.Qt.LeftButton)
+        qtbot.mouseClick(app.view.add_file_button, PyQt6.QtCore.Qt.LeftButton)
         app.view.refresh_controls()
         window.assert_called_once()
 
@@ -70,7 +70,7 @@ class TestEye(object):
         mocker.patch.object(app.view.loaded_files_table, 'hasFocus',
                             return_value=True)
         qtbot.keyClick(app.view.loaded_files_table,
-                       PyQt5.QtCore.Qt.Key_Return)
+                       PyQt6.QtCore.Qt.Key_Return)
 
         app.view.refresh_controls()
         assert app.view.figure.populated()
@@ -80,7 +80,7 @@ class TestEye(object):
         # Add pane
         with qtbot.wait_signal(app.signals.current_pane_changed):
             qtbot.mouseClick(app.view.add_pane_button,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
 
         app.view.refresh_controls()
         qtbot.wait(1000)
@@ -101,7 +101,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(app.signals.atrophy_bg_partial):
             qtbot.mouseClick(app.view.remove_pane_button,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         app.view.refresh_controls()
         count = app.view.pane_selector.count()
         assert app.view.figure.pane_count() == 1
@@ -110,9 +110,9 @@ class TestEye(object):
 
     def test_add_model_missing(self, mocker, qtbot, qapp,
                                spectral_filenames, caplog):
-        mocker.patch.object(PyQt5.QtWidgets.QMainWindow, 'show',
+        mocker.patch.object(PyQt6.QtWidgets.QMainWindow, 'show',
                             return_value=None)
-        mocker.patch.object(PyQt5.QtWidgets, 'QApplication',
+        mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)
 
         app = eye.Eye()
@@ -173,7 +173,7 @@ class TestEye(object):
         # test with alt axis
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.enable_overplot_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         loaded_eye.view.axes_selector.setCurrentText('Overplot')
         assert not loaded_eye.view.y_scale_log_button.isChecked()
         with qtbot.wait_signals([loaded_eye.signals.atrophy_bg_partial,
@@ -206,7 +206,7 @@ class TestEye(object):
     def test_change_fields_with_alt(self, loaded_eye, qtbot):
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.enable_overplot_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         loaded_eye.view.axes_selector.setCurrentText('Overplot')
 
         selectors = {'x': [loaded_eye.view.x_property_selector,
@@ -227,22 +227,22 @@ class TestEye(object):
 
     def test_change_units(self, mocker, qtbot, qapp, spectral_filenames,
                           caplog):
-        mocker.patch.object(PyQt5.QtWidgets.QMainWindow, 'show',
+        mocker.patch.object(PyQt6.QtWidgets.QMainWindow, 'show',
                             return_value=None)
-        mocker.patch.object(PyQt5.QtWidgets, 'QApplication',
+        mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)
-        mocker.patch.object(PyQt5.QtWidgets.QFileDialog,
+        mocker.patch.object(PyQt6.QtWidgets.QFileDialog,
                             'getOpenFileNames',
                             return_value=[spectral_filenames])
 
         app = eye.Eye()
-        qtbot.mouseClick(app.view.add_file_button, PyQt5.QtCore.Qt.LeftButton)
+        qtbot.mouseClick(app.view.add_file_button, PyQt6.QtCore.Qt.LeftButton)
         app.view.refresh_controls()
         app.view.loaded_files_table.selectRow(0)
         mocker.patch.object(app.view.loaded_files_table, 'hasFocus',
                             return_value=True)
         qtbot.keyClick(app.view.loaded_files_table,
-                       PyQt5.QtCore.Qt.Key_Return)
+                       PyQt6.QtCore.Qt.Key_Return)
         app.view.refresh_controls()
 
         selectors = {'x': [app.view.x_unit_selector, 'um'],
@@ -300,7 +300,7 @@ class TestEye(object):
         qtbot.wait(2000)
         for widget, value in widgets:
             with qtbot.wait_signals(signals):
-                qtbot.mouseClick(widget, PyQt5.QtCore.Qt.LeftButton)
+                qtbot.mouseClick(widget, PyQt6.QtCore.Qt.LeftButton)
                 widget.setText(value)
                 widget.editingFinished.emit()
         qtbot.wait(2000)
@@ -311,11 +311,11 @@ class TestEye(object):
 
     @pytest.mark.parametrize(
         'key,cid_name,deltax,deltay,changed,same,guide_count',
-        [(PyQt5.QtCore.Qt.Key_X, 'x_zoom', [1 / 4, 3 / 4], [1 / 2, 1 / 2],
+        [(PyQt6.QtCore.Qt.Key_X, 'x_zoom', [1 / 4, 3 / 4], [1 / 2, 1 / 2],
           [0], [1], 1),
-         (PyQt5.QtCore.Qt.Key_Y, 'y_zoom', [1 / 2, 1 / 2], [1 / 4, 3 / 4],
+         (PyQt6.QtCore.Qt.Key_Y, 'y_zoom', [1 / 2, 1 / 2], [1 / 4, 3 / 4],
           [1], [0], 1),
-         (PyQt5.QtCore.Qt.Key_Z, 'b_zoom', [1 / 4, 3 / 4], [1 / 4, 3 / 4],
+         (PyQt6.QtCore.Qt.Key_Z, 'b_zoom', [1 / 4, 3 / 4], [1 / 4, 3 / 4],
           [0, 1], [], 2)])
     def test_zoom(self, loaded_eye, qtbot, caplog,
                   key, cid_name, deltax, deltay, changed, same, guide_count):
@@ -338,12 +338,12 @@ class TestEye(object):
 
         guide_counts = [guide_count, 0]
         for i, count in enumerate(guide_counts):
-            point = PyQt5.QtCore.QPoint(int(p.x() + deltax[i] * w),
+            point = PyQt6.QtCore.QPoint(int(p.x() + deltax[i] * w),
                                         int(p.y() + deltay[i] * h))
 
             with qtbot.wait_signal(loaded_eye.signals.atrophy):
                 qtbot.mouseClick(loaded_eye.view.figure_widget.canvas,
-                                 PyQt5.QtCore.Qt.LeftButton,
+                                 PyQt6.QtCore.Qt.LeftButton,
                                  pos=point)
 
             qtbot.wait(1000)
@@ -360,7 +360,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.reset_zoom_button,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
 
         qtbot.wait(100)
         new_limits = (loaded_eye.view.figure.panes[0].ax.get_xlim(),
@@ -371,7 +371,7 @@ class TestEye(object):
 
     @pytest.mark.parametrize(
         'key,cid_name,deltax,deltay,changed,same,guide_count',
-        [(PyQt5.QtCore.Qt.Key_Y, 'y_zoom', [1 / 2, 1 / 2], [1 / 4, 3 / 4],
+        [(PyQt6.QtCore.Qt.Key_Y, 'y_zoom', [1 / 2, 1 / 2], [1 / 4, 3 / 4],
           [1], [0], 1)])
     def test_zoom_with_alt(self, loaded_eye_with_alt, qtbot, caplog,
                            key, cid_name, deltax, deltay, changed,
@@ -396,12 +396,12 @@ class TestEye(object):
 
         guide_counts = [guide_count, 0]
         for i, count in enumerate(guide_counts):
-            point = PyQt5.QtCore.QPoint(int(p.x() + deltax[i] * w),
+            point = PyQt6.QtCore.QPoint(int(p.x() + deltax[i] * w),
                                         int(p.y() + deltay[i] * h))
 
             with qtbot.wait_signal(loaded_eye.signals.atrophy):
                 qtbot.mouseClick(loaded_eye.view.figure_widget.canvas,
-                                 PyQt5.QtCore.Qt.LeftButton,
+                                 PyQt6.QtCore.Qt.LeftButton,
                                  pos=point)
 
             qtbot.wait(1000)
@@ -418,7 +418,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.reset_zoom_button,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
 
         qtbot.wait(100)
         new_limits = (loaded_eye.view.figure.panes[0].ax.get_xlim(),
@@ -445,7 +445,7 @@ class TestEye(object):
 
         loaded_eye.view.feature_model_selection.setCurrentText(feature)
         loaded_eye.view.background_model_selection.setCurrentText(baseline)
-        qtbot.keyClick(loaded_eye.view.figure_widget, PyQt5.QtCore.Qt.Key_F)
+        qtbot.keyClick(loaded_eye.view.figure_widget, PyQt6.QtCore.Qt.Key_F)
 
         cids = ['zoom_crosshair', mode]
         for cid in cids:
@@ -461,12 +461,12 @@ class TestEye(object):
         deltay = [1 / 2, 1 / 2]
         assert len(loaded_eye.view.figure.gallery.arts['fit']) == 0
         for x, y in zip(deltax, deltay):
-            point = PyQt5.QtCore.QPoint(int(p.x() + x * w),
+            point = PyQt6.QtCore.QPoint(int(p.x() + x * w),
                                         int(p.y() + y * h))
 
             with qtbot.wait_signal(loaded_eye.signals.atrophy):
                 qtbot.mouseClick(loaded_eye.view.figure_widget.canvas,
-                                 PyQt5.QtCore.Qt.LeftButton,
+                                 PyQt6.QtCore.Qt.LeftButton,
                                  pos=point)
 
         qtbot.wait(1000)
@@ -475,7 +475,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.signals.atrophy):
             qtbot.keyClick(loaded_eye.view.figure_widget,
-                           PyQt5.QtCore.Qt.Key_C)
+                           PyQt6.QtCore.Qt.Key_C)
         assert len(loaded_eye.view.figure.gallery.arts['fit']) == 0
 
     @pytest.mark.xfail(reason="Cursor wiggle from bot not recognized")
@@ -507,7 +507,7 @@ class TestEye(object):
 
         # Turn on checkbox
         qtbot.mouseClick(loaded_eye.view.cursor_checkbox,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(1000)
         assert loaded_eye.view.cursor_checkbox.isChecked()
         cids = ['cursor_loc', 'cursor_axis_leave']
@@ -525,14 +525,14 @@ class TestEye(object):
 
         # Turn off checkbox
         qtbot.mouseClick(loaded_eye.view.cursor_checkbox,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(200)
         assert all([label.text().strip() == '-' for label in loc_labels])
         assert all([not art.get_artist().get_visible() for art in arts])
 
         # Pop out window
         qtbot.mouseClick(loaded_eye.view.cursor_popout_button,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(200)
         assert loaded_eye.view._cursor_popout
 
@@ -597,12 +597,12 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy):
             qtbot.mouseClick(loaded_eye.view.marker_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert str(line.get_marker()) == 'x'
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy):
             qtbot.mouseClick(loaded_eye.view.marker_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert str(line.get_marker()) in ['', 'None']
 
     def test_show_grid(self, loaded_eye, qtbot):
@@ -614,14 +614,14 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.grid_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert ax.xaxis._major_tick_kw['gridOn']
         assert ax.yaxis._major_tick_kw['gridOn']
         assert loaded_eye.view.figure.show_grid
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.grid_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert not ax.xaxis._major_tick_kw['gridOn']
         assert not ax.yaxis._major_tick_kw['gridOn']
         assert not loaded_eye.view.figure.show_grid
@@ -634,13 +634,13 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy):
             qtbot.mouseClick(loaded_eye.view.error_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert not loaded_eye.view.error_checkbox.isChecked()
         assert not art.get_visible()
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy):
             qtbot.mouseClick(loaded_eye.view.error_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert loaded_eye.view.error_checkbox.isChecked()
         assert art.get_visible()
 
@@ -653,12 +653,12 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.dark_mode_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert loaded_eye.view.figure.fig.get_facecolor() == black
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.dark_mode_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert loaded_eye.view.figure.fig.get_facecolor() == white
 
     def test_show_overplot(self, loaded_eye, qtbot):
@@ -667,7 +667,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.enable_overplot_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert loaded_eye.view.enable_overplot_checkbox.isChecked()
         draws = loaded_eye.view.figure.gallery.arts['line']
         alts = list(filter(lambda x: x.get_axes() == 'alt', draws))
@@ -679,7 +679,7 @@ class TestEye(object):
 
         with qtbot.wait_signal(loaded_eye.view.signals.atrophy_bg_partial):
             qtbot.mouseClick(loaded_eye.view.enable_overplot_checkbox,
-                             PyQt5.QtCore.Qt.LeftButton)
+                             PyQt6.QtCore.Qt.LeftButton)
         assert loaded_eye.view.error_checkbox.isChecked()
         assert len(loaded_eye.view.figure.gallery.arts['line_alt']) == 0
 
@@ -692,7 +692,7 @@ class TestEye(object):
         # pop out new fit results window
         assert loaded_eye.view.fit_results is None
         qtbot.mouseClick(loaded_eye.view.open_fit_results_button,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(200)
         assert loaded_eye.view.fit_results is not None
         assert show_mock.call_count == 1
@@ -700,7 +700,7 @@ class TestEye(object):
 
         # click again, while visible - does nothing
         qtbot.mouseClick(loaded_eye.view.open_fit_results_button,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(200)
         assert loaded_eye.view.fit_results is not None
         assert show_mock.call_count == 1
@@ -710,7 +710,7 @@ class TestEye(object):
         vis_mock = mocker.patch.object(fitting_results.FittingResults,
                                        'isVisible', return_value=False)
         qtbot.mouseClick(loaded_eye.view.open_fit_results_button,
-                         PyQt5.QtCore.Qt.LeftButton)
+                         PyQt6.QtCore.Qt.LeftButton)
         qtbot.wait(200)
         assert loaded_eye.view.fit_results is not None
         assert show_mock.call_count == 2

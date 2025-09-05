@@ -9,7 +9,7 @@ import matplotlib.lines as ml
 from sofia_redux.visualization.display import blitting, gallery
 from sofia_redux.visualization import signals
 
-PyQt5 = pytest.importorskip('PyQt5')
+PyQt6 = pytest.importorskip('PyQt6')
 
 
 class TestBlitManager(object):
