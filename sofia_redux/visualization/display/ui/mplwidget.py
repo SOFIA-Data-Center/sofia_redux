@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as Canvas
 from matplotlib.figure import Figure
 import matplotlib
 
-matplotlib.use('QT5Agg')
+matplotlib.use('QTAgg')
 
 
 class MplCanvas(Canvas):
