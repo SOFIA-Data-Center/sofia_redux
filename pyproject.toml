@@ -97,7 +97,8 @@ eospec = "sofia_redux.visualization.controller:main"
     "designer/*",
     "designer/*/*",
     "designer/*/*/*",
-    "designer/*/*/*/*"
+    "designer/*/*/*/*",
+    "icons/redux*.png"
 ]
 "sofia_redux.pipeline.gui.qad" = ["designer/*"]
 "sofia_redux.scan" = [

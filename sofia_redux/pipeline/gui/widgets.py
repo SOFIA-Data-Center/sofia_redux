@@ -401,10 +401,10 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
             Type of file item to select.
         """
         pickButton = QtWidgets.QPushButton(self.groupBox)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/Tango/16x16/document-open.png"),
-                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        pickButton.setIcon(icon)
+        open_icon =self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_DialogOpenButton
+        )
+        pickButton.setIcon(open_icon)
         pickButton.setText(param['name'])
 
         # start a file dialog if clicked

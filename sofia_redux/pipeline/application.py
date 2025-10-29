@@ -1,6 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 """Run Redux reduction objects from a GUI interface."""
 
+from pathlib import Path
 import sys
 
 from sofia_redux.pipeline.interface import Interface
@@ -52,10 +53,11 @@ class Application(Interface):
         # Start application
         self.app = QtWidgets.QApplication(sys.argv)
 
+        redux_icon_file = Path(__file__).parent / "gui/icons/redux_icon.png"
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/redux_icon.png"),
-                       QtGui.QIcon.Normal,
-                       QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(str(redux_icon_file)),
+                       QtGui.QIcon.Mode.Normal,
+                       QtGui.QIcon.State.Off)
         self.app.setWindowIcon(icon)
         self.app.setApplicationName('Redux')
 

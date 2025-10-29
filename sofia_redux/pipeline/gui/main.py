@@ -3,6 +3,7 @@
 
 import os
 import signal
+from pathlib import Path
 
 from astropy import log
 
@@ -81,6 +82,31 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
 
         # set up UI from Designer generated file
         self.setupUi(self)
+
+        # Render the logo
+        self.logTextEdit.setHtml(
+            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+            "<html><head><meta name=\"qrichtext\" content=\"1\" />"
+            "<style type=\"text/css\">\n"
+            "  p, li { white-space: pre-wrap; }\n"
+            "</style></head>"
+            "<body style=\" font-family:\'Menlo\'; font-size:12pt;"
+            "               font-weight:400; font-style:normal;\">\n"
+            "<p align=\"center\" style=\"margin-top:20px; margin-bottom:20px;"
+            "                            margin-left:0px; margin-right:0px;"
+            "                            -qt-block-indent:0; text-indent:0px;\""
+            ">"
+            "<span style=\" font-family:\'.SF NS Text\'; font-size:13pt;\">"
+            "==   Redux ready.   =="
+            "</span></p>\n"
+            "<p align=\"center\" style=\"margin-top:0px; margin-bottom:0px;"
+            "                            margin-left:36px; margin-right:36px; "
+            "                            -qt-block-indent:0; text-indent:0px;\""
+            ">"
+            f"<img src=\"{Path(__file__).parent / 'icons/redux_large.png'}\" "
+            "      width=\"480\" height=\"480\" />"
+            "</p></body></html>"
+        )
 
         # establish signal handler to catch ctrl-C
         signal.signal(signal.SIGINT, self.cleanup)

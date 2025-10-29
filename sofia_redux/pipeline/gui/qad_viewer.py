@@ -71,6 +71,20 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         self.setPhotValue(self.photInitial)
         self.setPlotValue(self.plotInitial)
 
+        # set icons
+        imexam_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView)
+        self.imexamButton.setIcon(imexam_icon)
+        self.imexamButton.setIconSize(QtCore.QSize(32, 32))
+        save_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_DialogSaveButton)
+        self.saveButton.setIcon(save_icon)
+        self.saveButton.setIconSize(QtCore.QSize(32, 32))
+        header_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView)                    
+        self.headerButton.setIcon(header_icon)
+        self.headerButton.setIconSize(QtCore.QSize(32, 32))
+
         # connect signals to slots
         self.disableDS9Box.stateChanged.connect(self.getDispValue)
         self.disableOverplotsBox.stateChanged.connect(self.getDispValue)

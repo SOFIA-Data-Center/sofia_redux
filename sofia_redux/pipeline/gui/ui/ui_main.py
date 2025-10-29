@@ -337,12 +337,6 @@ class Ui_MainWindow(object):
         self.resetButton.setText(_translate("MainWindow", "Reset"))
         self.label.setText(_translate("MainWindow", "Step through:"))
         self.dataTabWidget.setTabText(self.dataTabWidget.indexOf(self.fileInfoTab), _translate("MainWindow", "File Information"))
-        self.logTextEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Menlo\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:20px; margin-bottom:20px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'.SF NS Text\'; font-size:13pt;\">==   Redux ready.   ==</span></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:36px; margin-right:36px; -qt-block-indent:0; text-indent:0px;\"><img src=\":/icons/redux_large.png\" width=\"480\" height=\"480\" /></p></body></html>"))
         self.dataTabWidget.setTabText(self.dataTabWidget.indexOf(self.logTab), _translate("MainWindow", "Log"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuParameters.setTitle(_translate("MainWindow", "Parameters"))

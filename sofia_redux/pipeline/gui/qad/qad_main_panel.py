@@ -64,6 +64,29 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         # set up UI from Designer generated file
         self.setupUi(self)
 
+        # set up icons
+        open_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_DialogOpenButton)
+        self.actionOpenDirectory.setIcon(open_icon)
+        up_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_FileDialogToParent)
+        self.actionGoPrevious.setIcon(up_icon)
+        next_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_ArrowForward)
+        self.actionGoNext.setIcon(next_icon)
+        home_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_DirHomeIcon)
+        self.actionGoHome.setIcon(home_icon)
+        save_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_DialogSaveButton)
+        self.actionSaveSettings.setIcon(save_icon)
+        imexam_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView)
+        self.actionImExam.setIcon(imexam_icon)    
+        header_icon = self.style().standardIcon(
+            QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView)
+        self.actionDisplayHeader.setIcon(header_icon)
+
         # Establish signal handler to catch ctrl-C
         signal.signal(signal.SIGINT, self.cleanup)
 
@@ -235,7 +258,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         current = self.imviewer.disp_parameters
         default = self.imviewer.default_parameters('display')
         dialog = qad_dialogs.DispSettingsDialog(self, current, default)
-        retval = dialog.exec_()
+        retval = dialog.exec()
         if retval == 1:
             self.imviewer.disp_parameters = dialog.getValue()
 
@@ -311,7 +334,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         current = self.imviewer.phot_parameters
         default = self.imviewer.default_parameters('photometry')
         dialog = qad_dialogs.PhotSettingsDialog(self, current, default)
-        retval = dialog.exec_()
+        retval = dialog.exec()
         if retval == 1:
             self.imviewer.phot_parameters = dialog.getValue()
 
@@ -323,7 +346,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         current = self.imviewer.plot_parameters
         default = self.imviewer.default_parameters('plot')
         dialog = qad_dialogs.PlotSettingsDialog(self, current, default)
-        retval = dialog.exec_()
+        retval = dialog.exec()
         if retval == 1:
             self.imviewer.plot_parameters = dialog.getValue()
 
@@ -462,7 +485,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
 
     def resetModel(self):
         """Reset the TreeView model."""
-        self.model = QtWidgets.QFileSystemModel(self)
+        self.model = QtGui.QFileSystemModel(self)
         self.treeView.setModel(self.model)
         self.setFilter()
         self.setRoot()
