@@ -138,34 +138,34 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
             except UnicodeEncodeError:  # pragma: no cover
                 name = 'UNKNOWN'
             log.debug(f'Key pushed in view: {name}')
-            if event.key() == QtCore.Qt.Key_F:
+            if event.key() == QtCore.Qt.Key.Key_F:
                 # F fits a gaussian to a selected region
                 fit_mode = self._parse_fit_mode()
                 self.start_selection(mode=fit_mode)
-            elif event.key() == QtCore.Qt.Key_W:
+            elif event.key() == QtCore.Qt.Key.Key_W:
                 # W resets any axes range changes
                 self.reset_zoom()
-            elif event.key() == QtCore.Qt.Key_X:
+            elif event.key() == QtCore.Qt.Key.Key_X:
                 # X zooms in on selected x-range
                 self.start_selection(mode='x_zoom')
-            elif event.key() == QtCore.Qt.Key_Y:
+            elif event.key() == QtCore.Qt.Key.Key_Y:
                 # Y zooms in on selected y-range
                 self.start_selection(mode='y_zoom')
-            elif event.key() == QtCore.Qt.Key_Z:
+            elif event.key() == QtCore.Qt.Key.Key_Z:
                 # Z zooms in on selected box
                 self.start_selection(mode='b_zoom')
-            elif event.key() == QtCore.Qt.Key_C:
+            elif event.key() == QtCore.Qt.Key.Key_C:
                 # C clears zoom/fit status
                 self.clear_selection()
                 self.clear_fit()
-            elif (event.key() == QtCore.Qt.Key_Return
-                  or event.key() == QtCore.Qt.Key_Enter):
+            elif (event.key() == QtCore.Qt.Key.Key_Return
+                  or event.key() == QtCore.Qt.Key.Key_Enter):
                 # enter in the file table displays selected models
                 if self.loaded_files_table.hasFocus():
                     # send display_model signal
                     self.signals.model_selected.emit()
-            elif (event.key() == QtCore.Qt.Key_Delete
-                  or event.key() == QtCore.Qt.Key_Backspace):
+            elif (event.key() == QtCore.Qt.Key.Key_Delete
+                  or event.key() == QtCore.Qt.Key.Key_Backspace):
                 if self.loaded_files_table.hasFocus():
                     # delete key in the file table removes selected models
                     self.signals.model_removed.emit()
@@ -177,7 +177,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
                     # delete key in filename table removes the selected
                     # filenames from the selected pane
                     self.remove_file_from_pane()
-            elif event.key() == QtCore.Qt.Key_A:
+            elif event.key() == QtCore.Qt.Key.Key_A:
                 self.print_current_artists()
 
     def open_eye(self) -> None:
@@ -1054,7 +1054,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
             # display base name
             item = QtWidgets.QTableWidgetItem(os.path.basename(filename))
             # store model_id in data and set full file path as tooltip
-            item.setData(QtCore.Qt.UserRole, model_id)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, model_id)
             item.setToolTip(filename)
             self.loaded_files_table.setItem(row_index, col_index, item)
         self.loaded_files_table.resizeRowsToContents()
@@ -1079,7 +1079,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         items = self.loaded_files_table.selectedItems()
         if not items:
             return
-        model_ids = [item.data(QtCore.Qt.UserRole) for item in items]
+        model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole) for item in items]
         return model_ids
 
     ####
@@ -1271,7 +1271,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
             have the pane index stored as data, under the
             UserRole tag.
         """
-        pane_id = item.data(0, QtCore.Qt.UserRole)
+        pane_id = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         if isinstance(pane_id, int):
             self.set_current_pane(pane_id)
 
@@ -1286,7 +1286,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
             Should have pane_id and model_id stored as data,
             under the UserRole tag.
         """
-        pane_id, model_id = item.data(0, QtCore.Qt.UserRole)
+        pane_id, model_id = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         if not model_id or isinstance(model_id, bool):
             return
         state = bool(item.checkState(0))
@@ -1494,31 +1494,31 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
                 current_row = [current_row]
             for row in current_row:
                 mid = self.filename_table.item(row, fn_index).data(
-                    QtCore.Qt.UserRole)
+                    QtCore.Qt.ItemDataRole.UserRole)
                 current_ids.append(mid)
 
         self.filename_table.blockSignals(True)
         self.filename_table.setUpdatesEnabled(False)
         self.filename_table.clearContents()
 
-        alignments = [QtCore.Qt.AlignCenter, QtCore.Qt.AlignCenter,
-                      QtCore.Qt.AlignCenter, QtCore.Qt.AlignLeft]
-        size_policies = [QtWidgets.QHeaderView.ResizeToContents,
-                         QtWidgets.QHeaderView.ResizeToContents,
-                         QtWidgets.QHeaderView.ResizeToContents,
-                         QtWidgets.QHeaderView.ResizeToContents]
+        alignments = [QtCore.Qt.AlignmentFlag.AlignCenter, QtCore.Qt.AlignmentFlag.AlignCenter,
+                      QtCore.Qt.AlignmentFlag.AlignCenter, QtCore.Qt.AlignmentFlag.AlignLeft]
+        size_policies = [QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
+                         QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
+                         QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
+                         QtWidgets.QHeaderView.ResizeMode.ResizeToContents]
 
         self.filename_table.setColumnCount(len(table_labels))
         self.filename_table.setHorizontalHeaderLabels(
             [label.capitalize() for label in table_labels])
         self.filename_table.verticalHeader().setSectionResizeMode(
-            QtWidgets.QHeaderView.ResizeToContents)
+            QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.filename_table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.filename_table.setSelectionMode(
-            QtWidgets.QAbstractItemView.ExtendedSelection)
+            QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.filename_table.setHorizontalScrollMode(
-            QtWidgets.QAbstractItemView.ScrollPerPixel)
+            QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         if self.all_panes_checkbox.isChecked():
             panes = self.figure.panes
@@ -1541,7 +1541,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
 
                 name_item = QtWidgets.QTableWidgetItem(
                     f'{os.path.basename(model.filename)}')
-                name_item.setData(QtCore.Qt.UserRole, model_id)
+                name_item.setData(QtCore.Qt.ItemDataRole.UserRole, model_id)
                 name_item.setToolTip(model.filename)
 
                 orders = model.num_orders
@@ -1567,7 +1567,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
 
         for row in range(self.filename_table.rowCount()):
             item = self.filename_table.item(row, fn_index)
-            if item.data(QtCore.Qt.UserRole) in current_ids:
+            if item.data(QtCore.Qt.ItemDataRole.UserRole) in current_ids:
                 self.filename_table.selectRow(row)
 
         self.filename_table.setUpdatesEnabled(True)
@@ -1621,7 +1621,7 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
                 for item in self.filename_table.selectedItems():
                     items.append(
                         self.filename_table.item(item.row(), fn_index))
-            model_ids = [item.data(QtCore.Qt.UserRole) for item in items]
+            model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole) for item in items]
         model_ids = list(set(model_ids))
 
         return model_ids, pane_index
@@ -2166,35 +2166,35 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         if self.control_frame.isVisible():
             log.debug('Hiding controls')
             self.control_frame.hide()
-            self.collapse_controls_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_controls_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_controls_button.setToolTip('Show control panel')
         else:
             log.debug('Showing controls')
             self.control_frame.show()
-            self.collapse_controls_button.setArrowType(QtCore.Qt.LeftArrow)
+            self.collapse_controls_button.setArrowType(QtCore.Qt.ArrowType.LeftArrow)
             self.collapse_controls_button.setToolTip('Hide control panel')
 
     def toggle_cursor(self) -> None:
         """Toggle cursor panel visibility."""
         if self.cursor_frame.isVisible():
             self.cursor_frame.hide()
-            self.collapse_cursor_button.setArrowType(QtCore.Qt.UpArrow)
+            self.collapse_cursor_button.setArrowType(QtCore.Qt.ArrowType.UpArrow)
             self.collapse_cursor_button.setToolTip('Show cursor panel')
         else:
             self.cursor_frame.show()
-            self.collapse_cursor_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_cursor_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_cursor_button.setToolTip('Hide cursor panel')
 
     def toggle_file_panel(self) -> None:
         """Toggle file panel visibility."""
         if self.file_choice_panel.isVisible():
             self.file_choice_panel.hide()
-            self.collapse_file_choice_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_file_choice_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_file_choice_button.setToolTip(
                 'Show file choice panel')
         else:
             self.file_choice_panel.show()
-            self.collapse_file_choice_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_file_choice_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_file_choice_button.setToolTip(
                 'Hide file choice panel')
 
@@ -2203,45 +2203,45 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         if self.order_panel.isVisible():
             self.order_panel.hide()
             self.pane_panel.hide()
-            self.collapse_order_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_order_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_order_button.setToolTip('Show order panel')
         else:
             self.order_panel.show()
             self.pane_panel.show()
-            self.collapse_order_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_order_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_order_button.setToolTip('Hide order panel')
 
     def toggle_axis_panel(self) -> None:
         """Toggle axis panel visibility."""
         if self.axis_panel.isVisible():
             self.axis_panel.hide()
-            self.collapse_axis_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_axis_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_axis_button.setToolTip('Show axis panel')
         else:
             self.axis_panel.show()
-            self.collapse_axis_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_axis_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_axis_button.setToolTip('Hide axis panel')
 
     def toggle_plot_panel(self) -> None:
         """Toggle plot panel visibility."""
         if self.plot_panel.isVisible():
             self.plot_panel.hide()
-            self.collapse_plot_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_plot_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_plot_button.setToolTip('Show plot panel')
         else:
             self.plot_panel.show()
-            self.collapse_plot_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_plot_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_plot_button.setToolTip('Hide plot panel')
 
     def toggle_analysis_panel(self) -> None:
         """Toggle analysis panel visibility."""
         if self.analysis_panel.isVisible():
             self.analysis_panel.hide()
-            self.collapse_analysis_button.setArrowType(QtCore.Qt.RightArrow)
+            self.collapse_analysis_button.setArrowType(QtCore.Qt.ArrowType.RightArrow)
             self.collapse_analysis_button.setToolTip('Show analysis panel')
         else:
             self.analysis_panel.show()
-            self.collapse_analysis_button.setArrowType(QtCore.Qt.DownArrow)
+            self.collapse_analysis_button.setArrowType(QtCore.Qt.ArrowType.DownArrow)
             self.collapse_analysis_button.setToolTip('Hide analysis panel')
 
     def print_current_artists(self) -> None:

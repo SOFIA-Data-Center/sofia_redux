@@ -139,7 +139,7 @@ class FittingResults(QtWidgets.QDialog, frw.Ui_Dialog):
             details = model.parameters_as_string()
             filename = details['filename']
             vhead = QTableWidgetItem(os.path.basename(filename))
-            vhead.setTextAlignment(QtCore.Qt.AlignLeft)
+            vhead.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
             vhead.setToolTip(filename)
             self.table_widget.setVerticalHeaderItem(row_index, vhead)
 
@@ -149,7 +149,7 @@ class FittingResults(QtWidgets.QDialog, frw.Ui_Dialog):
                 except KeyError:
                     text = 'NA'
                 item = QTableWidgetItem(text)
-                item.setTextAlignment(QtCore.Qt.AlignHCenter)
+                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
                 self.table_widget.setItem(row_index, col_index + 1, item)
 
         # resize rows and columns to contents

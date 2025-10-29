@@ -106,11 +106,11 @@ class CursorLocation(QtWidgets.QDialog, cl.Ui_Dialog):
                         item = QTableWidgetItem(value)
                 else:
                     item = QTableWidgetItem('######')
-                item.setTextAlignment(QtCore.Qt.AlignHCenter)
+                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
                 self.table_widget.setItem(row_index, col_index, item)
             # set filename as vertical header
             vhead = QTableWidgetItem(os.path.basename(str(new_point[0])))
-            vhead.setTextAlignment(QtCore.Qt.AlignLeft)
+            vhead.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
             vhead.setToolTip(new_point[0])
             self.table_widget.setVerticalHeaderItem(row_index, vhead)
         self._resize()

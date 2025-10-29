@@ -86,10 +86,10 @@ class MatplotlibPlot(QtWidgets.QDialog):
         layout.addWidget(self.scroll)
 
         # make sure there's a close button
-        self.setWindowFlags(QtCore.Qt.Window
-                            | QtCore.Qt.WindowMaximizeButtonHint
-                            | QtCore.Qt.WindowMinimizeButtonHint
-                            | QtCore.Qt.WindowCloseButtonHint)
+        self.setWindowFlags(QtCore.Qt.WindowType.Window
+                            | QtCore.Qt.WindowType.WindowMaximizeButtonHint
+                            | QtCore.Qt.WindowType.WindowMinimizeButtonHint
+                            | QtCore.Qt.WindowType.WindowCloseButtonHint)
 
         # window title
         if title is not None:

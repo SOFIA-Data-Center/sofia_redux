@@ -59,7 +59,7 @@ class TestTextView(object):
         self.tv.findText.setText(find_text)
         self.tv.find()
         cursor = self.tv.textEdit.textCursor()
-        cursor.select(QtGui.QTextCursor.WordUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
         assert cursor.selectedText() == find_text
 
         # reset
@@ -75,7 +75,7 @@ class TestTextView(object):
         self.tv.find()
         cursor = self.tv.textEdit.textCursor()
         assert cursor.atStart()
-        cursor.select(QtGui.QTextCursor.WordUnderCursor)
+        cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
         assert cursor.selectedText() != find_text
 
     def test_filter(self, qtbot):

@@ -34,14 +34,14 @@ else:
 class TestView(object):
 
     @pytest.mark.parametrize('key,name',
-                             [(QtCore.Qt.Key_X, 'x'),
-                              (QtCore.Qt.Key_A, 'a'),
-                              (QtCore.Qt.Key_W, 'w'),
-                              (QtCore.Qt.Key_Right, 'right'),
-                              (QtCore.Qt.Key_Escape, 'esc'),
-                              (QtCore.Qt.Key_Home, 'home'),
-                              (QtCore.Qt.Key_Delete, 'del'),
-                              (QtCore.Qt.Key_Space, 'space')])
+                             [(QtCore.Qt.Key.Key_X, 'x'),
+                              (QtCore.Qt.Key.Key_A, 'a'),
+                              (QtCore.Qt.Key.Key_W, 'w'),
+                              (QtCore.Qt.Key.Key_Right, 'right'),
+                              (QtCore.Qt.Key.Key_Escape, 'esc'),
+                              (QtCore.Qt.Key.Key_Home, 'home'),
+                              (QtCore.Qt.Key.Key_Delete, 'del'),
+                              (QtCore.Qt.Key.Key_Space, 'space')])
     def test_key_press_event(self, key, name, qtbot, capsys, mocker, qapp):
         mocker.patch.object(QtWidgets.QMainWindow, 'show',
                             return_value=None)
@@ -64,7 +64,7 @@ class TestView(object):
         mocker.patch.object(QtWidgets.QTableWidget, 'hasFocus',
                             return_value=True)
         with qtbot.wait_signal(blank_view.signals.model_removed):
-            qtbot.keyClick(blank_view, QtCore.Qt.Key_Delete)
+            qtbot.keyClick(blank_view, QtCore.Qt.Key.Key_Delete)
         assert 'Key pushed in view: Del' in caplog.text
 
     def test_key_press_event_delete_pane(self, blank_view, mocker,
@@ -74,7 +74,7 @@ class TestView(object):
         mocker.patch.object(MplWidget, 'hasFocus', return_value=True)
         mock = mocker.patch.object(view.View, 'remove_pane')
 
-        qtbot.keyClick(blank_view, QtCore.Qt.Key_Delete)
+        qtbot.keyClick(blank_view, QtCore.Qt.Key.Key_Delete)
 
         assert 'Key pushed in view: Del' in caplog.text
         mock.assert_called_once()
@@ -85,7 +85,7 @@ class TestView(object):
         mocker.patch.object(QtWidgets.QTableWidget, 'hasFocus',
                             side_effect=[False, True])
         mock = mocker.patch.object(view.View, 'remove_file_from_pane')
-        qtbot.keyClick(blank_view, QtCore.Qt.Key_Backspace)
+        qtbot.keyClick(blank_view, QtCore.Qt.Key.Key_Backspace)
         assert 'Key pushed in view: Backspace' in caplog.text
         mock.assert_called_once()
 
@@ -369,7 +369,7 @@ class TestView(object):
         pane_mock = mocker.patch.object(view.View, 'set_current_pane')
         pane_id = 1
         item = QtWidgets.QTreeWidgetItem()
-        item.setData(0, QtCore.Qt.UserRole, pane_id)
+        item.setData(0, QtCore.Qt.ItemDataRole.UserRole, pane_id)
 
         blank_view.select_pane(item)
 
@@ -383,13 +383,13 @@ class TestView(object):
 
         item = QtWidgets.QTreeWidgetItem()
         item.setCheckState(0, state)
-        item.setData(0, QtCore.Qt.UserRole, (pane_id, model_id))
+        item.setData(0, QtCore.Qt.ItemDataRole.UserRole, (pane_id, model_id))
 
         blank_view.enable_model(item)
         assert pane_mock.call_count == 0
 
         model_id = 2
-        item.setData(0, QtCore.Qt.UserRole, (pane_id, model_id))
+        item.setData(0, QtCore.Qt.ItemDataRole.UserRole, (pane_id, model_id))
         blank_view.enable_model(item)
         pane_mock.assert_called_once_with(pane_id, model_id, state)
 
@@ -405,7 +405,7 @@ class TestView(object):
         button.setProperty('id', (pane_id, state))
         button.clicked.connect(blank_view.enable_all_models)
 
-        qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(button, QtCore.Qt.MouseButton.LeftButton)
 
         enable_mock.assert_called_once_with(pane_id, state)
         assert button.text() == label
@@ -600,9 +600,9 @@ class TestView(object):
         blank_view.all_disabled_orders_button.clicked.connect(
             blank_view.disable_all_orders)
         qtbot.mouseClick(blank_view.all_enabled_orders_button,
-                         QtCore.Qt.LeftButton)
+                         QtCore.Qt.MouseButton.LeftButton)
         qtbot.mouseClick(blank_view.all_disabled_orders_button,
-                         QtCore.Qt.LeftButton)
+                         QtCore.Qt.MouseButton.LeftButton)
 
         assert update_mock.call_count == 2
         update_mock.assert_has_calls(

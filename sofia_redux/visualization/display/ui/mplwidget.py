@@ -16,8 +16,8 @@ class MplCanvas(Canvas):
         self.fig = Figure(figsize=(30, 35), tight_layout=True)
         Canvas.__init__(self, self.fig)
         Canvas.setSizePolicy(self,
-                             QtWidgets.QSizePolicy.Expanding,
-                             QtWidgets.QSizePolicy.Expanding)
+                             QtWidgets.QSizePolicy.Policy.Expanding,
+                             QtWidgets.QSizePolicy.Policy.Expanding)
         Canvas.updateGeometry(self)
 
 
@@ -27,7 +27,7 @@ class MplWidget(QtWidgets.QFrame):
     """
     def __init__(self, parent=None):
         QtWidgets.QFrame.__init__(self, parent)
-        self.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
 
         self.canvas = MplCanvas()
         self.vbl = QtWidgets.QVBoxLayout()

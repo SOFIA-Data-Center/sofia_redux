@@ -216,7 +216,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         """
         response = QtWidgets.QMessageBox.question(
             self, 'Quit', 'Quit Redux?')
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.cleanup()
         else:  # pragma: no cover
             try:
@@ -250,14 +250,14 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         """
         # move cursor to the end
         cursor = self.logTextEdit.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.movePosition(QtGui.QTextCursor.MoveOperation.End)
         self.logTextEdit.setTextCursor(cursor)
 
         # insert the message as HTML
         self.logTextEdit.insertHtml("<pre>{}<br></pre>".format(msg))
 
         # move the cursor to the end again
-        cursor.movePosition(QtGui.QTextCursor.End)
+        cursor.movePosition(QtGui.QTextCursor.MoveOperation.End)
         self.logTextEdit.setTextCursor(cursor)
 
         # repaint to refresh view
@@ -377,10 +377,10 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         if enable:
             self.pipeStepListWidget.clearSelection()
             self.pipeStepListWidget.setSelectionMode(
-                QtWidgets.QAbstractItemView.NoSelection)
+                QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
         else:
             self.pipeStepListWidget.setSelectionMode(
-                QtWidgets.QAbstractItemView.SingleSelection)
+                QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
 
     def enableReduction(self, enable=True):
         """
@@ -661,7 +661,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # turn off the whole controls box and menus
         # while steps are running
         self.enableControls(False)
-        self.controlsBox.setCursor(QtCore.Qt.BusyCursor)
+        self.controlsBox.setCursor(QtCore.Qt.CursorShape.BusyCursor)
         self.highlightStep(self.interface.reduction.step_index)
 
         # make a runnable object for threading and connect it
@@ -837,7 +837,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
                                       saved_dir)
         loader.signals.finished.connect(self.openFinish)
         self.threadpool.start(loader)
-        self.setCursor(QtCore.Qt.BusyCursor)
+        self.setCursor(QtCore.Qt.CursorShape.BusyCursor)
         self.enableReduction(False)
 
     def openFinish(self, result):
@@ -909,7 +909,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
 
         # register viewers for the reduction;
         # if they are embedded, add them to a splitter widget
-        parent = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        parent = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
         self.interface.register_viewers(parent)
         if self.interface.has_embedded_viewers():
             self.dataTabWidget.insertTab(0, parent, 'Data View')
@@ -927,10 +927,10 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         header = self.fileTableView.horizontalHeader()
         for column in range(self.fileTableView.model().columnCount()):
             header.setSectionResizeMode(
-                column, QtWidgets.QHeaderView.ResizeToContents)
+                column, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
             width = header.sectionSize(column)
             header.setSectionResizeMode(
-                column, QtWidgets.QHeaderView.Interactive)
+                column, QtWidgets.QHeaderView.ResizeMode.Interactive)
             header.resizeSection(column, width)
 
         # add row numbers
@@ -993,7 +993,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
 
         response = QtWidgets.QMessageBox.question(
             self, 'Close Reduction', 'Close current reduction?')
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
             self.resetPipeline()
             self.enableReduction(False)
             self.setStatus('Reduction closed.')
@@ -1007,7 +1007,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         """Remove files from the current reduction."""
         dialog = widgets.RemoveFilesDialog(self, self.loaded_files)
         retval = dialog.exec()
-        if retval == QtWidgets.QDialog.Accepted:
+        if retval == QtWidgets.QDialog.DialogCode.Accepted:
             remove_files = dialog.getValue()
             self.onOpenReduction(remove_files=remove_files)
 
@@ -1099,7 +1099,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # confirm before destroying existing config
         response = QtWidgets.QMessageBox.question(
             self, 'Reset Configuration', 'Reset configuration settings?')
-        if response != QtWidgets.QMessageBox.Yes:
+        if response != QtWidgets.QMessageBox.StandardButton.Yes:
             return
 
         self.onLoadConfiguration(default=True)
@@ -1112,7 +1112,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
         # confirm before destroying existing parameters
         response = QtWidgets.QMessageBox.question(
             self, 'Reset Parameters', 'Reset all parameters?')
-        if response != QtWidgets.QMessageBox.Yes:
+        if response != QtWidgets.QMessageBox.StandardButton.Yes:
             return
 
         self.interface.load_parameters()
@@ -1160,7 +1160,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
                                    param, default,
                                    self.base_directory)
         retval = dialog.exec()
-        if retval == QtWidgets.QDialog.Accepted:
+        if retval == QtWidgets.QDialog.DialogCode.Accepted:
             # change params
             param = dialog.getValue()
             self.interface.reduction.set_parameter_set(param, index)
@@ -1334,7 +1334,7 @@ class ReduxMainWindow(QtWidgets.QMainWindow, ui_main.Ui_MainWindow):
             self.interface.configuration.update_display = False
 
         # if there is a current reduction, register its viewers
-        parent = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+        parent = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
         self.interface.register_viewers(parent)
 
         # create or close a Data View tab

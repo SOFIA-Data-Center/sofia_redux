@@ -68,7 +68,7 @@ def main():
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', UserWarning)
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
 
 def parse_args(args: List) -> argparse.Namespace:

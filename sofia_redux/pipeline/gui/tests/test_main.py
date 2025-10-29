@@ -86,9 +86,9 @@ class TestMainWindow(object):
 
         # mock a dialog box to always confirm
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.Yes)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Yes)
         mocker.patch.object(QtWidgets.QMessageBox, 'warning',
-                            return_value=QtWidgets.QMessageBox.Ok)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Ok)
 
         # make main window
         mw = ReduxMainWindow(app)
@@ -110,9 +110,9 @@ class TestMainWindow(object):
 
         # mock a dialog box to always confirm
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.Yes)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Yes)
         mocker.patch.object(QtWidgets.QMessageBox, 'warning',
-                            return_value=QtWidgets.QMessageBox.Ok)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Ok)
 
         # make main window
         mw = ReduxMainWindow(app)
@@ -290,7 +290,7 @@ class TestMainWindow(object):
 
         # test if remove dialog canceled
         mocker.patch.object(RemoveFilesDialog, 'exec_',
-                            return_value=QtWidgets.QDialog.Rejected)
+                            return_value=QtWidgets.QDialog.DialogCode.Rejected)
         mw.onRemoveFiles()
         assert mw.loaded_files == orig_files
 
@@ -304,7 +304,7 @@ class TestMainWindow(object):
 
         # test if no file selected
         mocker.patch.object(RemoveFilesDialog, 'exec_',
-                            return_value=QtWidgets.QDialog.Accepted)
+                            return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QListWidget, 'selectedItems',
                             return_value=[])
         mw.onRemoveFiles()
@@ -538,7 +538,7 @@ class TestMainWindow(object):
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
         mocker.patch.object(QtWidgets.QDialog, 'exec_',
-                            return_value=QtWidgets.QDialog.Accepted)
+                            return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)
 
@@ -574,7 +574,7 @@ class TestMainWindow(object):
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
         mocker.patch.object(QtWidgets.QDialog, 'exec_',
-                            return_value=QtWidgets.QDialog.Accepted)
+                            return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)
 
@@ -607,7 +607,7 @@ class TestMainWindow(object):
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
         mocker.patch.object(QtWidgets.QDialog, 'exec_',
-                            return_value=QtWidgets.QDialog.Accepted)
+                            return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)
 
@@ -700,7 +700,7 @@ class TestMainWindow(object):
 
         # mock confirmation dialog to decline
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.No)
+                            return_value=QtWidgets.QMessageBox.StandardButton.No)
 
         # reset parameters: nothing happens
         mw.onResetParameters()
@@ -708,7 +708,7 @@ class TestMainWindow(object):
 
         # mock confirmation dialog to confirm
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.Yes)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Yes)
 
         # reset parameters: parameters back to original
         mw.onResetParameters()
@@ -848,9 +848,9 @@ class TestMainWindow(object):
     def test_display_options(self, qtbot, mocker):
         # mock a dialog box to always confirm
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.Yes)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Yes)
         mocker.patch.object(QtWidgets.QMessageBox, 'warning',
-                            return_value=QtWidgets.QMessageBox.Ok)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Ok)
 
         # test defaults set from initial config
 
@@ -975,7 +975,7 @@ class TestMainWindow(object):
 
         # mock confirmation dialog to decline
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.No)
+                            return_value=QtWidgets.QMessageBox.StandardButton.No)
 
         # reset config: nothing happens
         mw.onResetConfiguration()
@@ -983,7 +983,7 @@ class TestMainWindow(object):
 
         # mock confirmation dialog to confirm
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
-                            return_value=QtWidgets.QMessageBox.Yes)
+                            return_value=QtWidgets.QMessageBox.StandardButton.Yes)
 
         # reset config: config back to original
         mw.onResetConfiguration()

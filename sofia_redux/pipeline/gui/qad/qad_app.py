@@ -122,4 +122,4 @@ def main():
     mw = QADMainWindow()
     mw.show()
     mw.raise_()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

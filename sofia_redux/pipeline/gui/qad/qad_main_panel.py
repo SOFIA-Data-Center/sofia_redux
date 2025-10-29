@@ -111,9 +111,9 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         self.treeView.doubleClicked.connect(self.onRow)
 
         # set directory model in tree view widget
-        self.model = QtWidgets.QFileSystemModel(self)
+        self.model = QtGui.QFileSystemModel(self)
         self.treeView.setModel(self.model)
-        self.treeView.sortByColumn(0, 0)
+        self.treeView.sortByColumn(0, QtCore.Qt.SortOrder.AscendingOrder)
 
         # for file browser tree:
         # default root is current working directory
@@ -184,7 +184,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         """
         if type(event) == QtGui.QKeyEvent:
             if (self.treeView.hasFocus()
-                    and event.key() == QtCore.Qt.Key_Return):
+                    and event.key() == QtCore.Qt.Key.Key_Return):
                 self.onRow()
 
     # event handlers
@@ -502,7 +502,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
 
         # resize to contents
         self.treeView.header().setSectionResizeMode(
-            0, QtWidgets.QHeaderView.ResizeToContents)
+            0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
         self.treeView.resizeColumnToContents(0)
 
         # enable/disable next button

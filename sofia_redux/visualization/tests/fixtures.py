@@ -508,13 +508,13 @@ def loaded_eye(qapp, mocker, qtbot, spectral_filenames):
                         return_value=[spectral_filenames])
 
     app = eye.Eye()
-    qtbot.mouseClick(app.view.add_file_button, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(app.view.add_file_button, QtCore.Qt.MouseButton.LeftButton)
     app.view.refresh_controls()
     app.view.loaded_files_table.selectRow(0)
     mocker.patch.object(app.view.loaded_files_table, 'hasFocus',
                         return_value=True)
     qtbot.keyClick(app.view.loaded_files_table,
-                   QtCore.Qt.Key_Return)
+                   QtCore.Qt.Key.Key_Return)
     app.view.refresh_controls()
     app.view.open_eye()
     qtbot.wait(1000)
@@ -534,15 +534,15 @@ def loaded_eye_with_alt(qapp, mocker, qtbot, spectral_filenames):
                         return_value=[spectral_filenames])
 
     app = eye.Eye()
-    qtbot.mouseClick(app.view.add_file_button, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(app.view.add_file_button, QtCore.Qt.MouseButton.LeftButton)
     app.view.refresh_controls()
     app.view.loaded_files_table.selectRow(0)
     mocker.patch.object(app.view.loaded_files_table, 'hasFocus',
                         return_value=True)
     qtbot.keyClick(app.view.loaded_files_table,
-                   QtCore.Qt.Key_Return)
+                   QtCore.Qt.Key.Key_Return)
     qtbot.mouseClick(app.view.enable_overplot_checkbox,
-                     QtCore.Qt.LeftButton)
+                     QtCore.Qt.MouseButton.LeftButton)
     app.view.axes_selector.setCurrentText('Current Overplot')
     app.view.y_property_selector.setCurrentText('spectral_flux')
     app.view.refresh_controls()

@@ -123,7 +123,7 @@ class ReferenceWindow(QtWidgets.QDialog, rd.Ui_Dialog):
 
             # add file name to list widget
             item = QtWidgets.QListWidgetItem(os.path.basename(filename))
-            item.setData(QtCore.Qt.UserRole, filename)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, filename)
             item.setToolTip(filename)
             self.loaded_files_list.addItem(item)
 
@@ -174,7 +174,7 @@ class ReferenceWindow(QtWidgets.QDialog, rd.Ui_Dialog):
         if self.textview is None or not self.textview.isVisible():
             self.textview = TextView(self)
             self.textview.tableButton.hide()
-        filename = item.data(QtCore.Qt.UserRole)
+        filename = item.data(QtCore.Qt.ItemDataRole.UserRole)
         with open(filename, 'r') as f:
             lines = f.readlines()
         lines = [ln.strip() for ln in lines]

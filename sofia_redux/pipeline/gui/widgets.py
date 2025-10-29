@@ -236,10 +236,10 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
 
         # hook up the reset and restore buttons
         reset = self.buttonBox.button(
-            QtWidgets.QDialogButtonBox.Reset)
+            QtWidgets.QDialogButtonBox.StandardButton.Reset)
         reset.clicked.connect(self.reset)
         restore = self.buttonBox.button(
-            QtWidgets.QDialogButtonBox.RestoreDefaults)
+            QtWidgets.QDialogButtonBox.StandardButton.RestoreDefaults)
         restore.clicked.connect(self.restore)
 
         # store the initial parameters and base directory
@@ -273,8 +273,8 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
         # expanding box
         comboBox = QtWidgets.QComboBox(self.groupBox)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed)
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed)
         comboBox.setSizePolicy(sizePolicy)
         comboBox.setObjectName(key)
         if param["description"] is not None:
@@ -307,8 +307,8 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
         textBox.setObjectName(key)
 
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.Fixed)
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Policy.Fixed)
         textBox.setSizePolicy(sizePolicy)
         textBox.setMinimumWidth(200)
 
@@ -381,7 +381,7 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
         # center the check box vertically
         vbox = QtWidgets.QVBoxLayout()
         vbox.addWidget(checkBox)
-        vbox.setAlignment(QtCore.Qt.AlignHCenter)
+        vbox.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
         self.groupBox.layout().addRow(param['name'], vbox)
 
@@ -513,7 +513,7 @@ class EditParam(QtWidgets.QDialog, ui_edit_param.Ui_Dialog):
     def setFormLayout(self):
         """Assign a form layout to the current groupBox."""
         layout = QtWidgets.QFormLayout()
-        layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
+        layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         self.groupBox.setLayout(layout)
 
     def setWidgets(self):
@@ -610,7 +610,7 @@ class DataTableModel(QtCore.QAbstractTableModel):
         """
         return len(self._keys)
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=QtCore.Qt.ItemDataRole.DisplayRole):
         """
         Retrieve table data by index.
 
@@ -628,11 +628,11 @@ class DataTableModel(QtCore.QAbstractTableModel):
             index value is returned.  If not, None is returned.
         """
         if index.isValid():
-            if role == QtCore.Qt.DisplayRole:
+            if role == QtCore.Qt.ItemDataRole.DisplayRole:
                 return str(self._data[self._keys[index.column()]][index.row()])
         return None
 
-    def headerData(self, col, orientation, role=QtCore.Qt.DisplayRole):
+    def headerData(self, col, orientation, role=QtCore.Qt.ItemDataRole.DisplayRole):
         """
         Retrieve column data.
 
@@ -650,11 +650,11 @@ class DataTableModel(QtCore.QAbstractTableModel):
         str or None
             Column name if orientation and role are valid; otherwise None.
         """
-        if orientation == QtCore.Qt.Horizontal and \
-                role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Orientation.Horizontal and \
+                role == QtCore.Qt.ItemDataRole.DisplayRole:
             return self._keys[col]
-        elif orientation == QtCore.Qt.Vertical and \
-                role == QtCore.Qt.DisplayRole:
+        elif orientation == QtCore.Qt.Orientation.Vertical and \
+                role == QtCore.Qt.ItemDataRole.DisplayRole:
             return col + 1
         return None
 

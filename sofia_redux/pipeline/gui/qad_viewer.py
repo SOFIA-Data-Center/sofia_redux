@@ -427,7 +427,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # extension combo box
         if 'extension' in fromdict:
             ext = str(fromdict['extension']).lower()
-            idx = self.extensionBox.findText(ext, QtCore.Qt.MatchFixedString)
+            idx = self.extensionBox.findText(ext, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.extensionBox.setCurrentIndex(idx)
             else:
@@ -439,19 +439,19 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # lock type combo boxes
         if 'lock_image' in fromdict:
             lock = fromdict['lock_image'].lower()
-            idx = self.lockImageBox.findText(lock, QtCore.Qt.MatchFixedString)
+            idx = self.lockImageBox.findText(lock, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.lockImageBox.setCurrentIndex(idx)
         if 'lock_slice' in fromdict:
             lock = fromdict['lock_slice'].lower()
-            idx = self.lockSliceBox.findText(lock, QtCore.Qt.MatchFixedString)
+            idx = self.lockSliceBox.findText(lock, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.lockSliceBox.setCurrentIndex(idx)
 
         # scale combo box
         if 'scale' in fromdict:
             scale = fromdict['scale'].lower()
-            idx = self.scaleBox.findText(scale, QtCore.Qt.MatchFixedString)
+            idx = self.scaleBox.findText(scale, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.scaleBox.setCurrentIndex(idx)
 
@@ -506,7 +506,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # model list
         if 'model' in fromdict:
             mname = fromdict['model'].lower()
-            idx = self.modelTypeBox.findText(mname, QtCore.Qt.MatchFixedString)
+            idx = self.modelTypeBox.findText(mname, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.modelTypeBox.setCurrentIndex(idx)
 
@@ -520,7 +520,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         if 'window_units' in fromdict:
             units = fromdict['window_units'].lower()
             idx = self.windowUnitsBox.findText(
-                units, QtCore.Qt.MatchFixedString)
+                units, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.windowUnitsBox.setCurrentIndex(idx)
 
@@ -533,7 +533,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # fwhm units list
         if 'fwhm_units' in fromdict:
             units = fromdict['fwhm_units'].lower()
-            idx = self.fwhmUnitsBox.findText(units, QtCore.Qt.MatchFixedString)
+            idx = self.fwhmUnitsBox.findText(units, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.fwhmUnitsBox.setCurrentIndex(idx)
 
@@ -547,7 +547,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         if 'aperture_units' in fromdict:
             units = fromdict['aperture_units'].lower()
             idx = self.apradUnitsBox.findText(units,
-                                              QtCore.Qt.MatchFixedString)
+                                              QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.apradUnitsBox.setCurrentIndex(idx)
 
@@ -590,7 +590,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         if 'window_units' in fromdict:
             units = fromdict['window_units'].lower()
             idx = self.plotWindowUnitsBox.findText(
-                units, QtCore.Qt.MatchFixedString)
+                units, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.plotWindowUnitsBox.setCurrentIndex(idx)
 
@@ -603,7 +603,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # share axes list
         if 'share_axes' in fromdict:
             ax = fromdict['share_axes'].lower()
-            idx = self.shareAxesBox.findText(ax, QtCore.Qt.MatchFixedString)
+            idx = self.shareAxesBox.findText(ax, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.shareAxesBox.setCurrentIndex(idx)
 
@@ -629,7 +629,7 @@ class QADViewerSettings(QtWidgets.QWidget, ui_qad_settings.Ui_Form):
         # summary stat list
         if 'summary_stat' in fromdict:
             ax = fromdict['summary_stat'].lower()
-            idx = self.summaryStatBox.findText(ax, QtCore.Qt.MatchFixedString)
+            idx = self.summaryStatBox.findText(ax, QtCore.Qt.MatchFlag.MatchFixedString)
             if idx != -1:
                 self.summaryStatBox.setCurrentIndex(idx)
 
