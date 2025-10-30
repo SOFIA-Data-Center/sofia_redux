@@ -1079,7 +1079,8 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         items = self.loaded_files_table.selectedItems()
         if not items:
             return
-        model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole) for item in items]
+        model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole)
+                     for item in items]
         return model_ids
 
     ####
@@ -1501,8 +1502,10 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         self.filename_table.setUpdatesEnabled(False)
         self.filename_table.clearContents()
 
-        alignments = [QtCore.Qt.AlignmentFlag.AlignCenter, QtCore.Qt.AlignmentFlag.AlignCenter,
-                      QtCore.Qt.AlignmentFlag.AlignCenter, QtCore.Qt.AlignmentFlag.AlignLeft]
+        alignments = [QtCore.Qt.AlignmentFlag.AlignCenter,
+                      QtCore.Qt.AlignmentFlag.AlignCenter,
+                      QtCore.Qt.AlignmentFlag.AlignCenter,
+                      QtCore.Qt.AlignmentFlag.AlignLeft]
         size_policies = [QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
                          QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
                          QtWidgets.QHeaderView.ResizeMode.ResizeToContents,
@@ -1621,7 +1624,8 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
                 for item in self.filename_table.selectedItems():
                     items.append(
                         self.filename_table.item(item.row(), fn_index))
-            model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole) for item in items]
+            model_ids = [item.data(QtCore.Qt.ItemDataRole.UserRole)
+                         for item in items]
         model_ids = list(set(model_ids))
 
         return model_ids, pane_index

@@ -632,7 +632,8 @@ class DataTableModel(QtCore.QAbstractTableModel):
                 return str(self._data[self._keys[index.column()]][index.row()])
         return None
 
-    def headerData(self, col, orientation, role=QtCore.Qt.ItemDataRole.DisplayRole):
+    def headerData(self, col, orientation,
+                   role=QtCore.Qt.ItemDataRole.DisplayRole):
         """
         Retrieve column data.
 

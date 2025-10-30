@@ -82,7 +82,7 @@ class QADMainWindow(QtWidgets.QMainWindow, ui_qad_main.Ui_MainWindow):
         self.actionSaveSettings.setIcon(save_icon)
         imexam_icon = self.style().standardIcon(
             QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView)
-        self.actionImExam.setIcon(imexam_icon)    
+        self.actionImExam.setIcon(imexam_icon)
         header_icon = self.style().standardIcon(
             QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView)
         self.actionDisplayHeader.setIcon(header_icon)

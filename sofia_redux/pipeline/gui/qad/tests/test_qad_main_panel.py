@@ -105,7 +105,8 @@ class TestQADMain(object):
             idx1 = model.index(fname, 0)
             idx2 = model.index(fname, model.columnCount() - 1)
             itemsel = QtCore.QItemSelection(idx1, idx2)
-            selection.select(itemsel, QtCore.QItemSelectionModel.SelectionFlag.Select)
+            selection.select(
+                itemsel, QtCore.QItemSelectionModel.SelectionFlag.Select)
         else:
             # or else select them all
             for fname in os.listdir(mw.rootpath):
@@ -113,8 +114,8 @@ class TestQADMain(object):
                 idx1 = model.index(fname, 0)
                 idx2 = model.index(fname, model.columnCount() - 1)
                 itemsel = QtCore.QItemSelection(idx1, idx2)
-                selection.select(itemsel,
-                                 QtCore.QItemSelectionModel.SelectionFlag.Select)
+                selection.select(
+                    itemsel, QtCore.QItemSelectionModel.SelectionFlag.Select)
 
         selected = []
         idx = mw.treeView.selectionModel().selectedRows()
