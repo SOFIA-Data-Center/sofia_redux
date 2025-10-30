@@ -289,7 +289,7 @@ class TestMainWindow(object):
         orig_files = mw.loaded_files.copy()
 
         # test if remove dialog canceled
-        mocker.patch.object(RemoveFilesDialog, 'exec_',
+        mocker.patch.object(RemoveFilesDialog, 'exec',
                             return_value=QtWidgets.QDialog.DialogCode.Rejected)
         mw.onRemoveFiles()
         assert mw.loaded_files == orig_files
@@ -303,7 +303,7 @@ class TestMainWindow(object):
                 return os.path.basename(self.value)
 
         # test if no file selected
-        mocker.patch.object(RemoveFilesDialog, 'exec_',
+        mocker.patch.object(RemoveFilesDialog, 'exec',
                             return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QListWidget, 'selectedItems',
                             return_value=[])
@@ -537,7 +537,7 @@ class TestMainWindow(object):
         # mock the show, exec_, and isvisible functions
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)
@@ -573,7 +573,7 @@ class TestMainWindow(object):
         # mock the show, exec_, and isvisible functions
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)
@@ -606,7 +606,7 @@ class TestMainWindow(object):
         # mock the show, exec_, and isvisible functions
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=QtWidgets.QDialog.DialogCode.Accepted)
         mocker.patch.object(QtWidgets.QDialog, 'isVisible',
                             return_value=True)

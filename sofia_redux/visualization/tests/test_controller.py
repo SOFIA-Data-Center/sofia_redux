@@ -35,7 +35,7 @@ class TestController(object):
     def test_main(self, mocker, qtbot, spectral_filenames, qapp):
         mocker.patch.object(sys, 'argv', spectral_filenames)
         mocker.patch.object(sys, 'exit')
-        mocker.patch.object(PyQt6.QtWidgets.QApplication, 'exec_',
+        mocker.patch.object(PyQt6.QtWidgets.QApplication, 'exec',
                             return_value=0)
         mocker.patch.object(PyQt6.QtWidgets, 'QApplication',
                             return_value=qapp)

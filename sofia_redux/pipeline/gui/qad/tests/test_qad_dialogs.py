@@ -43,7 +43,7 @@ class TestQADDialogs(object):
         # mock show and exec
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=None)
 
         disp_dialog = DispSettingsDialog()
@@ -78,7 +78,7 @@ class TestQADDialogs(object):
         # mock show and exec
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=None)
 
         imviewer = QADImView()
@@ -184,7 +184,7 @@ class TestQADDialogs(object):
         # mock show and exec
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=None)
 
         imviewer = QADImView()

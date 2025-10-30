@@ -42,7 +42,7 @@ def one_dim_pane_empty(simple_axes):
 def populated_spectral_eye(empty_eye_app, qtbot, mocker, spectral_filenames):
     mocker.patch.object(QtWidgets.QDialog, 'show',
                         return_value=None)
-    mocker.patch.object(QtWidgets.QDialog, 'exec_',
+    mocker.patch.object(QtWidgets.QDialog, 'exec',
                         return_value=None)
     empty_eye_app.add_panes(layout='rows', n_panes=2, kind='spectrum')
     empty_eye_app.load(spectral_filenames)

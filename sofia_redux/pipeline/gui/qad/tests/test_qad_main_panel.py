@@ -130,7 +130,7 @@ class TestQADMain(object):
         # mock the show and exec function
         mocker.patch.object(QtWidgets.QDialog, 'show',
                             return_value=None)
-        mocker.patch.object(QtWidgets.QDialog, 'exec_',
+        mocker.patch.object(QtWidgets.QDialog, 'exec',
                             return_value=None)
 
         # mock the imviewer class
@@ -375,7 +375,7 @@ class TestQADMain(object):
         mod_dict[test_key] = 'test'
 
         # mock the exec and getValue functions
-        mocker.patch.object(DispSettingsDialog, 'exec_',
+        mocker.patch.object(DispSettingsDialog, 'exec',
                             return_value=1)
         mocker.patch.object(DispSettingsDialog, 'getValue',
                             return_value=mod_dict)
@@ -399,7 +399,7 @@ class TestQADMain(object):
         test_key = 'model'
         mod_dict[test_key] = 'test'
 
-        mocker.patch.object(PhotSettingsDialog, 'exec_',
+        mocker.patch.object(PhotSettingsDialog, 'exec',
                             return_value=1)
         mocker.patch.object(PhotSettingsDialog, 'getValue',
                             return_value=mod_dict)
@@ -420,7 +420,7 @@ class TestQADMain(object):
         test_key = 'color'
         mod_dict[test_key] = 'test'
 
-        mocker.patch.object(PlotSettingsDialog, 'exec_',
+        mocker.patch.object(PlotSettingsDialog, 'exec',
                             return_value=1)
         mocker.patch.object(PlotSettingsDialog, 'getValue',
                             return_value=mod_dict)

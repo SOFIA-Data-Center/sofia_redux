@@ -17,7 +17,7 @@ class TestApplication(object):
         """Test run method."""
         mocker.patch.object(QtWidgets.QMessageBox, 'question',
                             return_value=QtWidgets.QMessageBox.StandardButton.Yes)
-        mocker.patch.object(QtWidgets.QApplication, 'exec_', return_value=None)
+        mocker.patch.object(QtWidgets.QApplication, 'exec', return_value=None)
         mocker.patch.object(QtWidgets.QMainWindow, 'show', return_value=None)
         mocker.patch.object(QtWidgets, 'QApplication', return_value=qapp)
         application = Application()

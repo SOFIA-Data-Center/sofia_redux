@@ -486,7 +486,7 @@ def empty_view(mocker, qtbot, qapp):
                         return_value=None)
     mocker.patch.object(QtWidgets, 'QApplication',
                         return_value=qapp)
-    mocker.patch.object(QtWidgets.QApplication, 'exec_',
+    mocker.patch.object(QtWidgets.QApplication, 'exec',
                         return_value=None)
     view_ = view.View(signals.Signals())
     qtbot.add_widget(view_)
@@ -553,7 +553,7 @@ def loaded_eye_with_alt(qapp, mocker, qtbot, spectral_filenames):
 
 @pytest.fixture(scope='function')
 def open_mock(mocker, qapp):
-    mocker.patch.object(QtWidgets.QApplication, 'exec_',
+    mocker.patch.object(QtWidgets.QApplication, 'exec',
                         return_value=0)
     mocker.patch.object(QtWidgets, 'QApplication',
                         return_value=qapp)

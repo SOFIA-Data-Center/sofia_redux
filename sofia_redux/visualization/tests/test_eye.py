@@ -58,7 +58,8 @@ class TestEye(object):
 
         assert app.view.loaded_files_table.rowCount() == 0
 
-        qtbot.mouseClick(app.view.add_file_button, PyQt6.QtCore.Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(app.view.add_file_button,
+                         PyQt6.QtCore.Qt.MouseButton.LeftButton)
         app.view.refresh_controls()
         window.assert_called_once()
 
@@ -236,7 +237,8 @@ class TestEye(object):
                             return_value=[spectral_filenames])
 
         app = eye.Eye()
-        qtbot.mouseClick(app.view.add_file_button, PyQt6.QtCore.Qt.MouseButton.LeftButton)
+        qtbot.mouseClick(app.view.add_file_button,
+                         PyQt6.QtCore.Qt.MouseButton.LeftButton)
         app.view.refresh_controls()
         app.view.loaded_files_table.selectRow(0)
         mocker.patch.object(app.view.loaded_files_table, 'hasFocus',
