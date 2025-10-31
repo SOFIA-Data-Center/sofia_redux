@@ -132,9 +132,14 @@ class View(QtWidgets.QMainWindow, ssv.Ui_MainWindow):
         """
         if type(event) == QtGui.QKeyEvent:
             try:
-                name = QtGui.QKeySequence(
-                    event.modifiers() | event.key()).toString().encode('utf-8')
-                name = name.decode('utf-8')
+                name = (
+                    QtGui.QKeySequence(
+                        event.modifiers().value | event.key()
+                    )
+                    .toString()
+                    .encode('utf-8')
+                    .decode('utf-8')
+                )
             except UnicodeEncodeError:  # pragma: no cover
                 name = 'UNKNOWN'
             log.debug(f'Key pushed in view: {name}')

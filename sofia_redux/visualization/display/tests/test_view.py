@@ -379,7 +379,7 @@ class TestView(object):
         pane_mock = mocker.patch.object(figure.Figure, 'set_enabled')
         pane_id = 1
         model_id = True
-        state = True
+        state = QtCore.Qt.CheckState.Checked
 
         item = QtWidgets.QTreeWidgetItem()
         item.setCheckState(0, state)
@@ -391,7 +391,7 @@ class TestView(object):
         model_id = 2
         item.setData(0, QtCore.Qt.ItemDataRole.UserRole, (pane_id, model_id))
         blank_view.enable_model(item)
-        pane_mock.assert_called_once_with(pane_id, model_id, state)
+        pane_mock.assert_called_once_with(pane_id, model_id, bool(state))
 
     @pytest.mark.parametrize('state,id_state,label',
                              [(True, False, 'Hide all'),
