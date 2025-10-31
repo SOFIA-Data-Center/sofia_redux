@@ -15,32 +15,32 @@ From source
 
 Obtain the source code for this package from the `SOFIA Redux GitHub project
 <https://github.com/SOFIA-Data-Center/sofia_redux>`__, then install it from the
-source directory:
+source directory::
 
-pip install .
+  pip install .
 
 or for development the package can be installed *editable*::
 
-   pip install -e .
+  pip install -e .
 
 Optional Requirements
 ---------------------
 
-PyQt5
+PyQt6
 ^^^^^
 
 If sofia_redux is installed via pip, the PyQt5 package, required for
 the pipeline GUI interface, is not automatically installed as a dependency.
-To use the GUI tools, install PyQt5 via pip::
+To use the GUI tools, install PyQt6 via pip::
 
-  pip install PyQt5
+  pip install PyQt6
 
 or use the [all] extra::
 
   pip install 'sofia-redux[all]'
 
 Please note that there may be some incompatibilities between some versions
-of PyQt5, some versions of the package dependencies, and some host OS versions.
+of PyQt6, some versions of the package dependencies, and some host OS versions.
 
 DS9
 ^^^
