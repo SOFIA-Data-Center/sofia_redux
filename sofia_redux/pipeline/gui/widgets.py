@@ -37,8 +37,9 @@ except ImportError:
             pass
 
         class Qt:
-            class DisplayRole:
-                pass
+            class ItemDataRole:
+                class DisplayRole:
+                    pass
 
         class QObject:
             pass
