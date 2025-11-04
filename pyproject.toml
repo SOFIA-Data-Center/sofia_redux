@@ -153,12 +153,10 @@ norecursedirs = [
 ]
 astropy_header = "true"
 text_file_format = "rst"
-addopts = "-p no:warnings"
-timeout = 1000
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "big: marks tests as requiring many resources (deselect with '-m \"not big\"')",
+addopts = [
+    "--strict-markers"
 ]
+timeout = 1000
 
 [tool.coverage.run]
 source = ["sofia_redux",]

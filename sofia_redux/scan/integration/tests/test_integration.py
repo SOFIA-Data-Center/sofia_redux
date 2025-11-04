@@ -22,6 +22,7 @@ from sofia_redux.scan.signal.signal import Signal
 from sofia_redux.toolkit.utilities.fits import set_log_level
 
 
+@pytest.mark.hugemem
 class TestIntegration(object):
 
     def test_init(self, initialized_scan, scan_file):
@@ -1880,7 +1881,6 @@ class TestIntegration(object):
         assert integ.perform('test') is False
         assert integ.comments == expected
 
-    @pytest.mark.big
     def test_get_fits_data(self, populated_integration):
         integ = populated_integration
         integ.setup_filters()
