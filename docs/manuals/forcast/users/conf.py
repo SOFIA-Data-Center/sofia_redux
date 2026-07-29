@@ -64,8 +64,8 @@ exclude_patterns.append('_templates')
 
 exclude_patterns.append('data_description.rst')
 exclude_patterns.append('software_description.rst')
-exclude_patterns.append('spectral_extraction.rst')
-exclude_patterns.append('spectral_calibration.rst')
+exclude_patterns.append('spectral_*.rst')
+exclude_patterns.append('appendix_*.rst')
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.

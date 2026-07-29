@@ -1,3 +1,7 @@
+.. _forcast_change_notes:
+
+Appendix D: Change notes for the FORCAST pipeline
+=================================================
 
 Significant changes
 -------------------

@@ -29,8 +29,12 @@ This manual applies to FORCAST Redux version |forcast_pipevers|.
 
 .. include:: software_description.rst
 
-.. _forcast_change_notes:
+.. include:: appendix_sample_config.rst
 
-Appendix D: Change notes for the FORCAST pipeline
-=================================================
+.. include:: appendix_input_keywords.rst
+    
+.. include:: appendix_calibration_data_generation.rst
+
 .. include:: change_notes.rst
+
+.. include:: references.rst
