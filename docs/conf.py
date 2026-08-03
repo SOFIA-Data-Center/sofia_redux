@@ -57,7 +57,7 @@ exclude_patterns.append('_templates')
 # specific support
 exclude_patterns.append('sofia_redux/pipeline/redux_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/usage/*.rst')
-exclude_patterns.append('manuals/*/external-reqs-src-install.rst')
+exclude_patterns.append('manuals/external-reqs-src-install.rst')
 exclude_patterns.append('manuals/*/*/index.rst')
 exclude_patterns.append('manuals/*/*/redux_doc.rst')
 exclude_patterns.append('manuals/*/users/data_description.rst')
