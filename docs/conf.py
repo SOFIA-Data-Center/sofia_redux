@@ -62,10 +62,8 @@ exclude_patterns.append('manuals/*/*/index.rst')
 exclude_patterns.append('manuals/*/*/redux_doc.rst')
 exclude_patterns.append('manuals/*/users/data_description.rst')
 exclude_patterns.append('manuals/*/users/software_description.rst')
-exclude_patterns.append('manuals/*/users/spectral_extraction.rst')
-exclude_patterns.append('manuals/*/users/spectral_calibration.rst')
-exclude_patterns.append('manuals/*/users/spectral_display.rst')
-exclude_patterns.append('manuals/*/data_handbook')
+exclude_patterns.append('manuals/*/users/spectral_*.rst')
+exclude_patterns.append('manuals/*/users/appendix_*.rst')
 exclude_patterns.append('manuals/*/*/api')
 
 # This is added to the end of RST files - a good place to put substitutions to
