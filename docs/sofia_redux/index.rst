@@ -23,11 +23,15 @@ Contributions and feedback are welcome via the GitHub project.
 Getting Started
 ===============
 
+.. Caution this imposes some title style sequence */* = =/= - ^ ~
+
 .. include:: ../install.rst
 
 
+=======================
 Running SOFIA pipelines
------------------------
+=======================
+
 Out of the box, Redux provides two primary command-line scripts:
 
 * **redux** (`sofia_redux.pipeline.sofia.redux_app`): An interactive graphical interface (GUI) for the SOFIA pipelines.
@@ -69,7 +73,9 @@ Tutorials are available for data reduction procedures, via the
 Manuals
 =======
 
-User's Manuals:
+==============
+User's Manuals
+==============
 
 - :doc:`../manuals/exes/users/users` [:doc:`HTML <../manuals/exes/users/users>` ,
   `PDF <https://redux.sofiadatacenter.de/resources/SDC-MAN-0005_Iss01%20EXES%20Redux%20User%27s%20Manual.pdf>`__]
@@ -85,7 +91,9 @@ User's Manuals:
 Older versions of the pipeline user's manuals can be found at
 `IRSA Data Pipelines <https://irsa.ipac.caltech.edu/data/SOFIA/docs/data/data-pipelines/index.html#pipeline>`__.
 
-Developer's Manuals:
+===================
+Developer's Manuals
+===================
 
 - :doc:`../manuals/exes/developers/developers`
 - :doc:`../manuals/fifils/developers/developers`
@@ -98,13 +106,9 @@ Instrument Pipeline Modules
 ===========================
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 3
 
-  instruments/exes/index.rst
-  instruments/fifi_ls/index.rst
-  instruments/flitecam/index.rst
-  instruments/forcast/index.rst
-  instruments/hawc/index.rst
+  instruments/index.rst
 
 
 Submodules
