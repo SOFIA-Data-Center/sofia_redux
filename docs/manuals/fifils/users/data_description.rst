@@ -836,17 +836,17 @@ using one of two sources:
    source ECMWF data from the DaRUS data repository [#fn_fifi_ecmwf]_. The pipeline identifies
    the satellite data which corresponds to the time and latitude of the observation, reads
    the PWV value, and scales it according to the above described method. The scaled value is stored
-   in the keyword ``WVZ_FIFI``.
+   in the keyword ``WV_USED``.
 
    2. If the *Use ECMWF WV values* option in the Redux GUI is left unticked, or the parameter
    ``use_ecmwf`` in the config file is set to False, then the PWV is sourced from the FIFI-LS headers.
    The pipeline reads the keyword ``WVZ_OBS``, which is a pre-computed scaling of the ECMWF data.
    Testing has shown that these values are accurate to within roughly 10% of the values derived directly
-   from the ECMWF data.
+   from the ECMWF data. The value is then stored in the keyword ``WV_USED``.
 
-The source used for a particular pipeline product can be identified with the keyword
-``WV_SRC``, which will have the value "ECMWF" or "HEADER". The actual PWV used for the
-telluric correction and selection of ATRAN profile is stored in the keyword ``WV_USED``.
+``WV_USED`` always reflects which PWV value was actually used for telluric correction and
+ATRAN profile identification. The PWV source used for a particular pipeline product can be identified with the keyword
+``WV_SRC``, which will have the value "ECMWF" or "HEADER". 
 Note that ``WVZ_STA`` and ``WVZ_END`` are legacy values from the non-functional SOFIA Water Vapor Monitor
 (WVM) and should not be used for telluric correction.
 
