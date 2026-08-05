@@ -1,6 +1,6 @@
-****************************
-HAWC+ DRP Developer's Manual
-****************************
+******************************
+HAWC+ Redux Developer's Manual
+******************************
 
 .. raw:: latex
 
@@ -14,19 +14,19 @@ Document Purpose
 ----------------
 
 This document is intended to provide all the information necessary to
-maintain the HAWC+ DRP pipeline, used to produce Level
+maintain the HAWC+ Redux pipeline, used to produce Level
 2, 3, and 4 reduced products for HAWC+ data, in either manual or automatic
 mode. Level 2 is defined as data that has been processed to correct for
 instrumental effects; Level 3 is defined as data that has been
 flux-calibrated. Level 4 is any higher-level data product. A more
 general introduction to the data reduction procedure and the scientific
-justification of the algorithms is available in the HAWC+ DRP Users
+justification of the algorithms is available in the HAWC+ Redux Pipeline User's
 Manual.
 
-This manual applies to HAWC+ DRP version 3.2.0.
+This manual applies to HAWC+ Redux version 3.2.2.
 
-HAWC DRP Revision History
--------------------------
+HAWC Redux Pipeline Revision History
+------------------------------------
 
 The HAWC pipeline was originally developed as three separate packages: the
 HAWC Data Reduction Pipeline (DRP), which contains pipeline infrastructure and
@@ -89,14 +89,14 @@ The sofia_redux package has several sub-modules organized by functionality::
 The modules used in the HAWC pipeline are described below.
 
 
-DRP Architecture
-----------------
+Pipeline Architecture
+---------------------
 
-The HAWC DRP (`sofia_redux.instruments.hawc`) package is written in Python using
+The HAWC Pipeline (`sofia_redux.instruments.hawc`) package is written in Python using
 standard scientific tools and libraries. It has two main structures: data
 containers and the data processing algorithms (pipe steps).
 
-In the DRP, data reduction proceeds by creating and calling
+In the pipelin, data reduction proceeds by creating and calling
 pipeline Step objects, each of which is responsible for a single step
 in the data reduction. Pipe steps (e.g. StepPrepare, StepDemodulate, etc.)
 inherit from StepParent objects that
@@ -107,14 +107,14 @@ file (DataFits), with a header structure and binary data arranged into
 header-data units (HDUs), but may optionally correspond to a text file
 (DataText) or other format. All pipeline components use a common
 configuration object and send messages to common logger objects. See
-:numref:`drp_objects` for a class diagram of the relationships
-between the most important DRP classes.
+:numref:`hawc_redux_objects` for a class diagram of the relationships
+between the most important HAWC+ Redux classes.
 
-.. figure:: images/drp_class.png
-   :alt: DRP Core Class Diagram.
-   :name: drp_objects
+.. figure:: images/hawc_class.png
+   :alt: Hawc redux Core Class Diagram.
+   :name: hawc_redux_objects
 
-   DRP Core Class Diagram. Pipeline steps inherit from StepParent (for
+   HAWC+ Pipeline Core Class Diagram. Pipeline steps inherit from StepParent (for
    single-input, single-output steps), StepMIParent (for multi-input,
    single-output steps) or from StepMOParent (for multi-input,
    multi-output steps). Input and output data for the steps may be any
@@ -148,7 +148,7 @@ input files are merged in multi-input, single-output steps, most
 keywords are taken from the first input header, but some keywords may
 require special handling (averaging, concatenation, or other operations
 across the input set). These special merge handling procedures are
-specified in the DRP configuration file, in the [headmerge] section, and
+specified in the Redux configuration file, in the [headmerge] section, and
 are handled by the *DataFits.mergehead()* method.
 
 Header keywords may also be overridden in the configuration file, in the
@@ -173,12 +173,12 @@ embedded in the file name.
 
 Pipeline data objects also store a configuration object in ConfigObj
 format and a logging object for passing messages to. See
-:numref:`drp_data_class` for brief documentation of the most important
+:numref:`hawc_data_class` for brief documentation of the most important
 attributes and operations of the DataFits object.
 
-.. figure:: images/drp_data_class.png
+.. figure:: images/hawc_data_class.png
    :alt: UML class diagram for DataFits.
-   :name: drp_data_class
+   :name: hawc_data_class
    :height: 800
 
    DataFits class diagram.
@@ -208,7 +208,7 @@ operate on a list of Data objects and return a single Data object as
 output (multi-input, single output; MISO). These inherit from
 StepMIParent. Some steps may also operate on a list of Data objects at
 once, but still return multiple output files (multi-input, multi-output;
-MIMO). These inherit from StepMOParent. See :numref:`drp_step_class`
+MIMO). These inherit from StepMOParent. See :numref:`hawc_step_class`
 for a diagram of the Step parent classes.
 
 Parameters for each step are generally defined in their *setup* method.
@@ -218,9 +218,9 @@ and a comment. Parameters for the step are stored in a list in the
 *StepParent.getarg()* method. This method first checks for a value in a
 configuration file; if not found, the default value will be used.
 
-.. figure:: images/drp_step_class.png
+.. figure:: images/hawc_step_class.png
    :alt: StepParent Class Diagram.
-   :name: drp_step_class
+   :name: hawc_step_class
    :height: 800
 
    StepParent class diagram.
@@ -242,7 +242,7 @@ Main Classes
 
 The primary data structures for modeling an instrument in the scan package
 are listed below, and their relationships are diagrammed in
-:numref:`scan_data`.
+:numref:`hawc_scan_data`.
 
 -  **ChannelData**: an class representing a set of detector channel (pixels).
    A channel has properties, such as gains, flags, and weights etc.
@@ -296,9 +296,9 @@ are listed below, and their relationships are diagrammed in
    are inherently linked to a *ChannelGroup*, *Modalities* are linked to
    *ChannelDivisions*.
 
-.. figure:: images/scan_data.png
+.. figure:: images/hawc_scan_data.png
    :alt: UML class diagram of principal scan data classes.
-   :name: scan_data
+   :name: hawc_scan_data
 
    Principal scan data classes.  Channels has a set of ChannelDivisions.
    ChannelDivision is composed of ChannelGroups, which inherit from
@@ -321,7 +321,7 @@ dependents associated with the Frames and ChannelData.
 
 The reduction process is run from the class **Reduction**, which performs
 the reduction in a **Pipeline** instance, and
-produces a **SourceModel** (see :numref:`scan_process`).
+produces a **SourceModel** (see :numref:`hawc_scan_process`).
 A *Reduction* may create a set of sub-reductions to run in parallel,
 for processing a group of separate but associated source models.  These
 sub-reductions are used, for example, to process HAWC+ R and T subarrays
@@ -334,9 +334,9 @@ a set of tasks, defined by a **Configuration** class.  Metadata for
 the observation, including the *Configuration* and instrument information,
 is managed by an **Info** class associated with the *Reduction*.
 
-.. figure:: images/scan_process.png
+.. figure:: images/hawc_scan_process.png
    :alt: UML class diagram of principal scan processing classes.
-   :name: scan_process
+   :name: hawc_scan_process
 
    Principal scan processing classes.  A Reduction creates a Pipeline or,
    optionally, sub-reductions that create their own Pipelines.  The
@@ -523,27 +523,27 @@ Design
 HAWC Redux
 ~~~~~~~~~~
 
-To interface to the HAWC DRP pipeline, Redux defines the `HAWCReduction` and
+To interface to the HAWC Redux pipeline, Redux defines the `HAWCReduction` and
 `HAWCParameters` classes.  See :numref:`redux_class` for a sketch of
 the Redux classes used by the HAWC pipeline.  The HAWCReduction class
-holds the DRP DataFits objects and calls the DRP Step classes.  The
-HAWCParameters class reads from the DRP configuration object.
+holds the Redux DataFits objects and calls the Redux Step classes.  The
+HAWCParameters class reads from the Redux configuration object.
 
-The `HAWCParameters` class uses the DRP
-configuration file to define all parameters for DRP steps.
+The `HAWCParameters` class uses the Redux
+configuration file to define all parameters for Redux steps.
 Additionally, it adds a set of control parameters that the
 HAWCReduction class uses to determine if the output of a reduction
 step should be saved or displayed after processing.
 
-The `HAWCReduction` class also uses the DRP configuration file to
+The `HAWCReduction` class also uses the Redux configuration file to
 determine pipeline modes and data processing recipes for all input
 files.  Instead of implementing a method for each reduction step, it
 calls a single method for each step: the `run_drp_step` method
-looks up the appropriate DRP Step class from the pipeline step name,
+looks up the appropriate Step class from the pipeline step name,
 and calls it on the data in the `input` attribute.
 
 Since raw HAWC data is very large, Redux defines some of the initial
-data reduction steps as a combination of several DRP steps.  This
+data reduction steps as a combination of several steps.  This
 allows one raw file to be loaded into memory at a time, and only
 the smaller intermediate products to be passed along to the next
 reduction step.  These pipeline step overrides are defined in a
@@ -946,7 +946,7 @@ Appendix: Pipeline Recipe
 =========================
 
 This JSON document is the black-box interface specification for the HAWC
-DRP pipeline, as defined in the Pipetools-Pipeline ICD.
+Redux pipeline, as defined in the Pipetools-Pipeline ICD.
 
 .. include:: include/hawc_recipe.json
    :literal:
@@ -988,7 +988,7 @@ information for lab or diagnostic data (ex: scan number for lab scans).
 HAWA and HWPA stand for the spectral elements (SPECTEL1 and SPECTEL2 -
 with “\_” and initial “HAW” removed), RAW/MRG are the data reduction
 status acronym. The following list contains the most commonly used data
-reduction status acronyms. A full list is in the DRP User's Manual.
+reduction status acronyms. A full list is in the HAWC+ Redux User's Manual.
 
 -  RAW: Raw file as stored by the HAWC data acquisition software
 
