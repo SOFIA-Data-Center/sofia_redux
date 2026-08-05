@@ -936,9 +936,11 @@ sofia_redux.pipeline
 The Redux API, including the HAWC interface classes, is documented
 in the `sofia_redux.pipeline` package.
 
-.. toctree::
+.. include:: redux_doc.rst
 
-   redux_doc
+.. raw:: latex
+
+    \clearpage
 
 Appendix: Pipeline Recipe
 =========================

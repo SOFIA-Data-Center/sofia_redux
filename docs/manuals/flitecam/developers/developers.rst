@@ -660,9 +660,7 @@ sofia_redux.pipeline
 The Redux application programming interface (API), including the FLITECAM
 interface classes, are documented in the `sofia_redux.pipeline` package.
 
-.. toctree::
-
-   redux_doc
+.. include:: redux_doc.rst
 
 .. raw:: latex
 

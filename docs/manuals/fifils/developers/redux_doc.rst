@@ -1,51 +1,51 @@
 Redux Core
 ~~~~~~~~~~
 
-.. include:: ../../../api/sofia_redux.pipeline.interface.Interface.rst
-.. include:: ../../../api/sofia_redux.pipeline.configuration.Configuration.rst
-.. include:: ../../../api/sofia_redux.pipeline.chooser.Chooser.rst
-.. include:: ../../../api/sofia_redux.pipeline.reduction.Reduction.rst
-.. include:: ../../../api/sofia_redux.pipeline.parameters.Parameters.rst
-.. include:: ../../../api/sofia_redux.pipeline.parameters.ParameterSet.rst
-.. include:: ../../../api/sofia_redux.pipeline.application.Application.rst
-.. include:: ../../../api/sofia_redux.pipeline.pipe.Pipe.rst
-.. include:: ../../../api/sofia_redux.pipeline.viewer.Viewer.rst
+- :class:`sofia_redux.pipeline.interface.Interface` 
+- :class:`sofia_redux.pipeline.configuration.Configuration` 
+- :class:`sofia_redux.pipeline.chooser.Chooser` 
+- :class:`sofia_redux.pipeline.reduction.Reduction` 
+- :class:`sofia_redux.pipeline.parameters.Parameters` 
+- :class:`sofia_redux.pipeline.parameters.ParameterSet` 
+- :class:`sofia_redux.pipeline.application.Application` 
+- :class:`sofia_redux.pipeline.pipe.Pipe` 
+- :class:`sofia_redux.pipeline.viewer.Viewer` 
 
 
 Redux GUI
 ~~~~~~~~~
 
-.. include:: ../../../api/sofia_redux.pipeline.gui.main.ReduxMainWindow.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.ParamView.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.PipeStep.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.EditParam.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.CustomSignals.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.DataTableModel.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.StepRunnable.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.LoadRunnable.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.ProgressFrame.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.RemoveFilesDialog.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.widgets.TextEditLogger.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.textview.TextView.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad_viewer.QADViewer.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad_viewer.QADViewerSettings.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.matplotlib_viewer.MatplotlibViewer.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.matplotlib_viewer.MatplotlibPlot.rst
+- :class:`sofia_redux.pipeline.gui.main.ReduxMainWindow` 
+- :class:`sofia_redux.pipeline.gui.widgets.ParamView` 
+- :class:`sofia_redux.pipeline.gui.widgets.PipeStep` 
+- :class:`sofia_redux.pipeline.gui.widgets.EditParam` 
+- :class:`sofia_redux.pipeline.gui.widgets.CustomSignals` 
+- :class:`sofia_redux.pipeline.gui.widgets.DataTableModel` 
+- :class:`sofia_redux.pipeline.gui.widgets.StepRunnable` 
+- :class:`sofia_redux.pipeline.gui.widgets.LoadRunnable` 
+- :class:`sofia_redux.pipeline.gui.widgets.ProgressFrame` 
+- :class:`sofia_redux.pipeline.gui.widgets.RemoveFilesDialog` 
+- :class:`sofia_redux.pipeline.gui.widgets.TextEditLogger` 
+- :class:`sofia_redux.pipeline.gui.textview.TextView` 
+- :class:`sofia_redux.pipeline.gui.qad_viewer.QADViewer` 
+- :class:`sofia_redux.pipeline.gui.qad_viewer.QADViewerSettings` 
+- :class:`sofia_redux.pipeline.gui.matplotlib_viewer.MatplotlibViewer` 
+- :class:`sofia_redux.pipeline.gui.matplotlib_viewer.MatplotlibPlot` 
 
 QAD Viewer
 ~~~~~~~~~~
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_app.main.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_main_panel.QADMainWindow.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_imview.QADImView.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_headview.HeaderViewer.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_dialogs.DispSettingsDialog.rst
-.. include:: ../../../api/sofia_redux.pipeline.gui.qad.qad_dialogs.PhotSettingsDialog.rst
+- :class:`sofia_redux.pipeline.gui.qad.qad_app.main` 
+- :class:`sofia_redux.pipeline.gui.qad.qad_main_panel.QADMainWindow` 
+- :class:`sofia_redux.pipeline.gui.qad.qad_imview.QADImView` 
+- :class:`sofia_redux.pipeline.gui.qad.qad_headview.HeaderViewer` 
+- :class:`sofia_redux.pipeline.gui.qad.qad_dialogs.DispSettingsDialog` 
+- :class:`sofia_redux.pipeline.gui.qad.qad_dialogs.PhotSettingsDialog` 
 
 SOFIA Redux
 ~~~~~~~~~~~
-.. include:: ../../../api/sofia_redux.pipeline.sofia.sofia_app.main.rst
-.. include:: ../../../api/sofia_redux.pipeline.sofia.sofia_pipe.main.rst
-.. include:: ../../../api/sofia_redux.pipeline.sofia.sofia_chooser.SOFIAChooser.rst
-.. include:: ../../../api/sofia_redux.pipeline.sofia.sofia_configuration.SOFIAConfiguration.rst
-.. include:: ../../../api/sofia_redux.pipeline.sofia.fifils_reduction.FIFILSReduction.rst
-.. include:: ../../../api/sofia_redux.pipeline.sofia.parameters.fifils_parameters.FIFILSParameters.rst
+- :class:`sofia_redux.pipeline.sofia.sofia_app.main` 
+- :class:`sofia_redux.pipeline.sofia.sofia_pipe.main` 
+- :class:`sofia_redux.pipeline.sofia.sofia_chooser.SOFIAChooser` 
+- :class:`sofia_redux.pipeline.sofia.sofia_configuration.SOFIAConfiguration` 
+- :class:`sofia_redux.pipeline.sofia.fifils_reduction.FIFILSReduction` 
+- :class:`sofia_redux.pipeline.sofia.parameters.fifils_parameters.FIFILSParameters` 

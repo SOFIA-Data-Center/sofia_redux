@@ -86,6 +86,8 @@ Reference/API
 
 Redux Core
 ----------
+.. automodapi:: sofia_redux.pipeline
+   :headings: ~^
 .. automodapi:: sofia_redux.pipeline.application
    :headings: ~^
 .. automodapi:: sofia_redux.pipeline.chooser
