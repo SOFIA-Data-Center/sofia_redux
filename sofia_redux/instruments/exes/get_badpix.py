@@ -59,8 +59,21 @@ def get_badpix(header, clip_reference=False, apply_detsec=False):
         else:
             try:
                 bpm = get_file_from_darus(data_module.DARUS_DOI, bpm)
-            except FileNotFoundError:
+            except FileNotFoundError as e:
+                # Not in the dataset: permanent, so continue without a mask,
+                # as when the header names none.
+                log.warning(f'Could not retrieve bad pixel mask from DaRUS '
+                            f'dataset {data_module.DARUS_DOI}: {e}')
+                log.warning('Continuing without a bad pixel mask.')
                 return None
+            except OSError as e:
+                # DaRUS unreachable: temporary, so stop rather than quietly
+                # reducing without a mask.
+                log.error(f'Could not retrieve bad pixel mask from DaRUS '
+                          f'dataset {data_module.DARUS_DOI}: {e}')
+                log.error('Stopping rather than reducing without a mask; '
+                          'retry when DaRUS is reachable.')
+                raise
         mask = getdata(bpm).astype('int')
     if mask is None:
         return

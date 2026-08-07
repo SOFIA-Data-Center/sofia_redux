@@ -201,7 +201,12 @@ def get_atran_data(filename, resolution, atran_dir=None):
         localpath = os.path.join(atran_dir, f'{alt}K', filename)
         if not goodfile(localpath):
             log.debug(f'ATRAN file not found in ATRAN directory: {localpath}')
-            localpath = get_atran_from_darus(alt, filename)
+            try:
+                localpath = get_atran_from_darus(alt, filename)
+            except OSError as e:
+                log.error(f'Could not retrieve ATRAN file {filename} '
+                          f'for altitude {alt}K from DaRUS: {e}')
+                raise
 
     atranfile = os.path.basename(filename)
     hdul = gethdul(localpath, verbose=True)
@@ -353,7 +358,9 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
         try:
             ecmwf_file = Path(get_ecmwf_from_darus(filename))
         except Exception as e:
-            log.debug(f'Could not retrieve ECMWF file from DaRUS: {e}')
+            log.warning(f'Could not retrieve ECMWF file {filename} from '
+                        f'DaRUS dataset {PWV_DOI}: {e}')
+            log.warning('Falling back to WVZ_OBS from the header.')
             return None
 
     wv_ecmwf = None
