@@ -11,7 +11,7 @@ import numpy as np
 from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.get_resolution import get_resolution
 from sofia_redux.toolkit.utilities import goodfile, gethdul, hdinsert
-from sofia_redux.toolkit.utilities.darus import get_file_from_darus
+from sofia_redux.toolkit.utilities.darus import DarusError, get_file_from_darus
 from sofia_redux.spectroscopy.smoothres import smoothres
 
 
@@ -206,7 +206,10 @@ def get_atran_data(filename, resolution, atran_dir=None):
             except OSError as e:
                 log.error(f'Could not retrieve ATRAN file {filename} '
                           f'for altitude {alt}K from DaRUS: {e}')
-                raise
+                raise DarusError(
+                    f'Could not retrieve ATRAN file {filename} for '
+                    f'altitude {alt}K from DaRUS; the reduction '
+                    f'cannot continue.') from None
 
     atranfile = os.path.basename(filename)
     hdul = gethdul(localpath, verbose=True)

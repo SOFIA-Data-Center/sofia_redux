@@ -9,9 +9,19 @@ own dataset, identified by a unique DOI.
 from astropy.utils.data import download_file
 import requests
 
-__all__ = ['DARUS_URL_BASE', 'get_file_from_darus']
+__all__ = ['DARUS_URL_BASE', 'DarusError', 'get_file_from_darus']
 
 DARUS_URL_BASE = "https://darus.uni-stuttgart.de"
+
+
+class DarusError(OSError):
+    """Raised when a file could not be retrieved from DaRUS.
+
+    Carries a single message describing what was being retrieved and why
+    it failed. Callers raise it in place of the underlying transport
+    exception once that exception has been logged, so that the reduction
+    stops with a readable error instead of a chained retry traceback.
+    """
 
 # cache for list of files in each DaRUS dataset in the DOI
 __darus_files_in_ds = {}
