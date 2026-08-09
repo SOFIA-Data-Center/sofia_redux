@@ -310,6 +310,9 @@ def calculate_offsets(hdul, obsdate=None, flipsign=None, rotate=False):
 
     # plate scale in arcsec/mm
     plate_scale = header.get('PLATSCAL', 0)
+    if not telsim and plate_scale == -9999:
+        log.warning('PLATSCAL is -9999 (missing from the raw header); '
+                    'XS/YS spatial offsets will be badly wrong, not zero.')
     # Map offset in arcsec
     dlam_map = header.get('DLAM_MAP', 0)
     dbet_map = header.get('DBET_MAP', 0)

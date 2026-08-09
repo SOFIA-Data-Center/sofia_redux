@@ -177,6 +177,10 @@ def get_flat(header):
     if 'G_FLT_B' in header:
         b_filter = str(header['G_FLT_B']).upper().strip()
         if b_filter not in ['1', '2']:
+            if channel != 'RED':
+                log.warning("G_FLT_B=%s is invalid; using grating order %s "
+                            "as the blue filter instead — the wrong spectral "
+                            "flat file may be selected." % (b_filter, b_order))
             b_filter = b_order
     else:
         b_filter = b_order

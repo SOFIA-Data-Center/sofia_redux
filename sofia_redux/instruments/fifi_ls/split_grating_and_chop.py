@@ -112,6 +112,10 @@ def get_split_params(hdul, channel_index=3, sample_index=4,
         x['success'] = False
     hdinsert(header, 'CHANNEL', x['CHANNEL'], comment='Detector channel')
     x['CHOPLN'] = header.get('C_CHOPLN')
+    if 'C_AMP' not in header:
+        log.warning("C_AMP missing for file %s; assuming 0 (NOCHOP) - "
+                    "the file will be treated as unchopped and will "
+                    "not be split by chop phase." % fname)
     x['C_AMP'] = header.get('C_AMP', 0)
     for key in ['G_STRT', 'G_PSUP', 'G_SZUP', 'G_PSDN',
                 'G_SZDN', 'G_CYC', 'C_CYC', 'RAMPLN']:
@@ -119,6 +123,12 @@ def get_split_params(hdul, channel_index=3, sample_index=4,
         x[key] = header.get(color_key)
 
     x['PRIMARAY'] = header.get('PRIMARAY', 'UNKNOWN').upper().strip()
+    if x['PRIMARAY'] not in ('RED', 'BLUE'):
+        log.warning("PRIMARAY missing or invalid ('%s') for file %s; "
+                    "assuming BLUE - P_STRT/P_PSUP/P_SZUP (written to "
+                    "INDPOS_P) will be read from the blue channel "
+                    "grating keys, which may not be the true primary "
+                    "array." % (x['PRIMARAY'], fname))
     suffix = 'R' if x['PRIMARAY'] == 'RED' else 'B'
     for key in ['STRT', 'PSUP', 'SZUP']:
         x['P_' + key] = header.get('G_%s_%s' % (key, suffix))
@@ -598,6 +608,17 @@ def split_grating_and_chop(filename, write=False, outdir=None):
 
     # attach a position offset table for OTF mode scans
     instmode = str(hdul[0].header.get('INSTMODE', 'UNKNOWN')).upper()
+    if instmode == 'UNKNOWN':
+        log.warning("INSTMODE missing for file %s; assuming UNKNOWN - "
+                    "the file will not be treated as an OTF scan and no "
+                    "position offset table will be attached to the "
+                    "output product." % filename)
+    if 'OTF' in instmode and str(hdul[0].header.get(
+            'NODBEAM', 'UNKNOWN')).upper().strip() == 'UNKNOWN':
+        log.warning("NODBEAM missing or UNKNOWN for OTF file %s; not "
+                    "treated as an A nod - the on-sky position offset "
+                    "table will not be attached to the output product."
+                    % filename)
     nodbeam = str(hdul[0].header.get('NODBEAM', 'B')).upper().strip()
     if 'OTF' in instmode and nodbeam == 'A':
         try:

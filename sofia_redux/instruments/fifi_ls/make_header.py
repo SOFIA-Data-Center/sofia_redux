@@ -382,6 +382,10 @@ def update_basehead(basehead, table, headers):
     fits.Header
         Updated basehead
     """
+    if table['DATE-OBS']['value'] is None:
+        log.warning("DATE-OBS missing from base header; using 'UNKNOWN' - "
+                    "output header DATE-OBS is written as 'UNKNOWN' "
+                    "instead of a real observation time.")
     set_defaults(table)
     for key, row in table.items():
         hdinsert(basehead, key, row['value'], comment=row['comment'])
@@ -403,6 +407,10 @@ def update_basehead(basehead, table, headers):
     dateobs = basehead.get('DATE-OBS', 'UNKNOWN')
     utcstart = basehead.get('UTCSTART', '00:00:00')
     utcend = basehead.get('UTCEND', '00:00:00')
+    if utcstart == 'UNKNOWN' or utcend == 'UNKNOWN':
+        log.warning("UTCSTART/UTCEND is 'UNKNOWN' in header; DATE-BEG/"
+                    "DATE-END will be written with an invalid time and "
+                    "TELAPSE will be set to 0.")
     datestr = str(dateobs).split('T')[0].strip()
     datebeg = '%sT%s' % (datestr, utcstart)
     dateend = '%sT%s' % (datestr, utcend)
