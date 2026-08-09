@@ -224,7 +224,12 @@ def guess_source_position(header, image, srcpos=None):
     if not srcpos:
         if 'CRPIX1' in header and 'CRPIX2' in header:
             srcpos = [header['CRPIX1'], header['CRPIX2']]
-            log.debug('SRCPOS from CRPIX: {}'.format(srcpos))
+            log.warning('SRCPOSX/SRCPOSY not usable (absent or set to '
+                        '0,0) and no source peak found; using '
+                        'CRPIX1/CRPIX2 ({}) as the initial source '
+                        'position - the photometry fit will be seeded '
+                        'at the WCS reference pixel, not a measured '
+                        'source location.'.format(srcpos))
         else:
             srcpos = None
             log.debug('SRCPOS not found')

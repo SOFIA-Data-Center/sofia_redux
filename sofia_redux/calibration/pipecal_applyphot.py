@@ -151,10 +151,13 @@ def pipecal_applyphot(fitsfile, srcpos=None, fitsize=None, fwhm=None,
         log.info('Sky radii: {}'.format(skyrad))
     if config and not fwhm and 'fwhm' in config:
         fwhm = config['fwhm']
+        log.info('FWHM: {}'.format(fwhm))
     if config and not fitsize and 'fitsize' in config:
         fitsize = config['fitsize']
+        log.info('Fit size: {}'.format(fitsize))
     if config and not runits and 'runits' in config:
         runits = config['runits']
+        log.info('Raw units: {}'.format(runits))
 
     # Perform photometry
     phot = pipecal_photometry(image, variance, srcpos=srcpos,

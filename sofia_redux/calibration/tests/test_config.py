@@ -472,7 +472,8 @@ class TestConfig(object):
                    'ALPHACET   B 1.0\n')
         result = pipecal_config(header)
         capt = capsys.readouterr()
-        assert capt.err == ''
+        assert 'std_eflux' in capt.err
+        assert 'could not be parsed' in capt.err
         assert 'std_eflux' not in result
 
         # good format, good value

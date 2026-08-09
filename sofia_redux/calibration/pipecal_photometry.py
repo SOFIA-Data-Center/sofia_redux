@@ -124,6 +124,12 @@ def pipecal_photometry(image, variance, srcpos=None,
                         'the built-in default 138 - the profile fit will '
                         'use a 138 pixel subimage, not the requested '
                         'size.'.format(fitsize))
+        else:
+            log.warning('fitsize not provided; using the built-in '
+                        'default 138 - the profile fit will use a 138 '
+                        'pixel subimage, which may not match the '
+                        'calibrated value for this instrument (e.g. '
+                        'HAWC+ uses 100).')
         fitsize = 138
     try:
         fwhm = float(fwhm)
@@ -133,6 +139,12 @@ def pipecal_photometry(image, variance, srcpos=None,
                         'built-in default 5.0 - the profile fit is seeded '
                         'with a 5.0 pixel FWHM, not the requested '
                         'value.'.format(fwhm))
+        else:
+            log.warning('fwhm not provided; using the built-in default '
+                        '5.0 - this matches FORCAST and HAWC+, but not '
+                        'FLITECAM (6.0), so the profile fit will be '
+                        'seeded with the wrong initial width for '
+                        'FLITECAM data.')
         fwhm = 5.0
     try:
         aprad = float(aprad)
@@ -142,6 +154,12 @@ def pipecal_photometry(image, variance, srcpos=None,
                         'built-in default 12.0 - PHOTAPER and the aperture '
                         'flux STAPFLX will be measured in a 12.0 pixel '
                         'aperture, not the requested one.'.format(aprad))
+        else:
+            log.warning('aprad not provided; using the built-in '
+                        'default 12.0 - PHOTAPER and the aperture flux '
+                        'STAPFLX will be measured in a 12.0 pixel '
+                        'aperture (the HAWC+ pipeline, by comparison, '
+                        'passes 20.0).')
         aprad = 12.0
 
     runits = str(runits).strip()
@@ -152,6 +170,11 @@ def pipecal_photometry(image, variance, srcpos=None,
         raise PipeCalError(msg)
 
     if skyrad is None:
+        log.warning('skyrad not provided; using the built-in default '
+                    '[15.0, 25.0] (the FORCAST/FLITECAM sky annulus '
+                    'radii) - if this is HAWC+ data, the sky '
+                    'background will be measured in the wrong annulus '
+                    '(HAWC+ uses [25.0, 35.0]).')
         skyrad = [15., 25.]
     elif not hasattr(skyrad, '__len__') or len(skyrad) != 2:
         msg = 'Invalid sky radius'

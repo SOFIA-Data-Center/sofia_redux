@@ -2,6 +2,7 @@
 
 import warnings
 
+from astropy import log
 import bottleneck as bn
 import numpy as np
 from scipy.stats import describe
@@ -418,6 +419,15 @@ def robust_mask(data, threshold, mask=None, axis=None, mask_data=False,
                 mad = np.expand_dims(
                     1.482 * bn.nanmedian(
                         np.abs(d - med), axis=axis), axis)
+
+            if np.any(mad == 0):
+                log.warning(
+                    'MAD is 0 (at least half the valid values in the '
+                    'affected data are identical); abs(d - med) / MAD '
+                    'is inf or NaN there, so every such point fails the '
+                    'threshold check regardless of its deviation and is '
+                    'marked invalid, including points that are not '
+                    'outliers.')
 
             ratio = np.abs(d - med) / mad
             valid &= ratio <= threshold

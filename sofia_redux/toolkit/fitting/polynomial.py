@@ -584,7 +584,9 @@ def linear_polyfit(samples, order, exponents=None, error=1, mask=None,
     try:
         coeffs = np.linalg.solve(alpha, beta)
     except np.linalg.LinAlgError as err:
-        log.debug("singular values encountered in matrix inversion: %s" % err)
+        log.warning("Singular matrix in polynomial fit (%s); coefficients "
+                    "set to NaN, so any value evaluated from this fit "
+                    "will also be NaN." % err)
         nc = alpha.shape[0]
         coeffs = np.full(nc, np.nan)
         return (coeffs, np.full((nc, nc), np.nan)) if covar else coeffs

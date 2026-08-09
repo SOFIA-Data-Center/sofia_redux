@@ -147,7 +147,8 @@ class TestUtil(object):
         test = util.guess_source_position(header, image)
         assert test == crpix
         capt = capsys.readouterr()
-        assert 'SRCPOS from CRPIX' in capt.out
+        assert 'not usable' in capt.err
+        assert 'CRPIX1/CRPIX2' in capt.err
 
         # find_peaks failure, no crpix: return None
         del header['CRPIX1']

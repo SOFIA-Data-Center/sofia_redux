@@ -127,6 +127,11 @@ def fixpix(data, max_iter=5):
         niter += 1
         log.debug(f'Iteration {niter}: total {nhot} hot, {ncold} cold')
 
+    if niter >= max_iter > 0 and new_badpix:
+        log.warning(f'Bad pixel search stopped at max_iter={max_iter} '
+                    'while still finding new bad pixels; the output BADMASK '
+                    'is not guaranteed to include all hot/cold pixels.')
+
     log.info(f'Found {nhot} hot pixels and {ncold} cold pixels')
     return mask
 
