@@ -594,7 +594,14 @@ def _add_configuration_files(header):
                      comment='#', names=columns)
     df['date'] = df['date'].apply(float)
     row = df[df['date'] > header['fdate']].iloc[0]
-
+    if row.name == df.index[-1]:
+        log.warning(
+            f"Observation date {header['fdate']} is at or past the last "
+            f"dated entry in caldefault.dat; reusing the newest tabulated "
+            f"calibration files BPM={row['bpmfile']}, "
+            f"LINFILE={row['linfile']}, DRKFILE={row['darkfile']} — the "
+            f"dark file is reused from the newest tabulated flight and "
+            f"may not match this observation's actual flight.")
 
     # These files are on DaRUS but can be placed into the
     # datapath manually. If they are not there, remain silent and

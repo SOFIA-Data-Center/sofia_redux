@@ -84,6 +84,11 @@ def _verify_inputs(data, header, flat, variance, illum,
                            f'Not shifting images.')
 
     # Store the order height as well
+    if 'SLTH_PIX' not in header:
+        log.warning(f'SLTH_PIX missing from header; using the full '
+                    f'frame height ({ny}) as slit height instead - the '
+                    f'shift search will not be narrowed to the true '
+                    f'slit extent.')
     n_slit = header.get('SLTH_PIX', ny)
 
     # Check that there are at least some good frames
