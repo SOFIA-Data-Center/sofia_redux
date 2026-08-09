@@ -186,6 +186,12 @@ def get_model(header, resolution, filename=None,
                 dateobs = int(''.join(date[0:3]) + '00')
             except ValueError:
                 pass
+        if dateobs == 9999999999:
+            log.warning('DATE-OBS missing, blank, or unparseable; '
+                        'using 9999999999 as the comparison date — '
+                        'the wrong standard model file may be selected '
+                        'instead of the one matching the true '
+                        'observation date.')
 
         log.debug('Object, date: {} {}'.format(objname, dateobs))
 

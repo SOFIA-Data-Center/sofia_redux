@@ -151,6 +151,12 @@ def merge_centroid(data, header, variance=None, normmap=None, resize=True):
     cry = getpar(header, 'CRPIX2', dtype=int, default=data.shape[0] / 2)
     cx = getpar(header, 'SRCPOSX', dtype=int, default=crx)
     cy = getpar(header, 'SRCPOSY', dtype=int, default=cry)
+    if 'SRCPOSX' not in header or 'SRCPOSY' not in header:
+        log.warning('SRCPOSX/SRCPOSY missing; using CRPIX1/CRPIX2 (%s, %s) '
+                    '— this position picks which already-found peak '
+                    'is treated as the source for merge alignment, which '
+                    'may be the wrong peak if the true source lies '
+                    'elsewhere.' % (cx, cy))
     dr = [(v[0] - cx) ** 2 + (v[1] - cy) ** 2 for v in found]
     base_idx = np.array(dr).argmin()
     base_coords = np.array(found[base_idx])

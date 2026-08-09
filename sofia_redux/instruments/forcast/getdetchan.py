@@ -27,11 +27,22 @@ def getdetchan(header):
         log.warning("not a valid header: returning SW")
         return 'SW'
 
+    if 'DETCHAN' not in header:
+        log.warning("DETCHAN missing; using SW — wrong "
+                    "channel-specific bias level or non-linearity "
+                    "correction may be applied.")
+        return 'SW'
+
     value = header.get('DETCHAN', 'SW')
     value = str(value).strip().upper()
     if value == '1':
         return 'LW'
     elif value == 'LW':
         return 'LW'
+    elif value in ('0', 'SW'):
+        return 'SW'
     else:
+        log.warning("DETCHAN value '%s' not recognized; using SW — "
+                    "wrong channel-specific bias level or "
+                    "non-linearity correction may be applied." % value)
         return 'SW'

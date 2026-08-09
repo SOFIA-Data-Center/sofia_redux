@@ -52,10 +52,22 @@ def calcvar(data, header):
         log.error("must provide valid header")
         return
 
+    if 'RN_HIGH' not in header:
+        log.warning('RN_HIGH missing; using 2400.0 - ERROR extension '
+                    'will be wrong if the data are high capacitance '
+                    '(ILOWCAP=0).')
     rn_high = getpar(header, 'RN_HIGH', dtype=float, default=2400.,
                      comment="Read noise for high capacitance mode")
+    if 'RN_LOW' not in header:
+        log.warning('RN_LOW missing; using 244.8 (read noise for low '
+                    'capacitance mode) - the ERROR extension will be '
+                    'wrong if the data are low capacitance.')
     rn_low = getpar(header, 'RN_LOW', dtype=float, default=244.8,
                     comment="Read noise for low capacitance mode")
+    if 'BETA_G' not in header:
+        log.warning('BETA_G missing; using 1.0 (excess noise factor) - '
+                    'ERROR extension will be wrong if the true excess '
+                    'noise differs.')
     beta_g = getpar(header, 'BETA_G', dtype=float, default=1.0,
                     comment="Excess noise")
     eperadu = getpar(header, 'EPERADU', dtype=float, default=136, warn=True)
