@@ -1,5 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from astropy import log
 import numpy as np
 from sofia_redux.toolkit.utilities.fits import gethdul
 from sofia_redux.toolkit.image.adjust import rotate90 as idlrot
@@ -42,9 +43,18 @@ def readwavecal(filename, rotate=None, info=None):
         wavecal = idlrot(wavecal, rotate)
         spatcal = idlrot(spatcal, rotate)
 
+    orders = np.array(header.get('ORDERS', '0').split(',')).astype(int)
+    norders = int(header.get('NORDERS', 0))
+    if 'ORDERS' not in header:
+        log.warning("ORDERS missing from header; using '0' - orders will "
+                    "contain a single placeholder order (0) instead of the "
+                    "wavecal file's real orders.")
+    if 'NORDERS' not in header:
+        log.warning('NORDERS missing from header; using 0 - no per-order '
+                    'wavelength/spatial coefficients will be extracted, '
+                    'even if the header defines them.')
+
     if isinstance(info, dict):
-        orders = np.array(header.get('ORDERS', '0').split(',')).astype(int)
-        norders = int(header.get('NORDERS', 0))
         info['wctype'] = str(header.get('WCTYPE')).strip()
         info['orders'] = orders
         info['norders'] = norders

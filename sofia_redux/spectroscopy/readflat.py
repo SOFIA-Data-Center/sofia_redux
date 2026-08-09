@@ -105,6 +105,23 @@ def readflat(filename):
     orders = np.array(
         [x for x in hdr.get('ORDERS', '0').split(',')
          if x != '']).astype(int)
+
+    consequence = {
+        'PLTSCALE': "'ps' will be 0",
+        'RP': "'rp' will be 0",
+        'SLTW_ARC': "'slitw_arc' will be 0",
+        'SLTW_PIX': "'slitw_pix' will be 0",
+        'EDGEDEG': "'edgedeg' will be 0, which will not match the real "
+                   "per-order edge coefficients read below",
+        'NORDERS': "'norders' will be 0, so no orders will be extracted",
+        'ORDERS': "'orders' will be [0]",
+    }
+    missing = [key for key in consequence if key not in hdr]
+    if missing:
+        detail = '; '.join(f'{k} -> {consequence[k]}' for k in missing)
+        log.warning(f"{', '.join(missing)} missing from flat header; "
+                    f"using 0 -- {detail}.")
+
     if rotation not in [None, 0]:
         image = rotate90(image, rotation)
         if var is not None:
