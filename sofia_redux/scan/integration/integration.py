@@ -1116,6 +1116,11 @@ class Integration(ABC):
                 sigma_multiplier = float(sigma_clip)
             except ValueError:
                 sigma_multiplier = 5.0
+                log.warning(
+                    f"sigmaclip value {sigma_clip!r} is not a valid "
+                    f"number; using sigma=5.0 — this default determines "
+                    f"which frames get flagged SKIP_SOURCE_MODELING (or "
+                    f"invalidated) and excluded from the source map.")
             log.debug(f"Sigma clipping speeds (sigma={sigma_multiplier}).")
             valid = self.frames.valid & self.frames.is_unflagged(
                 'SKIP_SOURCE_MODELING')

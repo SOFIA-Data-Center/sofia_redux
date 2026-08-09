@@ -232,6 +232,13 @@ class HawcPlusFrames(SofiaFrames):
                                 "are missing or contain invalid values. "
                                 "Forcing sidereal mapping.")
                     self.info.astrometry.is_nonsidereal = False
+        elif self.scan.is_nonsidereal:
+            if not self.configuration.get_bool('lab'):
+                log.warning(
+                    "NonSiderealRA/NonSiderealDEC columns missing "
+                    "from HDU; object coordinates will not be set, "
+                    "though the scan stays flagged non-sidereal - "
+                    "frames will lack valid target-tracking data.")
 
         return columns
 

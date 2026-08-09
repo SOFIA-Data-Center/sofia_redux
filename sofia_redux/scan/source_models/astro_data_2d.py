@@ -336,6 +336,9 @@ class AstroData2D(AstroModel2D):
             scan.weight = 1.0 / self.get_chi2(robust=(method == 'robust'))
             if not np.isfinite(scan.weight):
                 scan.weight = 0.0
+                log.warning(f'Scan {scan.get_id()}: chi2-based weight '
+                            f'is non-finite; using 0.0 — this scan will '
+                            f'not contribute to the coadded map.')
 
         if self.configuration.get_bool('scanmaps'):
             file_name = os.path.join(self.reduction.work_path,

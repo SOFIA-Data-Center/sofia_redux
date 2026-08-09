@@ -220,7 +220,11 @@ class SofiaAstrometryInfo(AstrometryInfo):
         coordinates : EquatorialCoordinates
         """
         if self.coordinate_valid(self.object_coordinates):
-            log.debug("Referencing scan to object coordinates OBJRA/OBJDEC.")
+            log.info(
+                "Referencing scan to object coordinates OBJRA/OBJDEC in "
+                "place of invalid OBSRA/OBSDEC - output astrometry is "
+                "anchored to OBJRA/OBJDEC, and this source is not "
+                "otherwise recorded in the output product.")
             return self.object_coordinates.copy()
 
         elif self.is_requested_valid(header=header):

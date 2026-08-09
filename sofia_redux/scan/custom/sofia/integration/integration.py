@@ -168,6 +168,14 @@ class SofiaIntegration(Integration):
             The derived PWV.
         """
         log.debug("Estimating PWV based on altitude...")
+        if not self.configuration.is_configured('pwv41k'):
+            log.warning("pwv41k missing from configuration; using 29.0 um "
+                        "(shipped sofia/default.cfg sets 22.0) - the "
+                        "modeled PWV will be wrong.")
+        if not self.configuration.is_configured('pwvscale'):
+            log.warning("pwvscale missing from configuration; using 5.0 "
+                        "(shipped sofia/default.cfg sets 4.38) - the "
+                        "modeled PWV will be wrong.")
         pwv41k = self.configuration.get_float(
             'pwv41k', default=29.0) * units.Unit('micrometer')
         b = 1.0 / self.configuration.get_float('pwvscale', default=5.0)

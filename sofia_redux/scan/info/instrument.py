@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import numpy as np
-from astropy import constants, units
+from astropy import constants, log, units
 
 from sofia_redux.scan.info.base import InfoBase
 from sofia_redux.scan.flags.mounts import Mount
@@ -174,6 +174,9 @@ class InstrumentInfo(InfoBase):
         """
         if (self.configuration is None
                 or not self.configuration.has_option('jansky')):
+            log.warning(
+                "'jansky' not configured; using a Jy/beam conversion "
+                "of 1.0 - V2JY will record 1.0.")
             return 1.0 * units.Unit('Jy/beam')
 
         try:

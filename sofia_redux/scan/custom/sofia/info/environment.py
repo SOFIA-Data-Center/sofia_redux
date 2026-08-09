@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import numpy as np
-from astropy import units
+from astropy import log, units
 
 from sofia_redux.scan.info.base import InfoBase
 from sofia_redux.scan.utilities.bracketed_values import BracketedValues
@@ -67,6 +67,15 @@ class SofiaEnvironmentInfo(InfoBase):
         self.pwv.start = options.get_float("WVZ_STA") * units.Unit('um')
         self.pwv.end = options.get_float("WVZ_END") * units.Unit('um')
         self.ambient_t = options.get_float("TEMP_OUT") * units.Unit('deg_C')
+        if np.isnan(self.ambient_t):
+            log.warning("TEMP_OUT missing or invalid; ambient air "
+                        "temperature set to NaN -- this scan "
+                        "contributes no measurement to the skydip "
+                        "sky temperature. If no scan in the "
+                        "reduction has a valid TEMP_OUT, the fit "
+                        "uses the built-in tsky=273.0 K, and the "
+                        "shipped skydip.fit=tau,offset config does "
+                        "not refit it.")
         self.primary_t1 = options.get_float("TEMPPRI1") * units.Unit('deg_C')
         self.primary_t2 = options.get_float("TEMPPRI2") * units.Unit('deg_C')
         self.primary_t3 = options.get_float("TEMPPRI3") * units.Unit('deg_C')
