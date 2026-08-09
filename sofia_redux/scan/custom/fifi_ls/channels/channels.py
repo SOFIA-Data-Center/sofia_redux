@@ -134,7 +134,11 @@ class FifiLsChannels(SofiaCamera):
         -------
         None
         """
-        pass
+        if 'rotation' in self.configuration:
+            log.warning("'rotation' is configured but has no effect for "
+                        "FIFI-LS - instrument.rotation stays at its "
+                        "default 0 deg, so SI pixel offsets for pointing "
+                        "will not reflect the configured rotation.")
         # self.detector.initialize_channel_data(self.data)
         # self.set_nominal_pixel_positions()
         # super().load_channel_data()
