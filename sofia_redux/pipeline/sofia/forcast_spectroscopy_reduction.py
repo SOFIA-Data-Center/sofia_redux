@@ -1628,6 +1628,11 @@ class FORCASTSpectroscopyReduction(FORCASTReduction):
             resp_hdul.close()
 
             detbias = rhead.get('DETBIAS', -9999.)
+            if 'SYSERR' not in rhead:
+                log.warning('SYSERR missing from response file '
+                            'header; using 0.0 -- CALERR (systematic '
+                            'flux calibration error) will be recorded '
+                            'as 0 instead of unknown.')
             syserr = rhead.get('SYSERR', 0.0)
             resname = respfile.split(self.calres['pathcal'])[-1]
             response = {1: {'wave': response_data[0, :],

@@ -1622,6 +1622,14 @@ class EXESReduction(Reduction):
             flat = fits.ImageHDU(uflat['FLAT'].data, flat_header, name='FLAT')
             flat_error = fits.ImageHDU(uflat['FLAT_ERROR'].data,
                                        flat_header, name='FLAT_ERROR')
+            if 'ROTATION' not in flat_header:
+                log.warning(
+                    'ROTATION missing from processed flat header; '
+                    'using 0 - if the flat is cross-dispersed, the '
+                    'illumination mask will be unrotated in the wrong '
+                    'orientation, and ROTATION will not be copied to '
+                    'the science header, so the later Undistort step '
+                    'will fail with a KeyError on ROTATION.')
             rotation = flat_header.get('ROTATION', 0)
             illum_header = flat_header.copy()
             illum_header['BUNIT'] = ''

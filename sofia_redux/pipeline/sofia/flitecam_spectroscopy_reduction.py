@@ -304,6 +304,11 @@ class FLITECAMSpectroscopyReduction(FLITECAMReduction,
                 log.error(msg)
                 raise ValueError(msg) from None
         else:
+            if 'SYSERR' not in rhead:
+                log.warning('SYSERR missing from response file '
+                            'header; using 0.0 -- CALERR (fractional '
+                            'flux calibration error) will be recorded '
+                            'as 0 instead of unknown.')
             syserr = rhead.get('SYSERR', 0.0)
             resname = respfile.split(self.calres['pathcal'])[-1]
 

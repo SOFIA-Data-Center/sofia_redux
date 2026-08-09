@@ -386,6 +386,9 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                 rotation = fits.getval(wavefile, 'ROTATION')
             except KeyError:
                 rotation = 0
+                log.warning('ROTATION missing from {}; using 0 — '
+                            'starting wavecal will be read '
+                            'unrotated.'.format(wavefile))
             wavecal, spatcal = readwavecal(wavefile, rotate=rotation)
             ctr = wavecal.shape[0] // 2
 
@@ -717,6 +720,13 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                         fitpos.append(np.nan)
                         fitheight.append(np.nan)
                         continue
+                    if not np.isfinite(s2n):
+                        log.warning('S/N for line {} um near pixel {} is '
+                                    'not finite; specerr may be zero or '
+                                    'spectrum may be all NaN in this '
+                                    'window, so the S/N quality check '
+                                    'cannot reject it and this line will '
+                                    'still be fit.'.format(line, guess))
 
                     try:
                         fit_peak = fitpeaks1d(

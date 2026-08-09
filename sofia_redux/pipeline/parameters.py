@@ -425,12 +425,22 @@ class Parameters(object):
                 except (TypeError, ValueError):
                     # allow it to be a non-number -- initial
                     # dtype may be not be broad enough
+                    log.warning("Value '{}' could not be parsed "
+                                "as int; using it as a string "
+                                "instead -- the step will receive "
+                                "a string, not an int, for this "
+                                "parameter.".format(value))
                     value = str(value)
         elif dtype == 'float':
             if type(value) is not float:
                 try:
                     value = float(value)
                 except (TypeError, ValueError):
+                    log.warning("Value '{}' could not be parsed "
+                                "as float; using it as a string "
+                                "instead -- the step will receive "
+                                "a string, not a float, for this "
+                                "parameter.".format(value))
                     value = str(value)
         elif dtype == 'strlist':
             if type(value) is not list:
