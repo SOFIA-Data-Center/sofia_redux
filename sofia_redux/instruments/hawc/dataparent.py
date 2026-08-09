@@ -310,7 +310,11 @@ class DataParent(object):
             if override is not None:
                 self.config.merge(override)
             else:
-                log.debug('No date config file for %s' % date)
+                log.warning('No date-specific override available for %s '
+                            '(date_config.cfg has no entry for this date); '
+                            'using default configuration only - calibration '
+                            'files and pointing corrections specific to this '
+                            'flight series will not be applied.' % date)
 
         # Then set any mode-specific overrides
         if mode is not None:

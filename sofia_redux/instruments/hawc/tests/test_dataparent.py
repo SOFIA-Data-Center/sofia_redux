@@ -84,7 +84,8 @@ class TestDataParent(DRPTestCase):
         # mergeconfig with date, no override available
         df.mergeconfig(date=dt.datetime(9999, 1, 1))
         capt = capsys.readouterr()
-        assert 'No date config file for 9999-01-01' in capt.out
+        assert 'No date-specific override available for 9999-01-01' \
+            in capt.err
 
         # config string -- bad path
         with pytest.raises(Exception):

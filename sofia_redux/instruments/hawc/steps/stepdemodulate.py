@@ -688,8 +688,12 @@ class StepDemodulate(StepParent):
         if chopfreq <= 0.:
             if l0method[:3] == 'ABS':
                 # set to user value
-                log.debug("Invalid chop frequency: {}. Using user "
-                          "frequency instead: {}".format(chopfreq, user_freq))
+                log.warning(
+                    "CHPFREQ is invalid: {}. Using dmdplot user "
+                    "frequency instead: {} -- chop-cycle sample "
+                    "binning and the box-filter window will be "
+                    "computed from this assumed frequency.".format(
+                        chopfreq, user_freq))
                 chopfreq = user_freq
             else:
                 msg = "Invalid chop frequency: %f" % chopfreq

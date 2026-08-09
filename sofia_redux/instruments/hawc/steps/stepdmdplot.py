@@ -292,6 +292,11 @@ class StepDmdPlot(StepParent):
             calmode = self.datain.getheadval('calmode', errmsg=False)
         except KeyError:
             calmode = 'UNKNOWN'
+            log.warning("CALMODE missing from header; using 'UNKNOWN' — "
+                        "the internal-calibrator phase-difference "
+                        "diagnostic will be skipped in favor of the "
+                        "standard door-vignetting plot, even if this "
+                        "is internal-calibrator data.")
 
         if calmode == 'INT_CAL':
 

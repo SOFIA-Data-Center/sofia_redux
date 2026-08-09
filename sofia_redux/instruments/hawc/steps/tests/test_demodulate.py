@@ -225,8 +225,8 @@ class TestDemodulate(DRPTestCase):
         with pytest.raises(AttributeError):
             step.run()
         capt = capsys.readouterr()
-        assert 'Invalid chop frequency' in capt.out
-        assert 'Using user frequency' in capt.out
+        assert 'CHPFREQ is invalid' in capt.err
+        assert 'Using dmdplot user frequency' in capt.err
 
     def test_checkhwp(self, tmpdir, capsys):
         # fewer frames needed for this check

@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 """WCS registration pipeline step."""
 
+from datetime import datetime
+
 from astropy import log
 import numpy as np
 
@@ -119,6 +121,27 @@ class StepWcs(StepParent):
             msg = 'Need offsibs_x/y values for all wavebands'
             log.error(msg)
             raise IndexError(msg)
+
+        # offsibs_x/y come from self.config unless passed explicitly; if no
+        # per-flight override matched DATE-OBS, the values above may be
+        # pipeconf.cfg's uncorrected defaults rather than a flight-specific
+        # correction.
+        if ('offsibs_x' not in self.arglist
+                and 'offsibs_y' not in self.arglist):
+            try:
+                obsdate_raw = self.datain.getheadval('DATE-OBS',
+                                                       errmsg=False)
+                obsdate = datetime.strptime(
+                    obsdate_raw.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+            except (KeyError, ValueError, AttributeError):
+                obsdate_raw = None
+                obsdate = None
+            if self.datain.date_override_config(obsdate) is None:
+                log.warning(
+                    'No date-range override in date_config.cfg covers '
+                    'DATE-OBS=%s; using offsibs_x=%s, offsibs_y=%s -- the '
+                    'per-flight boresight correction is not applied.'
+                    % (obsdate_raw, offsibs_x, offsibs_y))
 
         return offsibs_x, offsibs_y
 

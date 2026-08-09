@@ -346,14 +346,24 @@ class StepCheckhead(StepParent):
                 fltnum = "%4.4d" % self._getsafeval('FLGTNUM')
             except (TypeError, ValueError):
                 fltnum = "XXXX"
+                log.warning('HeaderCheck: MISSN-ID and FLGTNUM are both '
+                            'missing or unparseable; using XXXX for the '
+                            'flight number - the output filename will '
+                            'not identify the flight.')
 
         # Get spectels
         spec1 = self._getsafeval('SPECTEL1')
         spec2 = self._getsafeval('SPECTEL2')
         if spec1 is None:
             spec1 = 'UNKNOWN'
+            log.warning('HeaderCheck: SPECTEL1 missing; using UNKNOWN - '
+                        'the output filename will not correctly identify '
+                        'this spectral element.')
         if spec2 is None:
             spec2 = 'UNKNOWN'
+            log.warning('HeaderCheck: SPECTEL2 missing; using UNKNOWN - '
+                        'the output filename will not correctly identify '
+                        'this spectral element.')
         if spec1 == 'UNKNOWN' and spec2 == 'UNKNOWN':
             spec = 'UNKNOWN'
         else:
@@ -365,6 +375,8 @@ class StepCheckhead(StepParent):
         aorid = self._getsafeval('AOR_ID')
         if aorid is None:
             aorid = 'UNKNOWN'
+            log.warning('HeaderCheck: AOR_ID missing; using UNKNOWN - the '
+                        'output filename will not identify the AOR.')
         else:
             aorid = re.sub('_', '', aorid.strip())
 
@@ -389,6 +401,11 @@ class StepCheckhead(StepParent):
             int(fnum)
         except (TypeError, ValueError):
             fnum = 'UNKNOWN'
+            log.warning('HeaderCheck: File number missing or unparseable '
+                        'from filename <%s>; using UNKNOWN - the output '
+                        'filename will not distinguish this file from '
+                        'others in the same flight/AOR.' %
+                        os.path.basename(self.dataout.filename))
 
         # Compose output file name
         outfilename = "F%s_HA_%s_%s_%s_RAW_%s.fits" % \
