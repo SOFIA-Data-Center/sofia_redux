@@ -228,8 +228,9 @@ class HawcPlusFrames(SofiaFrames):
                 columns['ora'] = None
                 columns['odec'] = None
                 if self.scan.is_nonsidereal:
-                    log.warning("Missing NonSiderealRA/NonSiderealDEC "
-                                "columns. Forcing sidereal mapping.")
+                    log.warning("NonSiderealRA/NonSiderealDEC columns "
+                                "are missing or contain invalid values. "
+                                "Forcing sidereal mapping.")
                     self.info.astrometry.is_nonsidereal = False
 
         return columns

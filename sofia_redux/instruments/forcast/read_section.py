@@ -59,7 +59,8 @@ def read_section(xdim, ydim):
     try:
         section = [int(val) for val in configuration[key.lower()]]
     except ValueError:
-        log.error("The section %s has wrong format" % repr(section))
+        log.error("The section %s has wrong format"
+                  % repr(configuration[key.lower()]))
         log.warning(default_message)
         return default_section
 

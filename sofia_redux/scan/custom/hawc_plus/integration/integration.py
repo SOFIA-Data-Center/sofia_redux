@@ -389,7 +389,8 @@ class HawcPlusIntegration(SofiaIntegration):
             elif len(blank_time) != 2:
                 log.warning("Jump blanking time in configuration is "
                             "not a 1 or 2 element array.  "
-                            "Will not apply blank flags.")
+                            "Using only the first element for both "
+                            "before and after blank times.")
                 blank_time = np.full(2, blank_time[0]) * units.Unit('second')
             else:
                 blank_time = np.asarray(blank_time) * units.Unit('second')

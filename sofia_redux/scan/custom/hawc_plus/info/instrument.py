@@ -45,7 +45,7 @@ class HawcPlusInstrumentInfo(SofiaInstrumentInfo):
         sampling_freq = options.get_float("SMPLFREQ", default=np.nan
                                           ) * units.Unit('Hz')
         if np.isnan(sampling_freq) or sampling_freq < 0:
-            log.warning("Missing SMPLFREQ. Will assume 203.5 Hz.")
+            log.warning("Missing SMPLFREQ. Will assume 203.25 Hz.")
             sampling_freq = 203.25 * units.Unit('Hz')
 
         self.integration_time = (1 / sampling_freq).decompose()  # to seconds

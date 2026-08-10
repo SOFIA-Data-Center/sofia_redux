@@ -281,7 +281,7 @@ class HawcPlusDetectorArrayInfo(SofiaDetectorArrayInfo):
                 bias = [utils.get_int(x) for x in re.split(r'[\t,:;]', bias)]
                 if len(bias) != self.MCE_BIAS_LINES:
                     log.warning(
-                        f"Subarray {sub} requires {self.mce_subarray} bias "
+                        f"Subarray {sub} requires {self.MCE_BIAS_LINES} bias "
                         f"lines (found {len(bias)})")
                     break
                 self.detector_bias[sub] = bias

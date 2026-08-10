@@ -1224,7 +1224,8 @@ class AstroModel2D(SourceModel):
         if self.is_empty():
             source_name = ((self.id + ' ')
                            if self.id not in [None, ''] else '')
-            log.warning(f"Source {source_name}is empty. Skipping")
+            log.warning(f"Source {source_name}is empty; skipping write "
+                        f"and removing any existing output file.")
             if os.path.isfile(file_name):
                 os.remove(file_name)
             return

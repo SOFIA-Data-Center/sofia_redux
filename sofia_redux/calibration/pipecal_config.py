@@ -430,7 +430,7 @@ def pipecal_config(header):
             spec, ac1, calf, ecalf = np.genfromtxt(fname, dtype=str,
                                                    unpack=True)
         except (ValueError, TypeError):
-            log.error('Reference calibration factor file {} is poorly '
+            log.error('Average calibration factor file {} is poorly '
                       'formatted. Verify structure.'.format(fname))
             return config
         spec = np.array([i.strip().upper() for i in spec])

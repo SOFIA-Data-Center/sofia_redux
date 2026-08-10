@@ -802,7 +802,7 @@ def run_photometry(data, header, var, config, **kwargs):
             try:
                 runits = kwargs['runits']
             except KeyError:
-                runits = 'counts'
+                runits = 'Me/s'
             log.info('Source Flux: '
                      '{:.2f} +/- {:.2f} {}'.format(header['STAPFLX'],
                                                    header['STAPFLXE'],

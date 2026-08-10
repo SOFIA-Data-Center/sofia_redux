@@ -730,6 +730,9 @@ def stack(data, header, variance=None, mask=None, extra=None, stat='mode'):
         else:
             log.info('Jailbars cleaned with MEDIAN method')
             stacked, var = result
+    elif jbmethod.strip().lower() == 'fft':
+        log.info('Jailbars not removed in stack; JBCLEAN=FFT is '
+                 'handled in the clean step')
     else:
         log.info('Jailbars not removed')
 

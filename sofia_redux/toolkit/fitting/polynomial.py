@@ -864,7 +864,7 @@ def nonlinear_polyfit(samples, order, exponents=None, error=1, product=None,
     s, e = samples[:, mask], error[mask]
 
     if s.shape[1] < nc:
-        log.warning("insufficient non-NaN sample points")
+        log.warning("insufficient sample points after masking")
         coeffs = np.full(nc, np.nan)
         return (coeffs, np.full((nc, nc), np.nan)) if covar else coeffs
 
