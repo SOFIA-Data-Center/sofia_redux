@@ -237,8 +237,7 @@ class HawcPlusFrames(SofiaFrames):
                 log.warning(
                     "NonSiderealRA/NonSiderealDEC columns missing "
                     "from HDU; object coordinates will not be set, "
-                    "though the scan stays flagged non-sidereal - "
-                    "frames will lack valid target-tracking data.")
+                    "though the scan stays flagged non-sidereal.")
 
         return columns
 

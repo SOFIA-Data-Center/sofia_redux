@@ -423,11 +423,9 @@ def robust_mask(data, threshold, mask=None, axis=None, mask_data=False,
             if np.any(mad == 0):
                 log.warning(
                     'MAD is 0 (at least half the valid values in the '
-                    'affected data are identical); abs(d - med) / MAD '
-                    'is inf or NaN there, so every such point fails the '
-                    'threshold check regardless of its deviation and is '
-                    'marked invalid, including points that are not '
-                    'outliers.')
+                    'affected data are identical); every point in that '
+                    'region fails the threshold check and is marked '
+                    'invalid, including points that are not outliers.')
 
             ratio = np.abs(d - med) / mad
             valid &= ratio <= threshold

@@ -71,11 +71,7 @@ class SofiaEnvironmentInfo(InfoBase):
             log.warning("TEMP_OUT missing or invalid; ambient air "
                         "temperature set to NaN -- this scan "
                         "contributes no measurement to the skydip "
-                        "sky temperature. If no scan in the "
-                        "reduction has a valid TEMP_OUT, the fit "
-                        "uses the built-in tsky=273.0 K, and the "
-                        "shipped skydip.fit=tau,offset config does "
-                        "not refit it.")
+                        "sky temperature.")
         self.primary_t1 = options.get_float("TEMPPRI1") * units.Unit('deg_C')
         self.primary_t2 = options.get_float("TEMPPRI2") * units.Unit('deg_C')
         self.primary_t3 = options.get_float("TEMPPRI3") * units.Unit('deg_C')

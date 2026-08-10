@@ -78,9 +78,8 @@ class SofiaChoppingInfo(InfoBase):
         if self.chopping and np.isnan(self.frequency):
             log.warning(
                 "CHPFREQ missing or invalid while chopping is enabled; "
-                "chop frequency is nan - the source crossing time is "
-                "nan, poisoning the adaptive filter's source profile "
-                "and corrupting the point-source flux correction.")
+                "chop frequency is nan - the point-source flux "
+                "correction will be corrupted.")
         self.profile_type = options.get_string("CHPPROF")
         self.symmetry_type = options.get_string("CHPSYM")
         self.amplitude = options.get_float("CHPAMP1") * units.Unit('arcsec')

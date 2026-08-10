@@ -700,6 +700,7 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
             # guess position of each line in each spectrum
             allpos = []
             allheight = []
+            n_fit_failed = 0
             for spec in spectra:
                 fitpos = []
                 fitheight = []
@@ -734,10 +735,7 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                             guess=guess, stddev=sigma, box_width=('stddev', 3),
                             baseline_func=baseline)
                     except ValueError:
-                        log.warning('Fit failed for line {} um near pixel '
-                                    '{}; NaN recorded in LINE_TABLE '
-                                    'and excluded from the wavelength '
-                                    'fit.'.format(line, guess))
+                        n_fit_failed += 1
                         fitpos.append(np.nan)
                         fitheight.append(np.nan)
                     else:
@@ -760,6 +758,11 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
 
                 allpos.append(fitpos)
                 allheight.append(fitheight)
+
+            if n_fit_failed:
+                log.warning(f'{n_fit_failed} line fit(s) failed; NaN '
+                            f'recorded and excluded from the wavelength '
+                            f'fit.')
 
             # make position table and do preliminary fit
             allpos = np.array(allpos)
