@@ -58,9 +58,14 @@ def calcvar(data, header):
                     comment="Read noise for low capacitance mode")
     beta_g = getpar(header, 'BETA_G', dtype=float, default=1.0,
                     comment="Excess noise")
-    eperadu = getpar(header, 'EPERADU', dtype=float, default=136)
+    eperadu = getpar(header, 'EPERADU', dtype=float, default=136, warn=True)
     ilowcap = getpar(header, 'ILOWCAP', dtype=int, default=1)
     rn = rn_low if ilowcap else rn_high
+    if 'ILOWCAP' not in header:
+        log.warning('ILOWCAP missing; using 1 (low capacitance, read '
+                    'noise %s not %s) - ERROR extension will be too '
+                    'small if the data are high capacitance.'
+                    % (rn_low, rn_high))
 
     detitime = getpar(header, 'DETITIME', dtype=float, default=-1)
     if detitime < 0:

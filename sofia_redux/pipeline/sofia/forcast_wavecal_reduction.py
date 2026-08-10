@@ -724,6 +724,10 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                             guess=guess, stddev=sigma, box_width=('stddev', 3),
                             baseline_func=baseline)
                     except ValueError:
+                        log.warning('Fit failed for line {} um near pixel '
+                                    '{}; NaN recorded in LINE_TABLE '
+                                    'and excluded from the wavelength '
+                                    'fit.'.format(line, guess))
                         fitpos.append(np.nan)
                         fitheight.append(np.nan)
                     else:
