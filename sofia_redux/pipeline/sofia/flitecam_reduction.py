@@ -348,8 +348,10 @@ class FLITECAMReduction(FORCASTReduction):
         linfile = param.get_value('linfile')
         if os.path.isfile(linfile):
             log.info(f'Using linearity file {linfile}')
-        else:
+        elif not linfile:
             raise ValueError('No linearity file provided.')
+        else:
+            raise ValueError(f'Linearity file not found: {linfile}')
 
         if str(saturation).strip() == '':
             saturation = None

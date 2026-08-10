@@ -433,7 +433,7 @@ class TestFLITECAMImagingReduction(object):
         parset['linfile']['value'] = 'badfile.fits'
         with pytest.raises(ValueError) as err:
             red.correct_linearity()
-        assert 'No linearity file' in str(err)
+        assert 'Linearity file not found' in str(err)
 
     def test_clip_image(self, tmpdir, capsys):
         ffile, red, idx = self.standard_setup(tmpdir, 'clip_image',
