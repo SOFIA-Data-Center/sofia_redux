@@ -119,14 +119,29 @@ def pipecal_photometry(image, variance, srcpos=None,
     try:
         fitsize = int(fitsize)
     except (ValueError, TypeError):
+        if fitsize is not None:
+            log.warning('fitsize value {!r} could not be parsed; using '
+                        'the built-in default 138 - the profile fit will '
+                        'use a 138 pixel subimage, not the requested '
+                        'size.'.format(fitsize))
         fitsize = 138
     try:
         fwhm = float(fwhm)
     except (ValueError, TypeError):
+        if fwhm is not None:
+            log.warning('fwhm value {!r} could not be parsed; using the '
+                        'built-in default 5.0 - the profile fit is seeded '
+                        'with a 5.0 pixel FWHM, not the requested '
+                        'value.'.format(fwhm))
         fwhm = 5.0
     try:
         aprad = float(aprad)
     except (ValueError, TypeError):
+        if aprad is not None:
+            log.warning('aprad value {!r} could not be parsed; using the '
+                        'built-in default 12.0 - PHOTAPER and the aperture '
+                        'flux STAPFLX will be measured in a 12.0 pixel '
+                        'aperture, not the requested one.'.format(aprad))
         aprad = 12.0
 
     runits = str(runits).strip()

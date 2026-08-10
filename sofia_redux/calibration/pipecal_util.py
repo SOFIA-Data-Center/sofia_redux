@@ -55,8 +55,16 @@ def average_za(header):
     except (ValueError, TypeError, KeyError):
         zaend = -9999
     if zasta > 0 and zaend < 0:
+        log.warning('ZA_END missing, unreadable, or negative; using '
+                    'ZA_START ({:.2f} deg) alone - the telluric '
+                    'correction uses the start zenith angle, not '
+                    'the start/end average.'.format(zasta))
         za = zasta
     elif zasta < 0 and zaend > 0:
+        log.warning('ZA_START missing, unreadable, or negative; using '
+                    'ZA_END ({:.2f} deg) alone - the telluric '
+                    'correction uses the end zenith angle, not '
+                    'the start/end average.'.format(zaend))
         za = zaend
     elif zasta < 0 and zaend < 0:
         msg = 'Bad ZA value in header'
@@ -104,8 +112,16 @@ def average_alt(header):
     except (ValueError, TypeError, KeyError):
         altend = -9999
     if altsta > 0 and altend < 0:
+        log.warning('ALTI_END missing, unreadable, or negative; using '
+                    'ALTI_STA ({:.0f} ft) alone - the telluric '
+                    'correction uses the start altitude, not the '
+                    'start/end average.'.format(altsta))
         alt = altsta
     elif altsta < 0 and altend > 0:
+        log.warning('ALTI_STA missing, unreadable, or negative; using '
+                    'ALTI_END ({:.0f} ft) alone - the telluric '
+                    'correction uses the end altitude, not the '
+                    'start/end average.'.format(altend))
         alt = altend
     elif altsta < 0 and altend < 0:
         msg = 'Bad altitude value in header'
