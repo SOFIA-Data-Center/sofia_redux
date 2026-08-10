@@ -115,6 +115,16 @@ def subtract_extensions(hdul0, hdul1, add_only=False):
 
     nodpos0 = primeheader.get('NODBEAM', 'UNKNOWN').strip().upper()
     nodstyle = primeheader.get('NODSTYLE', 'UNKNOWN').strip().upper()
+    if not add_only:
+        if nodpos0 == 'UNKNOWN':
+            log.warning("NODBEAM is UNKNOWN, not A or B; combine_nods "
+                        "pairs files by nod beam, so this file will not "
+                        "reach any nod-combined product.")
+        elif nodstyle == 'UNKNOWN':
+            log.warning("NODSTYLE is UNKNOWN; chops subtracted without "
+                        "the symmetric-mode sign flip, but combine_nods "
+                        "still adds the B nods - source flux will cancel "
+                        "if these are symmetric (NMC) nods.")
     multiplier = 1
     if nodstyle in ['SYMMETRIC', 'NMC'] and nodpos0 != 'A' and not add_only:
         multiplier = -1
@@ -241,8 +251,13 @@ def subtract_chops(chop0_file, outdir=None, add_only=False, write=False):
 
     primeheader = hduls[0][0].header.copy()
     if primeheader.get('C_AMP', 0) == 0:  # not an error
-        log.info("No chop subtraction performed for NOCHOP mode "
-                 "(chop amp = 0)")
+        if 'C_AMP' not in primeheader:
+            log.warning("C_AMP missing from header; assuming 0 "
+                        "(NOCHOP) - chops will not be subtracted and "
+                        "any chop background remains in the flux.")
+        else:
+            log.info("No chop subtraction performed for NOCHOP mode "
+                     "(chop amp = 0)")
         if write:
             # not really much point in writing - just return name
             return tuple((os.path.join(outdir, x[0].header['FILENAME'])
