@@ -260,6 +260,9 @@ class SOFIAChooser(Chooser):
                             'FOR_G227', 'FOR_G329']
                 if spectel in spec_opt:
                     instmode = 'SPEC'
+                    log.info(f'{spectel_key} {spectel} in {datafile} is a '
+                             f'known grism; overriding instmode to SPEC '
+                             f'for recipe selection.')
 
                 # these keys have to match to return a consistent
                 # reduction object
@@ -328,6 +331,10 @@ class SOFIAChooser(Chooser):
                         reduction = FORCASTSpatcalReduction()
                     elif 'slitcorr' in config and config['slitcorr']:
                         reduction = FORCASTSlitcorrReduction()
+                    if type(reduction) is not FORCASTSpectroscopyReduction:
+                        log.info('Config override selected {} for this '
+                                 'FORCAST reduction.'.format(
+                                     type(reduction).__name__))
             else:
                 reduction = FORCASTImagingReduction()
         elif instrume == 'HAWC':

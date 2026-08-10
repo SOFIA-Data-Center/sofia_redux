@@ -669,24 +669,32 @@ def stack(data, header, variance=None, mask=None, extra=None, stat='mode'):
                  'SLITSCAN_NMC', 'SLITSCAN_NXCAC', 'MAP']
 
     if mode in c2_modes:
+        algorithm = 'stack_c2nc2'
         result = stack_c2nc2(posdata, header, variance=var,
                              bglevel=bglevel, extra=extra)
     elif mode in map_modes:
+        algorithm = 'stack_map'
         result = stack_map(posdata, header, variance=var,
                            bglevel=bglevel, extra=extra)
     elif mode == 'C3D':
+        algorithm = 'stack_c3d'
         result = stack_c3d(
             posdata, header, variance=var, extra=extra)
     elif mode == 'CM':
+        algorithm = 'stack_cm'
         result = stack_cm(
             posdata, header, variance=var, extra=extra)
     elif mode == 'STARE':
+        algorithm = 'stack_stare'
         result = stack_stare(posdata, header, variance=var)
     else:
         msg = "Stack failed (invalid instrument mode)"
         addhist(header, msg)
         log.error(msg)
         return
+
+    log.info(f"{header.get('FILENAME', 'UNKNOWN')}: stacking with "
+             f"mode={mode} using {algorithm}.")
 
     if result is None:
         msg = "Aborting stack - stacking failed"

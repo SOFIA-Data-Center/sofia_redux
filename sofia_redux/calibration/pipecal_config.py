@@ -361,6 +361,12 @@ def pipecal_config(header):
     # Take the first applicable date
     idx = idx[0]
 
+    refcal_name = ref_calf[idx] if ref_calf[idx] != '.' else 'none'
+    avgcal_name = avg_calf[idx] if avg_calf[idx] != '.' else 'none'
+    log.info(f"Using pipecal defaults row for {obj} (date>={dateobs}, "
+             f"altcfg1={altcfg1}): refcal={refcal_name}, "
+             f"avgcal={avgcal_name}.")
+
     # Read the filter definition file
     # Columns: spectel, altcfg1, lambda_mean, lamda_pivot,
     #     color_correction, aperture radius, background

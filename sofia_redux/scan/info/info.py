@@ -463,10 +463,13 @@ class Info(ABC):
         if source_type is None:
             return None
         if source_type == 'skydip':
+            log.info(f"Using '{source_type}' source model.")
             return SkyDip(info=self, reduction=reduction)
         elif source_type == 'map':
+            log.info(f"Using '{source_type}' source model.")
             return AstroIntensityMap(info=self, reduction=reduction)
         elif source_type == 'cube':
+            log.info(f"Using '{source_type}' source model.")
             return SpectralCube(info=self, reduction=reduction)
         elif source_type == 'null':
             return None
