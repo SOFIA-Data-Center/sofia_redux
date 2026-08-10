@@ -371,6 +371,10 @@ class StepCheckhead(StepParent):
             else:
                 obs = 'IMA'
 
+        log.info('HeaderCheck: header check complete for <%s>; obsmode=%s, '
+                  'aorid=%s, spectel=%s' % (os.path.basename(
+                      self.dataout.filename), obs, aorid, spec))
+
         # Get file number from filename
         fnum = self.dataout.filenum
         try:
