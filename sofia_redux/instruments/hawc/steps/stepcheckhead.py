@@ -135,10 +135,18 @@ class StepCheckhead(StepParent):
                 req_category = str(req['requirement']).strip()
             except KeyError:
                 req_category = '*'
+                log.warning('HeaderCheck: No requirement in header '
+                            'configuration for key <%s>; using * - the '
+                            'keyword will be required for every input '
+                            'file.' % key)
             try:
                 req_dtype = str(req['dtype']).strip()
             except KeyError:
                 req_dtype = 'str'
+                log.warning('HeaderCheck: No dtype in header '
+                            'configuration for key <%s>; using str - '
+                            'the keyword will fail validation unless '
+                            'its value is a string.' % key)
             try:
                 req_drange = req['drange']
             except KeyError:

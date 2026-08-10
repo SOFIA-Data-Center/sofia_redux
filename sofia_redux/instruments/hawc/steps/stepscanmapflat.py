@@ -126,7 +126,9 @@ class StepScanMapFlat(StepParent):
                 try:
                     k, v = val.split('=')
                 except (IndexError, ValueError, TypeError):
-                    pass
+                    log.warning(f'Could not parse option {val}; expected '
+                                'key=value - this setting will not be '
+                                'passed to the scan reduction.')
                 else:
                     options[k] = v
         kwargs['options'] = options
