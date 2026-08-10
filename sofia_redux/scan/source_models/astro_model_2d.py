@@ -1429,6 +1429,9 @@ class AstroModel2D(SourceModel):
             try:
                 fwhm = float(smooth) * size_unit
             except (TypeError, ValueError):
+                log.warning(f"Unrecognized smooth value '{smooth}'; using "
+                            f"the pixelization FWHM - the map will not be "
+                            f"smoothed.")
                 fwhm = 0 * size_unit
 
         if pixel_smoothing > fwhm:

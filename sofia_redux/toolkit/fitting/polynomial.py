@@ -672,6 +672,7 @@ def nonlinear_coefficients(matrix, data, error=None, mask=None, **kwargs):
             error = np.atleast_2d(error)
 
     nsamples = mask.sum(axis=1) if domask else None
+    nfailed = 0
 
     for i in range(nvec):
         if domask:
@@ -694,7 +695,12 @@ def nonlinear_coefficients(matrix, data, error=None, mask=None, **kwargs):
                     nonlinear_func, s, v, sigma=e, p0=p0, **kwargs)
             except RuntimeError:  # pragma: no cover
                 coefficients[i] = np.nan
+                nfailed += 1
         p0.fill(1.0)
+
+    if nfailed:
+        log.warning("least-squares minimization failed for %d of %d fits; "
+                    "coefficients set to NaN" % (nfailed, nvec))
 
     return coefficients if datavec else coefficients[0]
 
