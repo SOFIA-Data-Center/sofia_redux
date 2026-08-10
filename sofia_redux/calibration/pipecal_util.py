@@ -411,7 +411,7 @@ def get_fluxcal_factor(header, config,
         if write_history:
             msg1 = 'No reference flux calibration available'
             try:
-                msg2 = 'for SPECTEL={}, ALTCFG1={}, ' \
+                msg2 = ' for SPECTEL={}, ALTCFG1={}, ' \
                        'DATE={}. '.format(config['spectel'],
                                           config['altcfg1'],
                                           config['date'])
