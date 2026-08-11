@@ -3,6 +3,8 @@
 # This file performs testing using tox and tox.ini to define and configure the test environments.
 
 name: CI
+env:
+  NUMBA_DISABLE_CACHE: 1
 
 on:
   push:
