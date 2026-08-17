@@ -307,7 +307,7 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
     Returns
     -------
     tuple or None
-        Tuple of (wvz_ecmwf, wvz_fifi, wv_formula, filename) or None
+        Tuple of (WVZECMWF, wvz_fifi, wv_formula, filename) or None
         if ECMWF data could not be retrieved.
     """
     # Construct mission ID from header
@@ -356,7 +356,7 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
             log.debug(f'Could not retrieve ECMWF file from DaRUS: {e}')
             return None
 
-    wvz_ecmwf = None
+    WVZECMWF = None
     wvz_fifi = None
     try:
         cached = get_ecmwf_from_cache(ecmwf_file)
@@ -379,13 +379,13 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
             ecmwf_idx = np.searchsorted(unixtime, obs_time_unix)
             # Check quality flags (posconst and posjump should be 0)
             if posconst[ecmwf_idx] == 0 and posjump[ecmwf_idx] == 0:
-                wvz_ecmwf = float(pwv[ecmwf_idx])
+                WVZECMWF = float(pwv[ecmwf_idx])
                 # Convert to FIFI-LS scale
                 wv_offset, wv_slope = 0.34, 0.55
-                wvz_fifi = wv_offset + wvz_ecmwf * wv_slope
+                wvz_fifi = wv_offset + WVZECMWF * wv_slope
                 wv_formula = (f'WVZ_FIFI = {wv_offset} '
                               f'+ WVZ_ECMW * {wv_slope}')
-                log.debug(f'ECMWF WV: {wvz_ecmwf:.2f} -> '
+                log.debug(f'ECMWF WV: {WVZECMWF:.2f} -> '
                           f'FIFI-LS WV: {wvz_fifi:.2f} '
                           f'({wv_formula})')
     except Exception as e:
@@ -395,7 +395,7 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
         log.warning('No valid ECMWF data found for this observation')
         return None
 
-    return (wvz_ecmwf, wvz_fifi, wv_formula, filename)
+    return (WVZECMWF, wvz_fifi, wv_formula, filename)
 
 
 def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
@@ -434,7 +434,7 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
 
     # get water vapor
     wv = None
-    wvz_ecmwf = None
+    WVZECMWF = None
     wvz_fifi = None
     wv_formula = None
     wv_source = 'HEADER'
@@ -443,7 +443,7 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
         # Try to get water vapor from ECMWF reanalysis data
         ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
         if ecmwf_result is not None:
-            wvz_ecmwf, wvz_fifi, wv_formula, wv_file = ecmwf_result
+            WVZECMWF, wvz_fifi, wv_formula, wv_file = ecmwf_result
             wv = wvz_fifi
             wv_source = 'ECMWF'
             log.info(f'Using ECMWF water vapor: {wv:.2f}')
@@ -460,7 +460,7 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
                             'Automatically applying use_ecmwf=True')
                 ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
                 if ecmwf_result is not None:
-                    wvz_ecmwf, wvz_fifi, wv_formula, wv_file = ecmwf_result
+                    WVZECMWF, wvz_fifi, wv_formula, wv_file = ecmwf_result
                     wv = wvz_fifi
                     wv_source = 'ECMWF'
                     log.info(f'Using ECMWF water vapor: {wv:.2f}')
@@ -479,8 +479,8 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
              comment='Source of water vapor value (ECMWF or HEADER)')
     hdinsert(header, 'WVZ_USED', round(wv, 2),
              comment='[um] Water vapor used for ATRAN selection')
-    if wvz_ecmwf is not None:
-        hdinsert(header, 'WVZ_ECMWF', round(wvz_ecmwf, 2),
+    if WVZECMWF is not None:
+        hdinsert(header, 'WVZECMWF', round(WVZECMWF, 2),
                  comment='[um] Raw ECMWF WV (before FIFI-LS conversion)')
         hdinsert(header, 'WVZ_FORM', wv_formula,
                  comment='Formula used to convert ECMWF WV to FIFI-LS scale')

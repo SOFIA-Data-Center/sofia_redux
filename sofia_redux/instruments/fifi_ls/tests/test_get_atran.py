@@ -245,10 +245,10 @@ def test_get_wv_from_ecmwf(tmp_path):
     ecmwf_file = tmp_path / '906_FI_20220825_pwv.fits'
     fits.HDUList([fits.PrimaryHDU(), data_hdu]).writeto(str(ecmwf_file))
 
-    wvz_ecmwf, wvz_fifi, wv_formula, filename = get_wv_from_ecmwf(
+    WVZECMWF, wvz_fifi, wv_formula, filename = get_wv_from_ecmwf(
         header, str(tmp_path))
 
-    assert wvz_ecmwf == pwv_value
+    assert WVZECMWF == pwv_value
     assert abs(wvz_fifi - (0.34 + pwv_value * 0.55)) < 0.001
 
 
