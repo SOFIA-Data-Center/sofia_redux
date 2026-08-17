@@ -475,16 +475,16 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
     log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
 
     # Add water vapor source and values to header
-    hdinsert(header, 'WV_SRC', wv_source,
+    hdinsert(header, 'WVZ_SRC', wv_source,
              comment='Source of water vapor value (ECMWF or HEADER)')
-    hdinsert(header, 'WV_USED', round(wv, 2),
+    hdinsert(header, 'WVZ_USED', round(wv, 2),
              comment='[um] Water vapor used for ATRAN selection')
     if wvz_ecmwf is not None:
-        hdinsert(header, 'WVZ_ECMW', round(wvz_ecmwf, 2),
+        hdinsert(header, 'WVZ_ECMWF', round(wvz_ecmwf, 2),
                  comment='[um] Raw ECMWF WV (before FIFI-LS conversion)')
-        hdinsert(header, 'WV_FORM', wv_formula,
+        hdinsert(header, 'WVZ_FORM', wv_formula,
                  comment='Formula used to convert ECMWF WV to FIFI-LS scale')
-        hdinsert(header, 'WV_FILE', wv_file,
+        hdinsert(header, 'WVZ_FILE', wv_file,
                  comment='ECMWF PWV file used')
 
     return alt, za, wv
