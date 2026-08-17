@@ -320,7 +320,7 @@ class TestTelluricCorrect:
         mock_get_wv = mocker.patch(
             'sofia_redux.instruments.fifi_ls.get_atran.get_wv_from_ecmwf',
             return_value=(5.0, 3.1,
-                          'WVZ_FIFI = 0.34 + WVZ_ECMW * 0.55',
+                          'WVZ_USED = 0.34 + WVZECMWF * 0.55',
                           'test_pwv.fits'))
 
         telluric_correct(filename, use_ecmwf=True, ecmwf_dir=str(tmp_path))

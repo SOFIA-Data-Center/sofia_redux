@@ -307,7 +307,7 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
     Returns
     -------
     tuple or None
-        Tuple of (WVZECMWF, wvz_fifi, wv_formula, filename) or None
+        Tuple of (wv_ecmwf, wv_fifi, wv_formula, filename) or None
         if ECMWF data could not be retrieved.
     """
     # Construct mission ID from header
@@ -356,8 +356,8 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
             log.debug(f'Could not retrieve ECMWF file from DaRUS: {e}')
             return None
 
-    WVZECMWF = None
-    wvz_fifi = None
+    wv_ecmwf = None
+    wv_fifi = None
     try:
         cached = get_ecmwf_from_cache(ecmwf_file)
         if cached is not None:
@@ -379,23 +379,23 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
             ecmwf_idx = np.searchsorted(unixtime, obs_time_unix)
             # Check quality flags (posconst and posjump should be 0)
             if posconst[ecmwf_idx] == 0 and posjump[ecmwf_idx] == 0:
-                WVZECMWF = float(pwv[ecmwf_idx])
+                wv_ecmwf = float(pwv[ecmwf_idx])
                 # Convert to FIFI-LS scale
                 wv_offset, wv_slope = 0.34, 0.55
-                wvz_fifi = wv_offset + WVZECMWF * wv_slope
+                wv_fifi = wv_offset + wv_ecmwf * wv_slope
                 wv_formula = (f'WVZ_USED = {wv_offset} '
                               f'+ WVZECMWF * {wv_slope}')
-                log.debug(f'ECMWF WV: {WVZECMWF:.2f} -> '
-                          f'FIFI-LS WV: {wvz_fifi:.2f} '
+                log.debug(f'ECMWF WV: {wv_ecmwf:.2f} -> '
+                          f'FIFI-LS WV: {wv_fifi:.2f} '
                           f'({wv_formula})')
     except Exception as e:
         log.debug(f'Error reading ECMWF file {ecmwf_file}: {e}')
 
-    if wvz_fifi is None:
+    if wv_fifi is None:
         log.warning('No valid ECMWF data found for this observation')
         return None
 
-    return (WVZECMWF, wvz_fifi, wv_formula, filename)
+    return (wv_ecmwf, wv_fifi, wv_formula, filename)
 
 
 def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
@@ -434,8 +434,8 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
 
     # get water vapor
     wv = None
-    WVZECMWF = None
-    wvz_fifi = None
+    wv_ecmwf = None
+    wv_fifi = None
     wv_formula = None
     wv_source = 'HEADER'
 
@@ -443,8 +443,8 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
         # Try to get water vapor from ECMWF reanalysis data
         ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
         if ecmwf_result is not None:
-            WVZECMWF, wvz_fifi, wv_formula, wv_file = ecmwf_result
-            wv = wvz_fifi
+            wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
+            wv = wv_fifi
             wv_source = 'ECMWF'
             log.info(f'Using ECMWF water vapor: {wv:.2f}')
 
@@ -460,8 +460,8 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
                             'Automatically applying use_ecmwf=True')
                 ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
                 if ecmwf_result is not None:
-                    WVZECMWF, wvz_fifi, wv_formula, wv_file = ecmwf_result
-                    wv = wvz_fifi
+                    wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
+                    wv = wv_fifi
                     wv_source = 'ECMWF'
                     log.info(f'Using ECMWF water vapor: {wv:.2f}')
             if wv is None:
@@ -479,8 +479,8 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
              comment='Source of water vapor value (ECMWF or HEADER)')
     hdinsert(header, 'WVZ_USED', round(wv, 2),
              comment='[um] Water vapor used for ATRAN selection')
-    if WVZECMWF is not None:
-        hdinsert(header, 'WVZECMWF', round(WVZECMWF, 2),
+    if wv_ecmwf is not None:
+        hdinsert(header, 'WVZECMWF', round(wv_ecmwf, 2),
                  comment='[um] Raw ECMWF WV (before FIFI-LS conversion)')
         hdinsert(header, 'WVZ_FORM', wv_formula,
                  comment='Formula used to convert ECMWF WV to FIFI-LS scale')
