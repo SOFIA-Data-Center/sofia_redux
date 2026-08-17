@@ -383,8 +383,8 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
                 # Convert to FIFI-LS scale
                 wv_offset, wv_slope = 0.34, 0.55
                 wvz_fifi = wv_offset + WVZECMWF * wv_slope
-                wv_formula = (f'WVZ_FIFI = {wv_offset} '
-                              f'+ WVZ_ECMW * {wv_slope}')
+                wv_formula = (f'WVZ_USED = {wv_offset} '
+                              f'+ WVZECMWF * {wv_slope}')
                 log.debug(f'ECMWF WV: {WVZECMWF:.2f} -> '
                           f'FIFI-LS WV: {wvz_fifi:.2f} '
                           f'({wv_formula})')
