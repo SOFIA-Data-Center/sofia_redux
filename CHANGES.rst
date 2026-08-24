@@ -1,3 +1,21 @@
+1.5.2 (2026-XX-YY)
+==================
+
+- FLITECAM pipeline v2.2.1:
+
+  - Numpy 2.5 compatibility: removed np.row_stack usage
+
+- FIFI-LS pipeline v2.11.1:
+
+  - Numpy 2.5 compatibility: removed test mockup for np.char.chararray usage
+    in FITS headers.
+
+- toolkit module v2.6.0:
+
+  - Numpy 2.5 compatibility: removed unused utilities for np.char.chararray
+    to FITS header conversion and vice versa.
+
+
 1.5.1 (2026-07-22)
 ==================
 

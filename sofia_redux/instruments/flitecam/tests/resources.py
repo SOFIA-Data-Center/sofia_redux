@@ -96,7 +96,7 @@ def raw_testdata(spec=False, dthindex=1, nodbeam='A', nx=1024, ny=1024,
         if spec:
             # make a spectral trace like the center of the
             # gaussian, for all y
-            data1 = np.row_stack([data1[cy, :]] * ny)
+            data1 = np.vstack([data1[cy, :]] * ny)
     else:
         header['OBSTYPE'] = 'SKY'
 
