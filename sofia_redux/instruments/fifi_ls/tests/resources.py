@@ -30,7 +30,7 @@ class MockHDU(object):
         self.data = MockData()
         self.header = {}
         self.data['DATA'] = np.zeros((10, 10))
-        self.data['HEADER'] = np.chararray((10, 10))
+        self.data['HEADER'] = np.empty((10, 10))
 
 
 def raw_testdata(nod='A', obsid=None):

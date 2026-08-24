@@ -249,7 +249,6 @@ class TestSplitGratingAndChop:
 
         # mock HDU to make an error easier to trigger
         hdul = [hdul[0], MockHDU()]
-        hdul[1].data['HEADER'] = np.zeros((10, 10))
         result = u.separate_chops(hdul, params)
         assert result is None
         assert 'does not match' in capsys.readouterr().err

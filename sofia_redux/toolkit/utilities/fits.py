@@ -11,8 +11,8 @@ import numpy as np
 from sofia_redux.toolkit.utilities.func import goodfile, date2seconds
 
 __all__ = ['hdinsert', 'add_history', 'add_history_wrap',
-           'robust_read', 'getheader', 'getdata', 'header_to_chararray',
-           'chararray_to_header', 'gethdul', 'write_hdul',
+           'robust_read', 'getheader', 'getdata',
+           'gethdul', 'write_hdul',
            'get_key_value', 'set_log_level',
            'order_headers', 'merge_headers']
 
@@ -231,60 +231,6 @@ def getdata(filename, hdu=0, verbose=True):
         log.error("Could not read FITS data: %s" % filename)
         return
     return data
-
-
-def header_to_chararray(header):
-    """
-    Convert a FITS header to an array of strings
-
-    For the weirdness of FIFI-LS
-
-    Parameters
-    ----------
-    header : astropy.io.fits.header.Header
-
-    Returns
-    -------
-    np.ndarray
-    """
-    if not isinstance(header, fits.header.Header):
-        log.error("Invalid header")
-        return
-    c = repr(header).split('\n')
-    c = [x.ljust(80)[:80] for x in c]
-    return np.char.array([c], itemsize=80, unicode=True)
-
-
-def chararray_to_header(chararray):
-    """
-    Convert an array of strings to a FITS header
-
-    For the weirdness of FIFI-LS
-
-    Parameters
-    ----------
-    chararray : np.ndarray
-
-    Returns
-    -------
-    astropy.io.fits.header.Header
-    """
-    if not isinstance(chararray, np.ndarray):
-        log.error("Invalid chararray")
-        return
-
-    if chararray.ndim not in [1, 2]:
-        log.error("Invalid chararray features")
-        return
-
-    try:
-        c = chararray[0] if chararray.ndim == 2 else chararray
-        c = ''.join([x.ljust(80)[:80] for x in c])
-        h = fits.header.Header.fromstring(c)
-        return h
-    except (ValueError, TypeError, AttributeError) as err:
-        log.error(str(err))
-        return
 
 
 def gethdul(filename, verbose=True):
