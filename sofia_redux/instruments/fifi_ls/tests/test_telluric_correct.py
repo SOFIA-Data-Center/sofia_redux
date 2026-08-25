@@ -59,7 +59,7 @@ class TestTelluricCorrect:
         assert 'Telluric corrected' in str(default[0].header['HISTORY'])
         assert 'Telluric corrected' not in str(result[0].header['HISTORY'])
         assert 'Telluric spectrum attached' in str(result[0].header['HISTORY'])
-        assert result[0].header['WV_SRC'] == 'HEADER'
+        assert result[0].header['WVZ_SRC'] == 'HEADER'
 
         # output does not have uncorrected extensions; should
         # have everything else
@@ -269,7 +269,7 @@ class TestTelluricCorrect:
 
         assert isinstance(result, fits.HDUList)
         assert atran_filename in result[0].header['ATRNFILE']
-        assert result[0].header['WV_SRC'] == 'HEADER'
+        assert result[0].header['WVZ_SRC'] == 'HEADER'
 
     def test_atran_file(self, test_files):
         """
@@ -290,7 +290,7 @@ class TestTelluricCorrect:
         # ATRNFILE should be a single file, not 4 interpolated ones
         assert ',' not in result[0].header['ATRNFILE']
         # WV selection was skipped entirely
-        assert result[0].header.get('WV_SRC') is None
+        assert result[0].header.get('WVZ_SRC') is None
 
     def test_interpolated(self, test_files):
         """
@@ -320,7 +320,7 @@ class TestTelluricCorrect:
         mock_get_wv = mocker.patch(
             'sofia_redux.instruments.fifi_ls.get_atran.get_wv_from_ecmwf',
             return_value=(5.0, 3.1,
-                          'WVZ_FIFI = 0.34 + WVZ_ECMW * 0.55',
+                          'WVZ_USED = 0.34 + WVZECMWF * 0.55',
                           'test_pwv.fits'))
 
         telluric_correct(filename, use_ecmwf=True, ecmwf_dir=str(tmp_path))
