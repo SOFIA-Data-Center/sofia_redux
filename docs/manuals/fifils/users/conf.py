@@ -74,7 +74,7 @@ rst_epilog += f"""
 
 # SDC document number and revision
 docnumber = 'SDC-MAN-0001'
-issue = '04'
+issue = '05'
 
 # set the release date of the manual manually
 today = '2026-06-30'

@@ -9,6 +9,8 @@
 
   - Numpy 2.5 compatibility: removed test mockup for np.char.chararray usage
     in FITS headers.
+  - Renamed some header keywords concerning water vapor characteristics in data products.
+    See FIFI-LS Pipeline User's Manual change notes for a list.
 
 - toolkit module v2.6.0:
 
