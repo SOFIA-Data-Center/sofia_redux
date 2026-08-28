@@ -11,6 +11,19 @@ v2.0.0 and later were implemented in Python. For previously processed
 data, check the ``PIPEVERS`` keyword in the FITS header to determine the
 pipeline version used.
 
+.. rubric:: FIFI-LS Redux v2.11.1 (2026-XX-YY)
+
+*User manual: Iss. 05*
+
+- Numpy 2.5 compatibility: removed test mockup for np.char.chararray usage
+  in FITS headers.
+- Renamed some header keywords concerning water vapor characteristics in data products:
+
+  - ``WV_SRC`` to ``WVZ_SRC``
+  - ``WV_USED`` to ``WVZ_USED``
+  - ``WV_FORM`` to ``WVZ_FORM``
+  - ``WVZ_ECMW`` to ``WVZECMWF``
+  - Also changed ``WVZ_FORM`` to reference ``WVZ_USED`` instead of the non-existent ``WVZ_FIFI``.
 
 .. rubric:: FIFI-LS Redux v2.11.0 (2026-06-30)
 
