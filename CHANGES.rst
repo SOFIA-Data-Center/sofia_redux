@@ -4,7 +4,7 @@
 - EXES pipeline v3.1.1:
   - Refined error logging messages for calibration file retrievals from DaRUS  
 
-- FLITECAM pipeline v2.2.1:
+- FLITECAM pipeline v2.1.1:
 
   - Numpy 2.5 compatibility: removed np.row_stack usage
   - Refined error logging messages for calibration file retrievals from DaRUS  
@@ -17,12 +17,21 @@
     See FIFI-LS Pipeline User's Manual change notes for a list.
   - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS
 
-- toolkit module v2.6.0:
+- :mod:`toolkit` module v2.6.0:
 
   - Numpy 2.5 compatibility: removed unused utilities for np.char.chararray
     to FITS header conversion and vice versa.
   - Refined error logging messages for DaRUS file retrievals
 
+- Enhance logging for more warnings and errors.
+  This bumps a bunch of module versions beyond the above:
+  
+  - FORCAST pipeline v2.7.4
+  - HAWC+ pipeline v3.2.3
+  - :mod:`calibration`` module v1.7.1
+  - :mod:`pipeline` module v2.16.1
+  - :mod:`scan` module v1.3.18
+  - :mod:`spectroscopy` module v1.5.1
 
 1.5.1 (2026-07-22)
 ==================
