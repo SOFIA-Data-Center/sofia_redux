@@ -102,10 +102,6 @@ def imgshift_header(header, chop=True, nod=True, dither=True,
         coordsys = getpar(header, 'CHPCRSYS', dripconf=dripconf,
                           default='unknown', dtype=str).upper().strip()
         if coordsys not in ['ERF', 'SIRF']:
-            if 'CHPCOORD' not in header:
-                log.warning('CHPCOORD missing; using 0 - chop '
-                            'coordinate system defaults to SIRF '
-                            'and will not be rotated for ERF.')
             val = getpar(header, 'CHPCOORD', default=0,
                          dtype=int, dripconf=dripconf)
             coordsys = 'ERF' if val == 2 else 'SIRF'
@@ -116,16 +112,8 @@ def imgshift_header(header, chop=True, nod=True, dither=True,
 
     # Get nod distances
     if int(header.get('NODDING', 0)) and nod:
-        if 'NODAMP' not in header:
-            log.warning('NODAMP missing; using 0.0 - nod shift is '
-                        'zero, so merge/coadd registration will not '
-                        'correct for the nod offset.')
         dnod = getpar(header, 'NODAMP', default=0,
                       dtype=float, dripconf=dripconf)
-        if 'NODANGLE' not in header:
-            log.warning('NODANGLE missing; using 0.0 - nod shift '
-                        'direction will be wrong, corrupting '
-                        'merge/coadd registration.')
         nod_angle = getpar(header, 'NODANGLE', default=0,
                            dtype=float, dripconf=dripconf)
         nod_angle = np.radians(nod_angle) * angle_convention
@@ -135,7 +123,7 @@ def imgshift_header(header, chop=True, nod=True, dither=True,
                           default='unknown', dtype=str).upper().strip()
         if coordsys not in ['ERF', 'SIRF']:
             val = getpar(header, 'NODCOORD', default=0,
-                         dtype=int, dripconf=dripconf, warn=True)
+                         dtype=int, dripconf=dripconf)
             coordsys = 'ERF' if val == 2 else 'SIRF'
         if coordsys == 'ERF':
             shift['nodx'], shift['nody'] = \
