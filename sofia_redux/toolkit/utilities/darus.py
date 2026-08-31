@@ -6,6 +6,9 @@ SOFIA pipeline's reference files (ATRAN, ECMWF PWV, EXES and FLITECAM
 calibration files, ...) are hosted. Each instrument's files have their
 own dataset, identified by a unique DOI.
 """
+from pathlib import Path
+
+from astropy import log
 from astropy.utils.data import download_file
 import requests
 
@@ -66,7 +69,9 @@ def get_file_from_darus(doi, filename):
             continue
         fid = file['dataFile']['id']
         download_url = f'{DARUS_URL_BASE}/api/access/datafile/{fid}'
-        return download_file(download_url, cache=True, pkgname="sofia_redux")
+        cached_file = download_file(download_url, cache=True, pkgname="sofia_redux")
+        log.debug(f'DaRUS file {filename} cached in {Path(cached_file).parent}')
+        return cached_file
 
     raise FileNotFoundError(
         f'{filename} not found in DaRUS dataset {doi}')

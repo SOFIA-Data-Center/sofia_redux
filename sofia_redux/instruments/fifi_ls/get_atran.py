@@ -255,7 +255,6 @@ def get_atran_from_darus(altitude, filename):
     if dataset_doi is None:
         raise ValueError(f'No dataset DOI found for altitude {altitude}K')
     local_file = get_file_from_darus(dataset_doi, filename)
-    log.info(f'ATRAN file in astropy cache: {local_file}')
     return local_file
 
 
@@ -478,7 +477,7 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
     if wv < 1.:
         log.error(f'Invalid water vapor value: {wv}.')
 
-    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
+    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f} from {wv_source}')
 
     # Add water vapor source and values to header
     hdinsert(header, 'WVZ_SRC', wv_source,

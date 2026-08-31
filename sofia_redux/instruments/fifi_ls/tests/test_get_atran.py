@@ -384,7 +384,7 @@ def test_get_atran(header_for_atran):
     ]
 )
 def test_get_atran_clipped(
-        header_for_atran, capsys, caplog, fake_atran_dir,
+        header_for_atran, caplog, fake_atran_dir,
         hdrval, expected_atran_string, expected_warnings):
     """Test that get_atran handles the desired clipping."""
     for k, v in hdrval.items():
@@ -395,8 +395,7 @@ def test_get_atran_clipped(
 
     assert atran_spectrum.ndim == 2
 
-    capt = capsys.readouterr()
-    assert expected_atran_string in capt.out
+    assert expected_atran_string in caplog.text
 
     assert "Invalid data in ATRAN file" not in caplog.text
 
