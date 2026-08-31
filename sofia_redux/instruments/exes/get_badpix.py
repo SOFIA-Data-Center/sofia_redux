@@ -8,7 +8,7 @@ import numpy as np
 from sofia_redux.instruments.exes import data as data_module
 from sofia_redux.instruments.exes import utils
 from sofia_redux.toolkit.utilities.fits import getdata, goodfile
-from sofia_redux.toolkit.utilities.darus import get_file_from_darus
+from sofia_redux.toolkit.utilities.darus import DarusError, get_file_from_darus
 
 __all__ = ['get_badpix']
 
@@ -71,7 +71,8 @@ def get_badpix(header, clip_reference=False, apply_detsec=False):
                 # reducing without a mask.
                 log.error(f'Could not retrieve bad pixel mask from DaRUS '
                           f'dataset {data_module.DARUS_DOI}: {e}')
-                raise
+                raise DarusError(
+                    "Could not retrieve bad pixel mask from DaRUS") from None
         mask = getdata(bpm).astype('int')
     if mask is None:
         return
