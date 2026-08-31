@@ -23,6 +23,12 @@
     to FITS header conversion and vice versa.
   - Refined error logging messages for DaRUS file retrievals
 
+- :mod:`scan` module v1.4.0
+
+  - Removed `sample_equatorial` attribute from :class:`scan.frames.Frames`. This
+    array was initialized during HAWC+ reductions. It consumed a lot of memory but
+    was never used in the pipeline.
+
 - Enhance logging for more warnings and errors.
   This bumps a bunch of module versions beyond the above:
   
@@ -30,8 +36,8 @@
   - HAWC+ pipeline v3.2.3
   - :mod:`calibration`` module v1.7.1
   - :mod:`pipeline` module v2.16.1
-  - :mod:`scan` module v1.3.18
   - :mod:`spectroscopy` module v1.5.1
+
 
 1.5.1 (2026-07-22)
 ==================
