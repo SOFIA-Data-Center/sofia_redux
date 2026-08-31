@@ -150,7 +150,6 @@ class TestFrames(object):
         assert frames.sample_flag.shape == (nframe, nchannel)
         assert frames.source_index.shape == (nframe, nchannel)
         assert frames.map_index.shape == (nframe, nchannel)
-        assert frames.sample_equatorial.shape == (nframe, nchannel)
         assert frames.tuple_coord_quantity.shape == (nframe, nchannel)
         assert frames.tuple_coord_unit.shape == (nframe, nchannel)
         assert frames.tuple_coord_str.shape == (nframe, nchannel)

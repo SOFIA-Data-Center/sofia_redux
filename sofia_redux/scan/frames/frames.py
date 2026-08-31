@@ -51,7 +51,6 @@ class Frames(FlaggedData):
         self.sample_flag = None
         self.source_index = None
         self.map_index = None
-        self.sample_equatorial = None
 
         # Vectors
         self.equatorial = None
@@ -148,8 +147,7 @@ class Frames(FlaggedData):
         return {'data': float,
                 'sample_flag': 0,
                 'source_index': -1,
-                'map_index': (Index2D, -1),
-                'sample_equatorial': units.Unit('deg')}
+                'map_index': (Index2D, -1)}
 
     @property
     def internal_attributes(self):
