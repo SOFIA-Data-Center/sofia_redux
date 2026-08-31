@@ -440,16 +440,22 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
         alt = 0.5 * (alt_start + alt_end)
     alt /= 1000
 
-    # get water vapor
+    # get water vapor value
+    # Selection priority based on availability:
+    # use_ecmwf=True: ECMWF > FITS WVZ_OBS Header > Minimum value
+    # use_ecmwf=False FITS WVZ_OBS Header > ECMWF > Minimum value
     wv = None
     wv_ecmwf = None
     wv_fifi = None
     wv_formula = None
+    wv_source = None
+
+    wvz_obs = float(header.get('WVZ_OBS', 0))
+    header_wv_valid = wvz_obs > 0
 
     if not use_ecmwf:
-        # Try to get water vapor from the header WVZ_OBS keyword
-        wvz_obs = float(header.get('WVZ_OBS', 0))
-        if wvz_obs > 0:
+        if header_wv_valid:
+            # Use FITS header when ECMWF is disabled
             wv = wvz_obs
             wv_source = 'HEADER'
             log.info(f'Using WVZ_OBS water vapor: {wv:.2f}')
@@ -459,20 +465,27 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
                         'Automatically applying use_ecmwf=True')
             use_ecmwf = True
 
-    if use_ecmwf:
-        # Try to get water vapor from ECMWF reanalysis data
+    if use_ecmwf and wv is None:
         ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
         if ecmwf_result is not None:
             wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
             wv = wv_fifi
             wv_source = 'ECMWF'
             log.info(f'Using ECMWF water vapor: {wv:.2f}')
+        else:
+            log.info('ECMWF water vapor retrieval failed')
+            if header_wv_valid:
+                wv = wvz_obs
+                wv_source = 'HEADER'
+                log.info(f'Fallback to WVZ_OBS water vapor: {wv:.2f}')
 
     if wv is None:
-        log.error('No valid water vapor value available. '
-                  f'Using minimum WV ({ATRAN_WV_VALUES[0]} um).')
         wv = float(ATRAN_WV_VALUES[0])
         wv_source = 'FALLBACK'
+        log.error(
+            f'No valid water vapor value available. '
+            f'Using minimum WV {wv:.0f} um).'
+        )
 
     if wv < 1.:
         log.error(f'Invalid water vapor value: {wv}.')
