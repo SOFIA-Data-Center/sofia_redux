@@ -71,8 +71,6 @@ def get_badpix(header, clip_reference=False, apply_detsec=False):
                 # reducing without a mask.
                 log.error(f'Could not retrieve bad pixel mask from DaRUS '
                           f'dataset {data_module.DARUS_DOI}: {e}')
-                log.error('Stopping rather than reducing without a mask; '
-                          'retry when DaRUS is reachable.')
                 raise
         mask = getdata(bpm).astype('int')
     if mask is None:

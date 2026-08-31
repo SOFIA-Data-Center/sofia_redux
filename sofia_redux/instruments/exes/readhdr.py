@@ -624,7 +624,5 @@ def _download_cache_file(filename):
         cache_file = basename
         log.warning(f'File {basename} could not be downloaded from DaRUS '
                     f'dataset {DARUS_DOI}: {e}')
-        log.warning(f'Continuing; the step that needs {basename} will '
-                    f'fail with a clearer error.')
 
     return cache_file
