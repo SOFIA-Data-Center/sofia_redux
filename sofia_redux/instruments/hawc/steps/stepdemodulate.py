@@ -874,12 +874,12 @@ class StepDemodulate(StepParent):
                 badtrack = np.where(centroidexp < 10)
                 azelstate[badtrack] = np.int32(0)
                 premask[badtrack] += 2**8
-                log.debug('Removing bad samples, tracking '
-                          'issues - using centroidexp; %d sample(s) '
-                          'flagged' % len(badtrack[0]))
+                log.debug('Removing bad samples, tracking issues '
+                          f'- using {centroidexp=}; '
+                          f'{len(badtrack[0])} sample(s) flagged')
                 log.debug('Number of good samples after removing '
-                          'samples due to bad tracking = %d' %
-                          sum(azelstate))
+                          'samples due to bad tracking = '
+                          f'{sum(azelstate)}')
 
                 ngoodsampafter = sum(azelstate)
                 if float(ngoodsampafter) / float(ngoodsampbefore) > \
