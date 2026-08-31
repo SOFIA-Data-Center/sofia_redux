@@ -69,8 +69,10 @@ def get_file_from_darus(doi, filename):
             continue
         fid = file['dataFile']['id']
         download_url = f'{DARUS_URL_BASE}/api/access/datafile/{fid}'
-        cached_file = download_file(download_url, cache=True, pkgname="sofia_redux")
-        log.debug(f'DaRUS file {filename} cached in {Path(cached_file).parent}')
+        cached_file = download_file(
+            download_url, cache=True, pkgname="sofia_redux")
+        log.debug(f"DaRUS file {filename} from {doi} cached in "
+                  f"{Path(cached_file).parent}")
         return cached_file
 
     raise FileNotFoundError(
