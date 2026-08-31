@@ -363,7 +363,6 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
         except Exception as e:
             log.warning(f'Could not retrieve ECMWF file {filename} from '
                         f'DaRUS dataset {PWV_DOI}: {e}')
-            log.warning('Falling back to WVZ_OBS from the header.')
             return None
 
     wv_ecmwf = None
@@ -447,7 +446,19 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
     wv_ecmwf = None
     wv_fifi = None
     wv_formula = None
-    wv_source = 'HEADER'
+
+    if not use_ecmwf:
+        # Try to get water vapor from the header WVZ_OBS keyword
+        wvz_obs = float(header.get('WVZ_OBS', 0))
+        if wvz_obs > 0:
+            wv = wvz_obs
+            wv_source = 'HEADER'
+            log.info(f'Using WVZ_OBS water vapor: {wv:.2f}')
+        else:
+            log.warning('WVZ_OBS is missing or invalid in header.')
+            log.warning('use_ecmwf=False but no valid WVZ_OBS available. '
+                        'Automatically applying use_ecmwf=True')
+            use_ecmwf = True
 
     if use_ecmwf:
         # Try to get water vapor from ECMWF reanalysis data
@@ -459,25 +470,10 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
             log.info(f'Using ECMWF water vapor: {wv:.2f}')
 
     if wv is None:
-        # Try to get water vapor from the header WVZ_OBS keyword
-        wvz_obs = float(header.get('WVZ_OBS', 0))
-        if wvz_obs > 0:
-            wv = wvz_obs
-        else:
-            log.warning('WVZ_OBS is missing or invalid in header.')
-            if not use_ecmwf:
-                log.warning('use_ecmwf=False but no valid WVZ_OBS available. '
-                            'Automatically applying use_ecmwf=True')
-                ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
-                if ecmwf_result is not None:
-                    wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
-                    wv = wv_fifi
-                    wv_source = 'ECMWF'
-                    log.info(f'Using ECMWF water vapor: {wv:.2f}')
-            if wv is None:
-                log.error('No valid water vapor value available. '
-                          f'Using minimum WV ({ATRAN_WV_VALUES[0]} um).')
-                wv = float(ATRAN_WV_VALUES[0])
+        log.error('No valid water vapor value available. '
+                  f'Using minimum WV ({ATRAN_WV_VALUES[0]} um).')
+        wv = float(ATRAN_WV_VALUES[0])
+        wv_source = 'FALLBACK'
 
     if wv < 1.:
         log.error(f'Invalid water vapor value: {wv}.')
