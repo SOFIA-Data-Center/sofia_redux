@@ -6,12 +6,25 @@ SOFIA pipeline's reference files (ATRAN, ECMWF PWV, EXES and FLITECAM
 calibration files, ...) are hosted. Each instrument's files have their
 own dataset, identified by a unique DOI.
 """
+from pathlib import Path
+
+from astropy import log
 from astropy.utils.data import download_file
 import requests
 
-__all__ = ['DARUS_URL_BASE', 'get_file_from_darus']
+__all__ = ['DARUS_URL_BASE', 'DarusError', 'get_file_from_darus']
 
 DARUS_URL_BASE = "https://darus.uni-stuttgart.de"
+
+
+class DarusError(OSError):
+    """Raised when a file could not be retrieved from DaRUS.
+
+    Carries a single message describing what was being retrieved and why
+    it failed. Callers raise it in place of the underlying transport
+    exception once that exception has been logged, so that the reduction
+    stops with a readable error instead of a chained retry traceback.
+    """
 
 # cache for list of files in each DaRUS dataset in the DOI
 __darus_files_in_ds = {}
@@ -56,7 +69,11 @@ def get_file_from_darus(doi, filename):
             continue
         fid = file['dataFile']['id']
         download_url = f'{DARUS_URL_BASE}/api/access/datafile/{fid}'
-        return download_file(download_url, cache=True, pkgname="sofia_redux")
+        cached_file = download_file(
+            download_url, cache=True, pkgname="sofia_redux")
+        log.debug(f"DaRUS file {filename} from {doi} cached in "
+                  f"{Path(cached_file).parent}")
+        return cached_file
 
     raise FileNotFoundError(
         f'{filename} not found in DaRUS dataset {doi}')

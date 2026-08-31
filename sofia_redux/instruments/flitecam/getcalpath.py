@@ -235,13 +235,13 @@ def _download_cache_file(filename):
     try:
         cache_file = get_file_from_darus(DARUS_DOI, basename)
         log.info(f"Using {basename} cached as {cache_file}")
-    except OSError:
+    except OSError as e:
         # OSError covers the expected exceptions: HTTPError if the DaRUS
         # request fails, FileNotFoundError if the file is not in the dataset,
         # and download_file failures. Return basename only if the file
         # can't be downloaded; pipeline will issue clearer errors later.
         cache_file = basename
-        log.warning(f'File {cache_file} could not be downloaded from DaRUS '
-                    f'dataset {DARUS_DOI}')
+        log.warning(f'File {basename} could not be downloaded from DaRUS '
+                    f'dataset {DARUS_DOI}: {e}')
 
     return cache_file

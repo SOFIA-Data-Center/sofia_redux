@@ -1,9 +1,13 @@
 1.5.2 (2026-XX-YY)
 ==================
 
+- EXES pipeline v3.1.1:
+  - Refined error logging messages for calibration file retrievals from DaRUS  
+
 - FLITECAM pipeline v2.2.1:
 
   - Numpy 2.5 compatibility: removed np.row_stack usage
+  - Refined error logging messages for calibration file retrievals from DaRUS  
 
 - FIFI-LS pipeline v2.11.1:
 
@@ -11,11 +15,13 @@
     in FITS headers.
   - Renamed some header keywords concerning water vapor characteristics in data products.
     See FIFI-LS Pipeline User's Manual change notes for a list.
+  - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS
 
 - toolkit module v2.6.0:
 
   - Numpy 2.5 compatibility: removed unused utilities for np.char.chararray
     to FITS header conversion and vice versa.
+  - Refined error logging messages for DaRUS file retrievals
 
 
 1.5.1 (2026-07-22)

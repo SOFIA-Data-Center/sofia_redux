@@ -11,7 +11,7 @@ import numpy as np
 from sofia_redux.instruments import fifi_ls
 from sofia_redux.instruments.fifi_ls.get_resolution import get_resolution
 from sofia_redux.toolkit.utilities import goodfile, gethdul, hdinsert
-from sofia_redux.toolkit.utilities.darus import get_file_from_darus
+from sofia_redux.toolkit.utilities.darus import DarusError, get_file_from_darus
 from sofia_redux.spectroscopy.smoothres import smoothres
 
 
@@ -201,7 +201,15 @@ def get_atran_data(filename, resolution, atran_dir=None):
         localpath = os.path.join(atran_dir, f'{alt}K', filename)
         if not goodfile(localpath):
             log.debug(f'ATRAN file not found in ATRAN directory: {localpath}')
-            localpath = get_atran_from_darus(alt, filename)
+            try:
+                localpath = get_atran_from_darus(alt, filename)
+            except OSError as e:
+                log.error(f'Could not retrieve ATRAN file {filename} '
+                          f'for altitude {alt}K from DaRUS: {e}')
+                raise DarusError(
+                    f'Could not retrieve ATRAN file {filename} for '
+                    f'altitude {alt}K from DaRUS; the reduction '
+                    f'cannot continue.') from None
 
     atranfile = os.path.basename(filename)
     hdul = gethdul(localpath, verbose=True)
@@ -247,7 +255,6 @@ def get_atran_from_darus(altitude, filename):
     if dataset_doi is None:
         raise ValueError(f'No dataset DOI found for altitude {altitude}K')
     local_file = get_file_from_darus(dataset_doi, filename)
-    log.info(f'ATRAN file in astropy cache: {local_file}')
     return local_file
 
 
@@ -353,7 +360,8 @@ def get_wv_from_ecmwf(header, ecmwf_dir=None):
         try:
             ecmwf_file = Path(get_ecmwf_from_darus(filename))
         except Exception as e:
-            log.debug(f'Could not retrieve ECMWF file from DaRUS: {e}')
+            log.warning(f'Could not retrieve ECMWF file {filename} from '
+                        f'DaRUS dataset {PWV_DOI}: {e}')
             return None
 
     wv_ecmwf = None
@@ -432,47 +440,57 @@ def get_atran_parameters(header, use_ecmwf, ecmwf_dir):
         alt = 0.5 * (alt_start + alt_end)
     alt /= 1000
 
-    # get water vapor
+    # get water vapor value
+    # Selection priority based on availability:
+    # use_ecmwf=True: ECMWF > FITS WVZ_OBS Header > Minimum value
+    # use_ecmwf=False FITS WVZ_OBS Header > ECMWF > Minimum value
     wv = None
     wv_ecmwf = None
     wv_fifi = None
     wv_formula = None
-    wv_source = 'HEADER'
+    wv_source = None
 
-    if use_ecmwf:
-        # Try to get water vapor from ECMWF reanalysis data
+    wvz_obs = float(header.get('WVZ_OBS', 0))
+    header_wv_valid = wvz_obs > 0
+
+    if not use_ecmwf:
+        if header_wv_valid:
+            # Use FITS header when ECMWF is disabled
+            wv = wvz_obs
+            wv_source = 'HEADER'
+            log.info(f'Using WVZ_OBS water vapor: {wv:.2f}')
+        else:
+            log.warning('WVZ_OBS is missing or invalid in header.')
+            log.warning('use_ecmwf=False but no valid WVZ_OBS available. '
+                        'Automatically applying use_ecmwf=True')
+            use_ecmwf = True
+
+    if use_ecmwf and wv is None:
         ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
         if ecmwf_result is not None:
             wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
             wv = wv_fifi
             wv_source = 'ECMWF'
             log.info(f'Using ECMWF water vapor: {wv:.2f}')
+        else:
+            log.info('ECMWF water vapor retrieval failed')
+            if header_wv_valid:
+                wv = wvz_obs
+                wv_source = 'HEADER'
+                log.info(f'Fallback to WVZ_OBS water vapor: {wv:.2f}')
 
     if wv is None:
-        # Try to get water vapor from the header WVZ_OBS keyword
-        wvz_obs = float(header.get('WVZ_OBS', 0))
-        if wvz_obs > 0:
-            wv = wvz_obs
-        else:
-            log.warning('WVZ_OBS is missing or invalid in header.')
-            if not use_ecmwf:
-                log.warning('use_ecmwf=False but no valid WVZ_OBS available. '
-                            'Automatically applying use_ecmwf=True')
-                ecmwf_result = get_wv_from_ecmwf(header, ecmwf_dir)
-                if ecmwf_result is not None:
-                    wv_ecmwf, wv_fifi, wv_formula, wv_file = ecmwf_result
-                    wv = wv_fifi
-                    wv_source = 'ECMWF'
-                    log.info(f'Using ECMWF water vapor: {wv:.2f}')
-            if wv is None:
-                log.error('No valid water vapor value available. '
-                          f'Using minimum WV ({ATRAN_WV_VALUES[0]} um).')
-                wv = float(ATRAN_WV_VALUES[0])
+        wv = float(ATRAN_WV_VALUES[0])
+        wv_source = 'FALLBACK'
+        log.error(
+            f'No valid water vapor value available. '
+            f'Using minimum WV {wv:.0f} um).'
+        )
 
     if wv < 1.:
         log.error(f'Invalid water vapor value: {wv}.')
 
-    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f}')
+    log.debug(f'Alt, ZA, WV: {alt:.2f} {za:.2f} {wv:.2f} from {wv_source}')
 
     # Add water vapor source and values to header
     hdinsert(header, 'WVZ_SRC', wv_source,
