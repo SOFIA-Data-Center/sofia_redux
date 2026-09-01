@@ -57,14 +57,16 @@ exclude_patterns.append('_templates')
 # specific support
 exclude_patterns.append('sofia_redux/pipeline/redux_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/usage/*.rst')
+exclude_patterns.append('sofia_redux/scan/include/glossary.rst')
 exclude_patterns.append('manuals/external-reqs-src-install.rst')
 exclude_patterns.append('manuals/*/*/index.rst')
 exclude_patterns.append('manuals/*/*/redux_doc.rst')
 exclude_patterns.append('manuals/*/users/data_description.rst')
 exclude_patterns.append('manuals/*/users/software_description.rst')
-exclude_patterns.append('manuals/*/users/spectral_*.rst')
 exclude_patterns.append('manuals/*/users/appendix_*.rst')
+exclude_patterns.append('manuals/*/users/change_notes.rst')
 exclude_patterns.append('manuals/*/*/api')
+exclude_patterns.append('manuals/forcast/users/spectral_*.rst')
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
