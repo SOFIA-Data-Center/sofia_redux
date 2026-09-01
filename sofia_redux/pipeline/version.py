@@ -1,2 +1,2 @@
 # The pipeline module version is tracked statically in this file
-version = '2.16.0'
+version = '2.16.1'

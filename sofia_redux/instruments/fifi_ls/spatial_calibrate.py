@@ -208,7 +208,9 @@ def get_deltavec_coeffs(header, obsdate, telsim2det=0.842):
                   & (df['ch'] == prime_array[0].lower())
                   & (df['dch'] == dichroic)].sort_values('dt')
     except TypeError:
-        rows = []
+        log.error("No boresight offsets found for %s: PRIMARAY is "
+                  "missing or invalid in header." % longdate)
+        return None
     c1 = {'ax': 0.0, 'bx': 0.0, 'rx': 0.0,
           'ay': 0.0, 'by': 0.0, 'ry': 0.0}
     c2 = c1.copy()

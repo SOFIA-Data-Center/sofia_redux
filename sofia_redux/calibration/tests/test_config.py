@@ -429,13 +429,15 @@ class TestConfig(object):
         assert result['std_flux'] == 55.0
 
         # test both kinds of refcal files
-        for key, fname in [('calfac', 'rfcal.txt'), ('avgcalfc', 'avcal.txt')]:
+        for key, fname, err_msg in [
+                ('calfac', 'rfcal.txt', 'Reference calibration factor file'),
+                ('avgcalfc', 'avcal.txt', 'Average calibration factor file')]:
             # make a bad refcalfac file
             refcal = tmpdir.join(fname)
             refcal.write('BADVAL')
             result = pipecal_config(header)
             capt = capsys.readouterr()
-            assert 'Reference calibration factor file' in capt.err
+            assert err_msg in capt.err
             assert 'poorly formatted' in capt.err
             assert key not in result
 

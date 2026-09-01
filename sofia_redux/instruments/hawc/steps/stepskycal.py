@@ -212,10 +212,16 @@ class StepSkycal(StepMIParent, StepLoadAux):
             prbad = scal.imageget('R BAD PIXEL MASK')
         except ValueError:  # pragma: no cover
             prbad = np.zeros_like(prgain)
+            log.warning('No R BAD PIXEL MASK in default flat; '
+                        'treating all pixels as good - R bad pixel '
+                        'count below will read 0.')
         try:
             ptbad = scal.imageget('T BAD PIXEL MASK')
         except ValueError:  # pragma: no cover
             ptbad = np.zeros_like(ptgain)
+            log.warning('No T BAD PIXEL MASK in default flat; '
+                        'treating all pixels as good - T bad pixel '
+                        'count below will read 0.')
 
         log.info('')
         log.info('Default flat statistics:')

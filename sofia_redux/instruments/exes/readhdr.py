@@ -293,7 +293,7 @@ def _checkreq(key, value, table):
     # Check max
     if not np.isnan(row['max']) and value > row['max']:
         log.error(f"Required keyword {key} has wrong value {value}. "
-                  f"Should be <= {row['min']}")
+                  f"Should be <= {row['max']}")
         return False
     return True
 

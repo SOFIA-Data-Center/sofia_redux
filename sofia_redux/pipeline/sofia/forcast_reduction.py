@@ -708,7 +708,7 @@ class FORCASTReduction(Reduction):
             badmap = (badmap_int > 0)
             badfile = badfile.split(self.calres['pathcal'])[-1]
         else:
-            log.warning('No bad pixel file provided.')
+            log.warning('No bad pixel file found.')
             badfile = 'None'
             badmap = None
 

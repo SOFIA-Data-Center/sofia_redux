@@ -327,8 +327,10 @@ def hdcheck(filelist, dohdcheck=None, dripconf=False, kwfile=None):
 
         try:
             header = fits.getheader(filepath)
-        except OSError:
-            header = None
+        except OSError as e:
+            log.error("Could not read FITS header: %s (%s)" % (filepath, e))
+            allvalid = False
+            continue
 
         if not isinstance(header, fits.header.Header):
             log.error("Could not read FITS header: %s" % filepath)

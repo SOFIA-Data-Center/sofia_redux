@@ -439,7 +439,8 @@ def get_dms_angle(value, default=np.nan):
         try:
             value = parse_angle(str(value))
         except (ValueError, TypeError):
-            log.warning(f"Attempting to parse {value} as a dd:mm:ss string.")
+            log.warning(f"Could not parse {value} as a dd:mm:ss string; "
+                        f"using default ({default}).")
             return default
     return value
 
@@ -498,7 +499,8 @@ def get_hms_time(value, angle=False, default=np.nan):
         try:
             value = parse_time(str(value), angle=angle)
         except (ValueError, TypeError):
-            log.warning(f"Attempting to parse {value} as an hh:mm:ss string.")
+            log.warning(f"Could not parse {value} as an hh:mm:ss string; "
+                        f"using default ({default}).")
             return default
     return value
 

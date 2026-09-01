@@ -651,7 +651,7 @@ class FORCASTSpectroscopyReduction(FORCASTReduction):
         # divide by 2 for NMC and old-style SLITSCAN
         # (but not SLITSCAN_NXCAC)
         if 'nmc' in cnmode or cnmode == 'slitscan':
-            log.info('Dividing by 2 for NMC chop-nod mode.')
+            log.info('Dividing by 2 for NMC or old-style SLITSCAN mode.')
             cn_factor = 2.0
         else:
             cn_factor = 1.0

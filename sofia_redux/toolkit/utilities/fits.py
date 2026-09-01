@@ -147,9 +147,9 @@ def robust_read(filename, data_hdu=0, header_hdu=0, extension=None,
         hdul = fits.open(
             filename, mode='readonly', ignore_missing_end=True)
         hdul.verify('silentfix')
-        for hidx in [data_hdu, header_hdu]:
+        for label, hidx in (('data', data_hdu), ('header', header_hdu)):
             if not isinstance(hidx, int) or (hidx < 0) or (hidx >= len(hdul)):
-                log.warning("HDU %s does not exist (data)" % data_hdu)
+                log.warning("HDU %s does not exist (%s)" % (hidx, label))
                 return dataout, headout
         dataout = hdul[data_hdu].data
         headout = hdul[header_hdu].header

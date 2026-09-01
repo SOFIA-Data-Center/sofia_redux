@@ -955,7 +955,8 @@ def combine_extensions(df, b_nod_method='nearest', bg_scaling=False,
                             log.warning(
                                 "Telluric scaling not available "
                                 "for pointed data.  \n"
-                                "Skipping telluric scaling")
+                                "A median flux offset may be applied "
+                                "instead.")
                             b_flux2 = brow2['hdul'][b_fname].data
                             bdata = np.array([b_flux, b_flux2])
                             berr = np.array([np.sqrt(b_var),
