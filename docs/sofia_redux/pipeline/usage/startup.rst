@@ -1,11 +1,12 @@
-.. _pipe_automatic_mode:
+.. This file is included from all the user manuals. Don't use any reference labels
+   in order to avoid duplicates
 
 Automatic Mode Execution
 ------------------------
 
 The Redux pipeline infrastructure is capable of fully automated batch
 reductions, with much of the same functionality as in the manual mode
-(:ref:`pipe_manual_mode`). For this, it requires an input manifest
+(`Manual Mode Execution`_). For this, it requires an input manifest
 (*infiles.txt*) that contains relative paths to the input
 files (one per line). The command-line interface to the
 pipeline is run as::
@@ -47,8 +48,6 @@ interface are::
     -l LOGLEVEL, --loglevel LOGLEVEL
                           Log level.
 
-
-.. _pipe_manual_mode:
 
 Manual Mode Execution
 ---------------------
