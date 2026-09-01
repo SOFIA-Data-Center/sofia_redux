@@ -160,12 +160,6 @@ latex_elements = {
 # number figures for manuals
 numfig = True
 
-# -- Options for manual page output -------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [('index', project.lower(), project + u' Documentation',
-              [author], 1)]
 
 # -- Customize inheritance diagram --------------------------------------------
 # make the labels fit in the nodes
