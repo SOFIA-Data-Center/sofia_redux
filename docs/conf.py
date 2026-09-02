@@ -55,6 +55,7 @@ exclude_patterns.append('_templates')
 
 # exclude some things intended for direct inclusion or for latex/html
 # specific support
+exclude_patterns.append('sofia_redux/calibration/standard_model/standard_model_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/redux_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/usage/*.rst')
 exclude_patterns.append('sofia_redux/scan/include/glossary.rst')
