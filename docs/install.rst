@@ -76,6 +76,9 @@ transmission spectra, derived either from Steve Lord's ATRAN model
 `(bibcode: 1992nstc.rept.....L) <https://ntrs.nasa.gov/citations/19930010877>`__.
 (older models), or from ATRAN_SDC, a SOFIA-specific version of the former
 that was created with permission by the author.
+`ATRAN_SDC is provided as a web service <https://atran.sofiadatacenter.de>`
+by the SOFIA Data Center where you can generate and download atmospheric
+transmission spectra with parameters specific to your reduction analysis.
 
 The EXES pipeline does not use ATRAN models for telluric correction, but it
 does attach a reference atmospheric model at a matching altitude and zenith
@@ -101,7 +104,7 @@ from the `Planetary Spectrum Generator (PSG) <https://psg.gsfc.nasa.gov/>`__.
 
 - FIFI-LS:
 
-  For FIFI-LS, modified ATRAN_SDC models, parameterized by water vapor, are stored in the DaRUS data repository.
+  For FIFI-LS, pre-computed ATRAN_SDC models, parameterized by water vapor, are stored in the DaRUS data repository.
   The Pipeline will attempt to retrieve these automatically, however they can also be downloaded and stored locally
   in a directory referenced by the `atran_dir` or `atran_file` configuration parameters of the `telluric_correct` step.
   ECMWF water vapor data are also stored in DaRUS, and can also either be automatically retrieved
