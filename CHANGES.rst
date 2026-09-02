@@ -34,6 +34,13 @@
   - :mod:`scan` module v1.3.18
   - :mod:`spectroscopy` module v1.5.1
 
+- Documentation
+
+  - The installation section and the FIFI-LS User's manual now mention
+    the new web service `ATRAN_SDC <https://atran.sofiadatacenter.de>`_ for generating
+    tailored atmospheric tranmission spectra in place of the pre-computed ones available
+    from DaRUS.
+
 1.5.1 (2026-07-22)
 ==================
 
