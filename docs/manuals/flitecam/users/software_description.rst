@@ -892,83 +892,10 @@ for approaching quality assessment (QA) for FLITECAM data.
       theoretical spectrum, within the error bars of the observation. If
       it does not, the instrumental response file may need updating.
 
-Appendix A: Sample configuration files
-======================================
 
-Below are sample FLITECAM Redux parameter override files in INI format.
-If present, the parameter value overrides the
-default defined by the FLITECAM reduction object. If not present, the
-default value will be used.
+.. include:: appendix_a_sample_config.rst
 
-.. include:: include/redux_param_img.cfg
-   :literal:
+.. include:: appendix_b_input_keywords.rst
 
-.. raw:: latex
+.. include:: appendix_c_calibration_data_generation.rst   
 
-    \clearpage
-
-.. include:: include/redux_param_spec.cfg
-   :literal:
-
-.. raw:: latex
-
-    \clearpage
-
-Appendix B: Required input keywords
-===================================
-
-The files below define all keywords that the FLITECAM pipeline checks for
-validity before proceeding. They are normally located in the pipeline distribution
-distribution at *sofia_redux/instruments/flitecam/data/keyword_files*.
-
-.. include:: include/header_req_ima.cfg
-   :literal:
-
-.. include:: include/header_req_gri.cfg
-   :literal:
-
-
-Appendix C: Calibration Data Generation
-=======================================
-
-The FLITECAM Redux pipeline requires several kinds of auxiliary reference
-calibration files, listed in :numref:`flitecam_auxiliary`.  Some of these
-are produced by tools packaged with the pipeline.  This section describes the
-procedures used to produce these auxiliary files.
-
-.. |ref_wavecal_plots| replace:: :numref:`flitecam_wavecal_plots`
-
-.. |ref_spatcal_plots| replace:: :numref:`flitecam_spatcal_plots`
-
-.. |ref_wavecal_residuals| replace:: :numref:`flitecam_wavecal_residuals`
-
-.. |ref_spatcal_residuals| replace:: :numref:`flitecam_spatcal_residuals`
-
-.. include::  ../../forcast/users/spectral_calibration.rst
-
-.. figure:: images/wavecal_plots.png
-   :name: flitecam_wavecal_plots
-   :alt: The Redux GUI window, several spectral plot displays with lines marked,
-         and a DS9 window showing a spectral image.
-
-   Wavecal mode reduction and diagnostic plots.
-
-.. figure:: images/spatcal_plots.png
-   :name: flitecam_spatcal_plots
-   :alt: GUI window, spatial profile plot display, and a DS9 window with a spectral image.
-
-   Spatcal mode reduction and diagnostic plots.
-
-.. figure:: images/wavecal_residuals.png
-   :name: flitecam_wavecal_residuals
-   :alt: An image marked with positions and vertical fit lines and a plot window
-         showing fit residuals in X and Y.
-
-   Wavecal mode fit surface and residuals.
-
-.. figure:: images/spatcal_residuals.png
-   :name: flitecam_spatcal_residuals
-   :alt: An image marked with positions and horizontal fit lines and a plot window
-         showing fit residuals in X and Y.
-
-   Spatcal mode fit surface and residuals.
