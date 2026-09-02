@@ -166,6 +166,7 @@ def getcalpath(header, pathcal=None):
     for f in calcols:
         if f.endswith('file') and f in row and row[f] != '.':
             result[f] = os.path.join(path, row[f])
+            log.info(f"Using {row[f]} from {path}")
 
     # Read the filter shift_image table
     # This file lists the shift_image values that should be applied to CRPIX1
@@ -244,6 +245,7 @@ def _get_grism_cal(pathcal, result):
     for f in calcols:
         if f.endswith('file') and f in row and row[f] != '.':
             result[f] = os.path.join(pathcal, row[f])
+            log.info(f"Using {row[f]} from {pathcal}")
         elif f == 'resolution' and f in row and row[f] != '.':
             try:
                 result[f] = float(row[f])
