@@ -1,3 +1,7 @@
+.. _fifi_appendix_change_notes:
+
+Appendix D: Change notes for the FIFI-LS pipeline
+=================================================
 
 Significant changes
 -------------------
