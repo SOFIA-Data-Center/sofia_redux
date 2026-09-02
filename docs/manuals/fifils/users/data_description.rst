@@ -1288,8 +1288,7 @@ spectrum, the first row is the wavelength array, and the second row is
 the transmission fraction. This spectrum may be useful for further analysis
 of the data (e.g. for determining the total flux in an emission line).
 
-The final output from the pipeline is a FITS file with 11 image
-extensions:
+The final output from the pipeline is a FITS file with up to 16 extension HDUs:
 
 -  ``FLUX``: The *nx* x *ny* x *nw* cube of flux values.
 
