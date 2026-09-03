@@ -1279,7 +1279,10 @@ For reference, a model of the atmospheric
 transmission spectrum, smoothed to the resolution of the observation,
 and the instrumental response curve used in flux calibration are also
 attached to the FITS file in 1D extensions called ``TRANSMISSION`` and
-``RESPONSE``.
+``RESPONSE``. The wavelength-varying flux calibration error is included
+in the ``RELATIVE_RESPONSE_ERROR`` extension, which is 2-dimensional prior to
+resampling, and 1-dimensional afterwards. The exposure map is included in the
+``EXPOSURE_MAP`` extension.
 
 Finally, an unsmoothed transmission spectrum is attached in a 2D
 image extension called ``UNSMOOTHED_TRANSMISSION``. This extension will have size
