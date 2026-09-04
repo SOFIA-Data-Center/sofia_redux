@@ -16,7 +16,7 @@ def get_lines():
     Retrieve FIFI-LS lines of interest.
 
     Requires primary_lines.txt file in fifi_ls/data/line_lists.
-    This file must have 2 columns: wavelength (um), and name.
+    This file must have 2 tab-separated columns: wavelength (um), and name.
 
     Returns
     -------
@@ -33,5 +33,5 @@ def get_lines():
 
     names = ['wavelength', 'name']
     df = pandas.read_csv(linefile, comment='#', names=names,
-                         sep=r'\s+')
+                         sep=r'\t')
     return list(df['wavelength']), list(df['name'])
