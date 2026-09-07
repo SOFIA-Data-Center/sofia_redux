@@ -16,6 +16,7 @@
   - Renamed some header keywords concerning water vapor characteristics in data products.
     See FIFI-LS Pipeline User's Manual change notes for a list.
   - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS
+  - Bump FIFI-LS User's Manual SDC-MAN-0001 to Issue 05
 
 - :mod:`toolkit` module v2.6.0:
 
@@ -28,7 +29,7 @@
   
   - FORCAST pipeline v2.7.4
   - HAWC+ pipeline v3.2.3
-  - :mod:`calibration`` module v1.7.1
+  - :mod:`calibration` module v1.7.1
   - :mod:`pipeline` module v2.16.1
   - :mod:`scan` module v1.3.18
   - :mod:`spectroscopy` module v1.5.1
