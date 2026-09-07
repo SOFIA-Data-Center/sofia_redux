@@ -112,6 +112,51 @@ def test_filename(tmpdir, capsys, test_files):
     assert np.all(np.isnan(result[1]))
 
 
+def test_atran_file_override_path(tmpdir, capsys, test_files):
+    """An override given as a full path is read from that path directly."""
+    filename = test_files('scm')[0]
+    header = fits.open(filename)[0].header
+
+    # a standard ATRAN name, but in a user directory
+    atranfile = tmpdir.join('atran_sdc_41K_45deg_1pwv_39deg_2nlayer_'
+                            '40-300mum_bt.fits')
+    wave = np.linspace(40., 300., 50)
+    columns = fits.ColDefs([
+        fits.Column(name='wavelength', format='E', unit='um', array=wave),
+        fits.Column(name='transmission', format='E', array=np.ones(50))])
+    table = fits.BinTableHDU.from_columns(columns)
+    table.header['CONTENT'] = 'ATRAN_SDC Model'
+    fits.HDUList([fits.PrimaryHDU(), table]).writeto(str(atranfile))
+
+    result = get_atran(header, atran_file=str(atranfile))
+    assert np.allclose(result[0], wave)
+
+    # the file is used as given and no directory lookup
+    capt = capsys.readouterr()
+    assert 'Non-standard ATRAN filename' not in capt.out
+    assert 'Non-standard ATRAN filename' not in capt.err
+
+
+def test_atran_file_missing_content(tmpdir, capsys, test_files):
+    """A table without CONTENT warns and falls back, rather than raising."""
+    filename = test_files('scm')[0]
+    header = fits.open(filename)[0].header
+
+    atranfile = tmpdir.join('no_content.fits')
+    columns = fits.ColDefs([
+        fits.Column(name='wavelength', format='E', array=np.arange(50.)),
+        fits.Column(name='transmission', format='E', array=np.ones(50))])
+    fits.HDUList([fits.PrimaryHDU(),
+                  fits.BinTableHDU.from_columns(columns)]).writeto(
+        str(atranfile))
+
+    # no KeyError: falls back to the old format, finds no image data
+    assert get_atran(header, atran_file=str(atranfile)) is None
+    capt = capsys.readouterr()
+    assert 'Falling back to old format' in capt.err
+    assert 'Invalid data' in capt.err
+
+
 def test_header(capsys, test_files):
     filename = test_files('scm')[0]
     header = fits.open(filename)[0].header

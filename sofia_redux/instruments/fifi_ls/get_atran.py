@@ -189,35 +189,43 @@ def get_atran_data(filename, resolution, atran_dir=None):
         atran_dir = os.path.join(os.path.dirname(fifi_ls.__file__),
                                 'data', 'atran_files')
 
-    if not filename.startswith("atran_sdc_"):
-        log.info('Non-standard ATRAN filename not starting with "atran_sdc_"'
-                 f'Looking for {atran_dir}/{filename} only.')
-        localpath = os.path.join(atran_dir, filename)
+    atranfile = os.path.basename(filename)
+    if goodfile(filename):
+        # an existing file path was given directly and
+        # use it as is.
+        log.debug(f'Using ATRAN file directly: {filename}')
+        localpath = filename
+    elif not atranfile.startswith("atran_sdc_"):
+        localpath = os.path.join(atran_dir, atranfile)
+        log.info('Non-standard ATRAN filename not starting with '
+                 f'"atran_sdc_". Looking for {localpath} only.')
     else:
-        parts = filename.split('_')
+        parts = atranfile.split('_')
         if parts[2][-1] != 'K':
-            raise ValueError(f'Invalid ATRAN filename: {filename}')
+            raise ValueError(f'Invalid ATRAN filename: {atranfile}')
         alt = int(parts[2][:-1])
-        localpath = os.path.join(atran_dir, f'{alt}K', filename)
+        localpath = os.path.join(atran_dir, f'{alt}K', atranfile)
         if not goodfile(localpath):
             log.debug(f'ATRAN file not found in ATRAN directory: {localpath}')
             try:
-                localpath = get_atran_from_darus(alt, filename)
+                localpath = get_atran_from_darus(alt, atranfile)
             except OSError as e:
-                log.error(f'Could not retrieve ATRAN file {filename} '
+                log.error(f'Could not retrieve ATRAN file {atranfile} '
                           f'for altitude {alt}K from DaRUS: {e}')
                 raise DarusError(
-                    f'Could not retrieve ATRAN file {filename} for '
+                    f'Could not retrieve ATRAN file {atranfile} for '
                     f'altitude {alt}K from DaRUS; the reduction '
                     f'cannot continue.') from None
 
-    atranfile = os.path.basename(filename)
     hdul = gethdul(localpath, verbose=True)
     if hdul is None:
         log.error(f'Invalid data in ATRAN file {localpath}')
         return
 
-    if len(hdul) < 2 or hdul[1].header['CONTENT'] != "ATRAN_SDC Model":
+    # CONTENT may be absent entirely, so read it with get() rather than
+    # indexing, which would raise instead of falling back
+    content = hdul[1].header.get('CONTENT') if len(hdul) > 1 else None
+    if content != "ATRAN_SDC Model":
         log.warning("Did not find ATRAN SDC model data in FITS BinTableHDU "
                     f"in {localpath}. Falling back to old format.")
         if hdul[0].data is None:
