@@ -111,25 +111,39 @@ def test_filename(tmpdir, capsys, test_files):
     # data will be all nan
     assert np.all(np.isnan(result[1]))
 
+ATRAN_TEST_NAME = 'atran_sdc_41K_45deg_1pwv_39deg_2nlayer_40-300mum_bt.fits'
+ATRAN_TEST_WAVE = np.linspace(40., 300., 50)
 
-def test_atran_file_override_path(tmpdir, capsys, test_files):
+
+@pytest.fixture
+def atran_table_file(tmpdir):
+    """Make a minimal ATRAN binary table file in a user directory.
+    """
+    def _write(content='ATRAN_SDC Model'):
+        path = tmpdir.join(ATRAN_TEST_NAME)
+        columns = fits.ColDefs([
+            fits.Column(name='wavelength', format='E', unit='um',
+                        array=ATRAN_TEST_WAVE),
+            fits.Column(name='transmission', format='E',
+                        array=np.ones(ATRAN_TEST_WAVE.size))])
+        table = fits.BinTableHDU.from_columns(columns)
+        if content is not None:
+            table.header['CONTENT'] = content
+        fits.HDUList([fits.PrimaryHDU(), table]).writeto(str(path))
+        return str(path)
+
+    return _write
+
+
+def test_atran_file_override_path(capsys, test_files, atran_table_file):
     """An override given as a full path is read from that path directly."""
     filename = test_files('scm')[0]
     header = fits.open(filename)[0].header
 
-    # a standard ATRAN name, but in a user directory
-    atranfile = tmpdir.join('atran_sdc_41K_45deg_1pwv_39deg_2nlayer_'
-                            '40-300mum_bt.fits')
-    wave = np.linspace(40., 300., 50)
-    columns = fits.ColDefs([
-        fits.Column(name='wavelength', format='E', unit='um', array=wave),
-        fits.Column(name='transmission', format='E', array=np.ones(50))])
-    table = fits.BinTableHDU.from_columns(columns)
-    table.header['CONTENT'] = 'ATRAN_SDC Model'
-    fits.HDUList([fits.PrimaryHDU(), table]).writeto(str(atranfile))
+    atranfile = atran_table_file()
 
-    result = get_atran(header, atran_file=str(atranfile))
-    assert np.allclose(result[0], wave)
+    result = get_atran(header, atran_file=atranfile)
+    assert np.allclose(result[0], ATRAN_TEST_WAVE)
 
     # the file is used as given and no directory lookup
     capt = capsys.readouterr()
@@ -137,21 +151,15 @@ def test_atran_file_override_path(tmpdir, capsys, test_files):
     assert 'Non-standard ATRAN filename' not in capt.err
 
 
-def test_atran_file_missing_content(tmpdir, capsys, test_files):
+def test_atran_file_missing_content(capsys, test_files, atran_table_file):
     """A table without CONTENT warns and falls back, rather than raising."""
     filename = test_files('scm')[0]
     header = fits.open(filename)[0].header
 
-    atranfile = tmpdir.join('no_content.fits')
-    columns = fits.ColDefs([
-        fits.Column(name='wavelength', format='E', array=np.arange(50.)),
-        fits.Column(name='transmission', format='E', array=np.ones(50))])
-    fits.HDUList([fits.PrimaryHDU(),
-                  fits.BinTableHDU.from_columns(columns)]).writeto(
-        str(atranfile))
+    atranfile = atran_table_file(content=None)
 
     # no KeyError: falls back to the old format, finds no image data
-    assert get_atran(header, atran_file=str(atranfile)) is None
+    assert get_atran(header, atran_file=atranfile) is None
     capt = capsys.readouterr()
     assert 'Falling back to old format' in capt.err
     assert 'Invalid data' in capt.err
