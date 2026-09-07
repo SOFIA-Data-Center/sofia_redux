@@ -222,8 +222,6 @@ def get_atran_data(filename, resolution, atran_dir=None):
         log.error(f'Invalid data in ATRAN file {localpath}')
         return
 
-    # CONTENT may be absent entirely, so read it with get() rather than
-    # indexing, which would raise instead of falling back
     content = hdul[1].header.get('CONTENT') if len(hdul) > 1 else None
     if content != "ATRAN_SDC Model":
         log.warning("Did not find ATRAN SDC model data in FITS BinTableHDU "
