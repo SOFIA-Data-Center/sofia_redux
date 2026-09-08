@@ -1,3 +1,7 @@
+.. _exes_change_notes:
+
+Appendix C: Change notes for the EXES pipeline
+==============================================
 
 Significant changes
 -------------------

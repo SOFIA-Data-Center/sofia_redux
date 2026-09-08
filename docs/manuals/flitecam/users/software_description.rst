@@ -892,10 +892,3 @@ for approaching quality assessment (QA) for FLITECAM data.
       theoretical spectrum, within the error bars of the observation. If
       it does not, the instrumental response file may need updating.
 
-
-.. include:: appendix_a_sample_config.rst
-
-.. include:: appendix_b_input_keywords.rst
-
-.. include:: appendix_c_calibration_data_generation.rst   
-

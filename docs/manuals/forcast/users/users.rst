@@ -29,11 +29,11 @@ This manual applies to FORCAST Redux version |forcast_pipevers|.
 
 .. include:: software_description.rst
 
-.. include:: appendix_sample_config.rst
+.. include:: appendix_a_sample_config.rst
 
-.. include:: appendix_input_keywords.rst
+.. include:: appendix_b_input_keywords.rst
     
-.. include:: appendix_calibration_data_generation.rst
+.. include:: appendix_c_calibration_data_generation.rst
 
 .. include:: change_notes.rst
 

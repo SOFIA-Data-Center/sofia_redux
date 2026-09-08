@@ -1,3 +1,5 @@
+Appendix B: Change notes for the HAWC+ pipeline
+===============================================
 
 Significant changes
 -------------------

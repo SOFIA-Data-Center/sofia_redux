@@ -29,8 +29,10 @@ This manual applies to FLITECAM Redux version |flitecam_pipevers|.
 
 .. include:: software_description.rst
 
-.. _flitecam_change_notes:
+.. include:: appendix_a_sample_config.rst
 
-Appendix D: Change notes for the FLITECAM pipeline
-==================================================
+.. include:: appendix_b_input_keywords.rst
+
+.. include:: appendix_c_calibration_data_generation.rst   
+
 .. include:: change_notes.rst

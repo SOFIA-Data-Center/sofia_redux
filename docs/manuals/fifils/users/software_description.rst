@@ -632,9 +632,3 @@ for approaching quality assessment for FIFI-LS data.
    atmospheric transmission. If there are such discontinuities, the
    wavelength resampling may need to be redone with modified parameters.
 
-
-.. include:: appendix_a_sample_config.rst
-
-.. include:: appendix_b_sample_headerdef.rst   
-
-.. include:: appendix_c_fluxcal_history.rst   

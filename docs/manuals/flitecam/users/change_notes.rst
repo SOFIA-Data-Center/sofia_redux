@@ -1,3 +1,7 @@
+.. _flitecam_change_notes:
+
+Appendix D: Change notes for the FLITECAM pipeline
+==================================================
 
 Significant changes
 -------------------
