@@ -15,7 +15,10 @@
     in FITS headers.
   - Renamed some header keywords concerning water vapor characteristics in data products.
     See FIFI-LS Pipeline User's Manual change notes for a list.
-  - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS
+  - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS,
+    and for ATRAN file overrides.
+  - Updated the line lookup table and module to include all major lines observed
+    by FIFI-LS.
   - Bump FIFI-LS User's Manual SDC-MAN-0001 to Issue 05
 
 - :mod:`toolkit` module v2.6.0:
