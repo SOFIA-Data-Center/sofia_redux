@@ -34,6 +34,4 @@ def get_lines():
     names = ['wavelength', 'name']
     df = pandas.read_csv(linefile, comment='#', names=names,
                          sep=r'\s+')
-    df['wavelength'] = pandas.to_numeric(df['wavelength'], errors='coerce')
-    df = df.dropna(subset=['wavelength'])
     return list(df['wavelength']), list(df['name'])
