@@ -790,8 +790,15 @@ unless an ATRAN directory is specified, or a single ATRAN file is specified. In 
 telluric correction step, the pipeline uses the parameter set of observed altitude,
 zenith angle, and PWV in order to select the six models which lie adjacent to the
 observation in parameter spaces. Then, the pipeline carries out a series of two-file
-interpolations in order to build an optimal synthetic transmission spectrum. This spectrum
-is subsequently smoothed to the spectral resolution of the input file, and then
+interpolations in order to build an optimal synthetic transmission spectrum.
+
+Alternatively, a set of pre-computed ATRAN_SDC models can be downloaded manually from
+the DaRUS data repository [#fn_fifi_atransdc]_, or from the ATRAN_SDC web service
+[#fn_fifi_atran_web]_ and placed into a directory specified by the ``atran_dir``
+or ``atran_file`` parameter of the ``telluric_correct`` step
+(see :ref:`_fifi_appendix_sample_config_file`).
+
+The spectrum is subsequently smoothed to the spectral resolution of the input file, and then
 interpolated to the observed wavelength at each spexel. Finally, the data is divided
 by the transmission spectrum. Very low transmission
 values result in poor corrections, so any pixel for which the transmission
@@ -809,6 +816,8 @@ The uncorrected cube and its associated error are stored in the
 ``UNCORRECTED_FLUX`` and ``UNCORRECTED_STDDEV`` extensions.
 
 .. [#fn_fifi_atransdc] https://darus.uni-stuttgart.de/dataverse/irs-sofia-ad/?q=atran
+
+.. [#fn_fifi_atran_web] https://atran.sofiadatacenter.de
 
 .. _fifi_substep_wv_sources:
 
