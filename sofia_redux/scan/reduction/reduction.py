@@ -632,13 +632,17 @@ class Reduction(ReductionVersion):
             log.warning("No scans to reduce. Exiting.")
             raise ValueError("No scans to reduce.")
 
+        n_before = len(self.scans)
         self.info.validate_scans(self.scans)
         self.scans = [scan for scan in self.scans if scan is not None]
-        if not self.is_valid():
-            if self.is_sub_reduction:
-                reduction_name = f'Sub-reduction {self.reduction_number}'
-            else:
-                reduction_name = 'Reduction'
+        valid = self.is_valid()
+        if self.is_sub_reduction:
+            reduction_name = f'Sub-reduction {self.reduction_number}'
+        else:
+            reduction_name = 'Reduction'
+        log.info(f"{reduction_name}: kept {len(self.scans)} of {n_before} "
+                 f"scan(s) after validation.")
+        if not valid:
             log.warning(f"{reduction_name} contains no valid scans.")
             return
 
@@ -1711,6 +1715,8 @@ class Reduction(ReductionVersion):
         if self.source is not None:
             return self.source.hdul
         else:
+            log.warning("Reduction finished with no source model; "
+                        "no output was produced.")
             return None
 
     def terminate_reduction(self):

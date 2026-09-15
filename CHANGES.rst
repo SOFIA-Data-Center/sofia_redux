@@ -15,7 +15,11 @@
     in FITS headers.
   - Renamed some header keywords concerning water vapor characteristics in data products.
     See FIFI-LS Pipeline User's Manual change notes for a list.
-  - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS
+  - Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS,
+    and for ATRAN file overrides.
+  - Updated the line lookup table and module to include all major lines observed
+    by FIFI-LS.
+  - Bump FIFI-LS User's Manual SDC-MAN-0001 to Issue 05
 
 - :mod:`toolkit` module v2.6.0:
 
@@ -34,10 +38,16 @@
   
   - FORCAST pipeline v2.7.4
   - HAWC+ pipeline v3.2.3
-  - :mod:`calibration`` module v1.7.1
+  - :mod:`calibration` module v1.7.1
   - :mod:`pipeline` module v2.16.1
   - :mod:`spectroscopy` module v1.5.1
 
+- Documentation
+
+  - The installation section and the FIFI-LS User's manual now mention
+    the new web service `ATRAN_SDC <https://atran.sofiadatacenter.de>`_ for generating
+    tailored atmospheric tranmission spectra in place of the pre-computed ones available
+    from DaRUS.
 
 1.5.1 (2026-07-22)
 ==================

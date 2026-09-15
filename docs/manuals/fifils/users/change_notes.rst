@@ -24,6 +24,10 @@ pipeline version used.
   - ``WV_FORM`` to ``WVZ_FORM``
   - ``WVZ_ECMW`` to ``WVZECMWF``
   - Also changed ``WVZ_FORM`` to reference ``WVZ_USED`` instead of the non-existent ``WVZ_FIFI``.
+- Refined error logging messages for ATRAN and ECMWF file retrievals from DaRUS,
+  and for ATRAN file overrides.
+- Updated the line lookup table and module to include all major lines observed
+  by FIFI-LS.
 
 .. rubric:: FIFI-LS Redux v2.11.0 (2026-06-30)
 

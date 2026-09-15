@@ -251,15 +251,19 @@ class SOFIAChooser(Chooser):
                 # spectel1/2 depending on detector channel
                 # (0 / 1 or SW / LW, depending on date)
                 if detchan == '1' or detchan == 'LW':
-                    spectel = self.get_key_value(header, 'SPECTEL2')
+                    spectel_key = 'SPECTEL2'
                 else:
-                    spectel = self.get_key_value(header, 'SPECTEL1')
+                    spectel_key = 'SPECTEL1'
+                spectel = self.get_key_value(header, spectel_key)
 
                 # grism options
                 spec_opt = ['FOR_G063', 'FOR_G111',
                             'FOR_G227', 'FOR_G329']
                 if spectel in spec_opt:
                     instmode = 'SPEC'
+                    log.info(f'{spectel_key}={spectel} in {datafile} is a '
+                             f'known grism; overriding instmode to SPEC '
+                             f'for recipe selection.')
 
                 # these keys have to match to return a consistent
                 # reduction object
@@ -328,6 +332,10 @@ class SOFIAChooser(Chooser):
                         reduction = FORCASTSpatcalReduction()
                     elif 'slitcorr' in config and config['slitcorr']:
                         reduction = FORCASTSlitcorrReduction()
+                    if type(reduction) is not FORCASTSpectroscopyReduction:
+                        log.info('Config override selected {} for this '
+                                 'FORCAST reduction.'.format(
+                                     type(reduction).__name__))
             else:
                 reduction = FORCASTImagingReduction()
         elif instrume == 'HAWC':
