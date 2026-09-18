@@ -30,8 +30,8 @@ This manual applies to EXES Redux version |exes_pipevers|.
 
 .. include:: software_description.rst
 
-.. _exes_change_notes:
+.. include:: appendix_a_sample_config.rst
 
-Appendix C: Change notes for the EXES pipeline
-==============================================
+.. include:: appendix_b_header_keywords.rst
+
 .. include:: change_notes.rst

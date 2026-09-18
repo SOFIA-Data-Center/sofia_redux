@@ -55,18 +55,19 @@ exclude_patterns.append('_templates')
 
 # exclude some things intended for direct inclusion or for latex/html
 # specific support
+exclude_patterns.append('sofia_redux/calibration/standard_model/standard_model_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/redux_usage.rst')
 exclude_patterns.append('sofia_redux/pipeline/usage/*.rst')
-exclude_patterns.append('manuals/*/external-reqs-src-install.rst')
+exclude_patterns.append('sofia_redux/scan/include/glossary.rst')
+exclude_patterns.append('manuals/external-reqs-src-install.rst')
 exclude_patterns.append('manuals/*/*/index.rst')
 exclude_patterns.append('manuals/*/*/redux_doc.rst')
 exclude_patterns.append('manuals/*/users/data_description.rst')
 exclude_patterns.append('manuals/*/users/software_description.rst')
-exclude_patterns.append('manuals/*/users/spectral_extraction.rst')
-exclude_patterns.append('manuals/*/users/spectral_calibration.rst')
-exclude_patterns.append('manuals/*/users/spectral_display.rst')
-exclude_patterns.append('manuals/*/data_handbook')
+exclude_patterns.append('manuals/*/users/appendix_*.rst')
+exclude_patterns.append('manuals/*/users/change_notes.rst')
 exclude_patterns.append('manuals/*/*/api')
+exclude_patterns.append('manuals/forcast/users/spectral_*.rst')
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
@@ -160,12 +161,6 @@ latex_elements = {
 # number figures for manuals
 numfig = True
 
-# -- Options for manual page output -------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [('index', project.lower(), project + u' Documentation',
-              [author], 1)]
 
 # -- Customize inheritance diagram --------------------------------------------
 # make the labels fit in the nodes

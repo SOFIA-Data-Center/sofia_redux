@@ -28,8 +28,10 @@ This manual applies to FIFI-LS Redux version |fifils_pipevers|.
 
 .. include:: software_description.rst
 
-.. _fifi_appendix_change_notes:
+.. include:: appendix_a_sample_config.rst
 
-Appendix D: Change notes for the FIFI-LS pipeline
-=================================================
+.. include:: appendix_b_sample_headerdef.rst   
+
+.. include:: appendix_c_fluxcal_history.rst   
+
 .. include:: change_notes.rst

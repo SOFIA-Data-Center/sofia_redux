@@ -457,17 +457,10 @@ sofia_redux.pipeline
 The Redux application programming interface (API), including the FIFI-LS
 interface classes, are documented in the `sofia_redux.pipeline` package.
 
-.. toctree::
 
-   redux_doc
+.. include:: redux_doc.rst
 
+.. raw:: latex
 
-Appendix A: Pipeline Recipe
-===========================
+    \clearpage
 
-This JSON document is the black-box interface specification for the
-FIFI-LS Redux pipeline, as defined in the Pipetools-Pipeline ICD.
-
-
-.. include:: include/fifi_ls_recipe.json
-   :literal:

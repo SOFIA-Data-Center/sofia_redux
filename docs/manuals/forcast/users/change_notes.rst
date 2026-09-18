@@ -1,9 +1,13 @@
+.. _forcast_change_notes:
+
+Appendix D: Change notes for the FORCAST pipeline
+=================================================
 
 Significant changes
 -------------------
 Below are listed the most significant changes for the FORCAST pipeline
 over its history, highlighting impacts to science data products.
-See the data handbooks or user manuals associated with each release
+See the user manuals associated with each release
 for more information.
 
 All pipeline versions prior to v2.0.0 were implemented in IDL;

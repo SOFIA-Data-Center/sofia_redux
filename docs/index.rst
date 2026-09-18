@@ -23,3 +23,8 @@ Project Details
   changelog
   credits
   license
+
+.. toctree::
+  :hidden:
+
+  manuals/index

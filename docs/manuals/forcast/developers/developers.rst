@@ -704,20 +704,9 @@ sofia_redux.pipeline
 The Redux application programming interface (API), including the FORCAST
 interface classes, are documented in the `sofia_redux.pipeline` package.
 
-.. toctree::
-
-   redux_doc
+.. include:: redux_doc.rst
 
 .. raw:: latex
 
     \clearpage
 
-Appendix A: Pipeline Recipe
-===========================
-
-This JSON document is the black-box interface specification for the
-FORCAST Redux pipeline, as defined in the Pipetools-Pipeline ICD.
-
-
-.. include:: include/forcast_recipe.json
-   :literal:

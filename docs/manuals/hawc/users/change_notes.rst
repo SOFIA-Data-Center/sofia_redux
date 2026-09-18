@@ -1,9 +1,11 @@
+Appendix D: Change notes for the HAWC+ pipeline
+===============================================
 
 Significant changes
 -------------------
 Below are listed the most significant changes for the HAWC+ pipeline
 over its history, highlighting impacts to science data products.
-See the data handbooks or user manuals associated with each release
+See the user manuals associated with each release
 for more information.
 
 For previously processed data, check the PIPEVERS keyword in the FITS

@@ -174,7 +174,7 @@ https://docs.astropy.org/en/stable/utils/data.html for how to find and configure
 Troubleshooting
 ---------------
 
-The last working set of installed versions of all dependencies is recorded in the
+A tested set of installed dependencies in their minimum version is recorded in the
 `requirements-min.txt`
 file in this package. If errors are encountered in the other listed installation
 methods, it may be useful to install the frozen versions directly. For example, to install
