@@ -666,12 +666,3 @@ interface classes, are documented in the `sofia_redux.pipeline` package.
 
     \clearpage
 
-Appendix A: Pipeline Recipe
-===========================
-
-This JSON document is the black-box interface specification for the
-FLITECAM Redux pipeline, as defined in the Pipetools-Pipeline ICD.
-
-
-.. include:: include/flitecam_recipe.json
-   :literal:

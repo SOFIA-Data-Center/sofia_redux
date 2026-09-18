@@ -464,13 +464,3 @@ interface classes, are documented in the `sofia_redux.pipeline` package.
 
     \clearpage
 
-
-Appendix A: Pipeline Recipe
-===========================
-
-This JSON document is the black-box interface specification for the
-FIFI-LS Redux pipeline, as defined in the Pipetools-Pipeline ICD.
-
-
-.. include:: include/fifi_ls_recipe.json
-   :literal:

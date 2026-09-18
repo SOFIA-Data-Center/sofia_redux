@@ -942,15 +942,6 @@ in the `sofia_redux.pipeline` package.
 
     \clearpage
 
-Appendix: Pipeline Recipe
-=========================
-
-This JSON document is the black-box interface specification for the HAWC
-Redux pipeline, as defined in the Pipetools-Pipeline ICD.
-
-.. include:: include/hawc_recipe.json
-   :literal:
-
 
 Appendix: Raw FITS File Format
 ==============================
