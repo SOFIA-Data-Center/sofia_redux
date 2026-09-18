@@ -1,6 +1,6 @@
 .. _kwd_appendix:
 
-Appendix A: Required Header Keywords
+Appendix C: Required Header Keywords
 ====================================
 
 The file below defines all keywords that the HAWC+ pipeline checks for

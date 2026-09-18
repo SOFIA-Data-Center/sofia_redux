@@ -29,6 +29,10 @@ This manual applies to HAWC+ Redux version |hawc_pipevers|.
 
 .. include:: software_description.rst
 
-.. include:: appendix_a_header_keywords.rst
+.. include:: appendix_a_scanmap_glossary.rst
+
+.. include:: appendix_b_sample_config.rst
+
+.. include:: appendix_c_header_keywords.rst
 
 .. include:: change_notes.rst

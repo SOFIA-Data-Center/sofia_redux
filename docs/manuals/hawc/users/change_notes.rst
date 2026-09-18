@@ -1,4 +1,4 @@
-Appendix B: Change notes for the HAWC+ pipeline
+Appendix D: Change notes for the HAWC+ pipeline
 ===============================================
 
 Significant changes
