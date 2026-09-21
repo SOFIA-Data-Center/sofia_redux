@@ -307,9 +307,10 @@ def calculate_offsets(hdul, obsdate=None, flipsign=None, rotate=False):
              comment='Sky angle after calibration (deg)')
 
     if -9999 in [header.get('OBSLAM'), header.get('OBSBET')]:
-        log.warning('OBSLAM/OBSBET are -9999 (missing from the raw '
-                    'header); output RA/DEC coordinates and the '
-                    'resampled cube WCS will not be correct.')
+        raise ValueError(
+            'OBSLAM/OBSBET are -9999 (missing from the raw '
+            'header); output RA/DEC coordinates and the '
+            'resampled cube WCS will not be correct.')
 
     # plate scale in arcsec/mm
     plate_scale = header.get('PLATSCAL', 0)
