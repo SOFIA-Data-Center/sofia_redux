@@ -426,7 +426,8 @@ def update_basehead(basehead, table, headers):
         # Elapsed time in seconds
         telapse = (Tdateend - Tdatebeg).to(units.s).value
     except (ValueError, TypeError):
-        log.warning(f"Could not determine TELAPSE from {datebeg}, {dateend}")
+        log.warning(f"Could not determine TELAPSE from {datebeg}, {dateend}. "
+                    "It will be set to 0.")
         telapse = 0.0
 
     hdinsert(basehead, 'DATE-BEG', datebeg)
