@@ -295,11 +295,14 @@ def calculate_offsets(hdul, obsdate=None, flipsign=None, rotate=False):
 
     telsim = 'TELSIM' in [header.get('OBJ_NAME').strip().upper(),
                           header.get('OBJECT').strip().upper()]
-    if not telsim and 'DET_ANGL' not in header:
-        log.warning("DET_ANGL missing from header; using 0 deg - the "
-                    "field is not de-rotated but SKY_ANGL is written "
-                    "as 0, so the cube CROTA2 will claim North up.")
-    rotation = 0.0 if (telsim or rotate) else angle
+
+    if telsim or rotate:
+        rotation = 0.0
+    else:
+        if 'DET_ANGL' not in header:
+            raise ValueError("DET_ANGL missing from header")
+        rotation = angle
+
     hdinsert(header, 'SKY_ANGL', np.rad2deg(rotation),
              comment='Sky angle after calibration (deg)')
 
