@@ -166,7 +166,8 @@ class TestCombineNods:
         result = classify_files(inp)
         assert len(result) == len(files) // 2
         capt = capsys.readouterr()
-        assert 'DATE-OBS could not be parsed (BADVAL)' in capt.err
+        assert ('Modified Julian Date could not be parsed '
+                'from DATE-OBS BADVAL') in capt.err
 
     def test_combine_nodstyles(self, capsys, nodstyles):
         # make 2 A, 2B in each of sym and asym styles
