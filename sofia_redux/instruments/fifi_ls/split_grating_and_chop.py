@@ -114,10 +114,9 @@ def get_split_params(hdul, channel_index=3, sample_index=4,
     x['CHOPLN'] = header.get('C_CHOPLN')
     if 'C_AMP' not in header:
         raise ValueError(
-            f"C_AMP missing for file {fname}; assuming 0 (NOCHOP) - "
-            "the file will be treated as unchopped and will "
-            "not be split by chop phase.")
-    x['C_AMP'] = header.get('C_AMP', 0)
+            f"C_AMP header keyword missing for file {fname}. "
+            "This is only valid for unchopped observations")
+    x['C_AMP'] = header.get('C_AMP')
     for key in ['G_STRT', 'G_PSUP', 'G_SZUP', 'G_PSDN',
                 'G_SZDN', 'G_CYC', 'C_CYC', 'RAMPLN']:
         color_key = key + '_%s' % ('R' if x['CHANNEL'] == 'RED' else 'B')
