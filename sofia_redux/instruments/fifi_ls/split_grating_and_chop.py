@@ -603,11 +603,6 @@ def split_grating_and_chop(filename, write=False, outdir=None):
 
     # attach a position offset table for OTF mode scans
     instmode = str(hdul[0].header.get('INSTMODE', 'UNKNOWN')).upper()
-    if instmode == 'UNKNOWN':
-        log.warning("INSTMODE missing for file %s; assuming UNKNOWN - "
-                    "the file will not be treated as an OTF scan and no "
-                    "position offset table will be attached to the "
-                    "output product." % filename)
     nodbeam = str(hdul[0].header.get('NODBEAM', 'B')).upper().strip()
     if 'OTF' in instmode and nodbeam == 'A':
         try:
