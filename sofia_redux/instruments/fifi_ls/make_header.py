@@ -406,19 +406,27 @@ def update_basehead(basehead, table, headers):
     dateobs = basehead.get('DATE-OBS', 'UNKNOWN')
     utcstart = basehead.get('UTCSTART', '00:00:00')
     utcend = basehead.get('UTCEND', '00:00:00')
-    if utcstart in ['UNKNOWN','00:00:00'] or utcend in ['UNKNOWN','00:00:00']:
-        log.warning("Cannot parse UTCSTART and/or UTCEND. "
-                    "DATE-BEG/DATE-END will be written with an invalid time "
-                    "and TELAPSE will be set to 0.")
+    if utcstart == 'UNKNOWN' or utcstart not in basehead:
+        log.warning("UTCSTART unknown")
+    if utcend == 'UNKNOWN' or utcend not in basehead:
+        log.warning("UTCEND unknown")
     datestr = str(dateobs).split('T')[0].strip()
     datebeg = '%sT%s' % (datestr, utcstart)
     dateend = '%sT%s' % (datestr, utcend)
-
+    Tdatebeg = None
+    Tdateend = None
+    try:
+        Tdatebeg = Time(datebeg)
+        Tdateend = Time(dateend)
+    except ValueError:
+        log.warning(f"Cannot parse UTCSTART={datebeg}, "
+                    f" and/or UTCEND={dateend}. "
+                    "DATE-BEG/DATE-END will be written with an invalid time.")
     try:
         # Elapsed time in seconds
-        telapse = (Time(dateend) - Time(datebeg)).to(units.s).value
-    except ValueError:
-        log.warning("Could not determine TELAPSE")
+        telapse = (Tdateend - Tdatebeg).to(units.s).value
+    except (ValueError, TypeError):
+        log.warning(f"Could not determine TELAPSE from {datebeg}, {dateend}")
         telapse = 0.0
 
     hdinsert(basehead, 'DATE-BEG', datebeg)
