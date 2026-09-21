@@ -3,13 +3,13 @@
 import os
 import time
 
-from astropy.io import fits
 import numpy as np
+import pytest
+from astropy.io import fits
 
 import sofia_redux.instruments.fifi_ls.split_grating_and_chop as u
 from sofia_redux.instruments.fifi_ls.make_header import make_header
-from sofia_redux.instruments.fifi_ls.tests.resources \
-    import MockHDU
+from sofia_redux.instruments.fifi_ls.tests.resources import MockHDU
 
 
 class TestSplitGratingAndChop:
@@ -91,15 +91,15 @@ class TestSplitGratingAndChop:
         params = u.get_split_params(hdul)
         assert params['C_AMP'] == 135
 
-        del header['C_AMP']
-        params = u.get_split_params(hdul)
-        assert params['C_AMP'] == 0
-        assert params['success']
-
         del header['G_SZDN_R']
         params = u.get_split_params(hdul)
         assert not params['success']
         assert params['G_SZDN'] is None
+
+        del header['C_AMP']
+        with pytest.raises(ValueError,
+                           match="C_AMP header keyword missing"):
+            params = u.get_split_params(hdul)
 
         hdul = self.fake_hdul()
         header = hdul[0].header

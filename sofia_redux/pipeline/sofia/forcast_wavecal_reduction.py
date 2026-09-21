@@ -386,6 +386,9 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                 rotation = fits.getval(wavefile, 'ROTATION')
             except KeyError:
                 rotation = 0
+                log.warning('ROTATION missing from {}; using 0 — '
+                            'starting wavecal will be read '
+                            'unrotated.'.format(wavefile))
             wavecal, spatcal = readwavecal(wavefile, rotate=rotation)
             ctr = wavecal.shape[0] // 2
 
@@ -697,6 +700,7 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
             # guess position of each line in each spectrum
             allpos = []
             allheight = []
+            n_fit_failed = 0
             for spec in spectra:
                 fitpos = []
                 fitheight = []
@@ -717,6 +721,13 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                         fitpos.append(np.nan)
                         fitheight.append(np.nan)
                         continue
+                    if not np.isfinite(s2n):
+                        log.warning('S/N for line {} um near pixel {} is '
+                                    'not finite; specerr may be zero or '
+                                    'spectrum may be all NaN in this '
+                                    'window, so the S/N quality check '
+                                    'cannot reject it and this line will '
+                                    'still be fit.'.format(line, guess))
 
                     try:
                         fit_peak = fitpeaks1d(
@@ -724,6 +735,7 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
                             guess=guess, stddev=sigma, box_width=('stddev', 3),
                             baseline_func=baseline)
                     except ValueError:
+                        n_fit_failed += 1
                         fitpos.append(np.nan)
                         fitheight.append(np.nan)
                     else:
@@ -746,6 +758,11 @@ class FORCASTWavecalReduction(FORCASTSpectroscopyReduction):
 
                 allpos.append(fitpos)
                 allheight.append(fitheight)
+
+            if n_fit_failed:
+                log.warning(f'{n_fit_failed} line fit(s) failed; NaN '
+                            f'recorded and excluded from the wavelength '
+                            f'fit.')
 
             # make position table and do preliminary fit
             allpos = np.array(allpos)

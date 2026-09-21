@@ -161,6 +161,12 @@ def robust_read(filename, data_hdu=0, header_hdu=0, extension=None,
                     try:
                         _ = header[key]
                     except fits.verify.VerifyError:
+                        log.warning(
+                            f"Header keyword {key} could not be "
+                            "parsed; using 'UNKNOWN' — downstream "
+                            "steps will read 'UNKNOWN' in place of "
+                            "the recorded value, with no other trace "
+                            "of the corruption.")
                         header.remove(key)
                         header = header.copy()
                         header[key] = 'UNKNOWN'
@@ -388,6 +394,13 @@ def order_headers(headers):
 
     dateobs, nodbeam = [], []
     for header in headers:
+        if 'DATE-OBS' not in header:
+            log.warning(
+                f"DATE-OBS missing from "
+                f"{header.get('FILENAME', 'UNKNOWN')}; using "
+                "3000-01-01T00:00:00 for date ordering — this file "
+                "may be wrongly treated as the latest observation "
+                "when ordering and merging headers.")
         dateobs.append(
             date2seconds(
                 str(header.get('DATE-OBS', default='3000-01-01T00:00:00'))))

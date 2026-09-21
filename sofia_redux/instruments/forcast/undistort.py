@@ -716,11 +716,13 @@ def undistort(data, header=None, pinhole=None, rotate=False,
         numpy.ndarray : The distortion-corrected variance (nrow, ncol)
     """
     create_header = False
+    missing_crpix = False
     if not isinstance(header, fits.header.Header):
         create_header = True
         header = fits.header.Header()
     elif 'CRPIX1' not in header or 'CRPIX2' not in header:
         create_header = True
+        missing_crpix = True
 
     if not isinstance(data, np.ndarray) or len(data.shape) != 2:
         addhist(header, "correction was not applied (Invalid data)")
@@ -745,6 +747,13 @@ def undistort(data, header=None, pinhole=None, rotate=False,
         header['CRPIX1'] = data.shape[1] / 2
         header['CRPIX2'] = data.shape[0] / 2
         header['CROTA2'] = 0.0
+        if missing_crpix:
+            log.warning('CRPIX1 and/or CRPIX2 missing from header; using '
+                       'image center (%s, %s) in their place - if '
+                       'centroid-based merging (CORMERGE=CENTROID) is used '
+                       'downstream, the wrong peak may be picked as the '
+                       'merge reference when the true pointing is '
+                       'off-center.' % (header['CRPIX1'], header['CRPIX2']))
 
     if header.get('NAXIS1') != data.shape[1]:
         header['NAXIS1'] = data.shape[1]

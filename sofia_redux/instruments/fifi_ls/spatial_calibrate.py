@@ -295,12 +295,29 @@ def calculate_offsets(hdul, obsdate=None, flipsign=None, rotate=False):
 
     telsim = 'TELSIM' in [header.get('OBJ_NAME').strip().upper(),
                           header.get('OBJECT').strip().upper()]
-    rotation = 0.0 if (telsim or rotate) else angle
+
+    if telsim or rotate:
+        rotation = 0.0
+    else:
+        if 'DET_ANGL' not in header:
+            raise ValueError("DET_ANGL missing from header")
+        rotation = angle
+
     hdinsert(header, 'SKY_ANGL', np.rad2deg(rotation),
              comment='Sky angle after calibration (deg)')
 
+    if -9999 in [header.get('OBSLAM'), header.get('OBSBET')]:
+        raise ValueError(
+            'OBSLAM/OBSBET are -9999 (missing from the raw '
+            'header); output RA/DEC coordinates and the '
+            'resampled cube WCS will not be correct.')
+
     # plate scale in arcsec/mm
     plate_scale = header.get('PLATSCAL', 0)
+    if not telsim and plate_scale == -9999:
+        raise ValueError(
+            'PLATSCAL is -9999 (missing from the raw header); '
+            'XS/YS spatial offsets will be badly wrong, not zero.')
     # Map offset in arcsec
     dlam_map = header.get('DLAM_MAP', 0)
     dbet_map = header.get('DBET_MAP', 0)

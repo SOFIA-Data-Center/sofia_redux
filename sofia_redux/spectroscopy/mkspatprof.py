@@ -144,6 +144,10 @@ def mkspatprof(rectimg, atran=None, atmosthresh=None,
             warnings.simplefilter('ignore', RuntimeWarning)
             profile = np.nanmedian(image, axis=1)
             profile /= np.nansum(np.abs(profile))
+            if not np.all(np.isfinite(profile)):
+                log.warning(f"Order {order} median spatial profile contains "
+                            f"non-finite (NaN/Inf) values; downstream "
+                            f"aperture-finding steps will use it unfiltered.")
             result[order] = profile.copy()
 
             # Normalize the image

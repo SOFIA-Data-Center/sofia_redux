@@ -105,6 +105,11 @@ def merge(data, header, variance=None, normmap=None, skip_rotation=False,
     mode = readmode(header)
     cormerge = getpar(header, 'CORMERGE', comment='merging algorithm',
                       dtype=str, default='unknown').upper().strip()
+    if 'SLIT' not in header:
+        log.warning("SLIT missing from header; using 'UNKNOWN' — "
+                    "if a slit was in the beam, cormerge will not be "
+                    "forced to NOSHIFT, and an imaging shift algorithm "
+                    "may be applied to slit-image data.")
     slit = str(header.get('SLIT', 'UNKNOWN')).upper().strip()
     imaging = slit not in ['NONE', 'UNKNOWN']
     if mode == 'C2NC4' or imaging:

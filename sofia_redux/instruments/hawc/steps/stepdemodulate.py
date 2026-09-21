@@ -688,8 +688,12 @@ class StepDemodulate(StepParent):
         if chopfreq <= 0.:
             if l0method[:3] == 'ABS':
                 # set to user value
-                log.debug("Invalid chop frequency: {}. Using user "
-                          "frequency instead: {}".format(chopfreq, user_freq))
+                log.warning(
+                    "CHPFREQ is invalid: {}. Using dmdplot user "
+                    "frequency instead: {} -- chop-cycle sample "
+                    "binning and the box-filter window will be "
+                    "computed from this assumed frequency.".format(
+                        chopfreq, user_freq))
                 chopfreq = user_freq
             else:
                 msg = "Invalid chop frequency: %f" % chopfreq
@@ -870,12 +874,12 @@ class StepDemodulate(StepParent):
                 badtrack = np.where(centroidexp < 10)
                 azelstate[badtrack] = np.int32(0)
                 premask[badtrack] += 2**8
-                log.debug('Removing bad samples, tracking '
-                          'issues - using centroidexp; %d sample(s) '
-                          'flagged' % len(badtrack[0]))
+                log.debug('Removing bad samples, tracking issues '
+                          f'- using {centroidexp=}; '
+                          f'{len(badtrack[0])} sample(s) flagged')
                 log.debug('Number of good samples after removing '
-                          'samples due to bad tracking = %d' %
-                          sum(azelstate))
+                          'samples due to bad tracking = '
+                          f'{sum(azelstate)}')
 
                 ngoodsampafter = sum(azelstate)
                 if float(ngoodsampafter) / float(ngoodsampbefore) > \

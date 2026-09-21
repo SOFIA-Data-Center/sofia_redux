@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from astropy import log
+
 from sofia_redux.scan.info.base import InfoBase
 from sofia_redux.scan.utilities.utils import insert_info_in_header
 
@@ -56,10 +58,30 @@ class SofiaModeInfo(InfoBase):
         options = self.options
         if options is None:
             return
+        if 'CHOPPING' not in options:
+            log.warning("CHOPPING missing from header; using False - "
+                        "the chopping metadata block will not be "
+                        "written to the combined output header.")
         self.is_chopping = options.get_bool("CHOPPING")
+        if 'NODDING' not in options:
+            log.warning("NODDING missing from header; using False - "
+                        "the nodding metadata block will not be "
+                        "written to the combined output header.")
         self.is_nodding = options.get_bool("NODDING")
+        if 'DITHER' not in options:
+            log.warning("DITHER missing from header; using False - "
+                        "the dithering metadata block will not be "
+                        "written to the combined output header.")
         self.is_dithering = options.get_bool("DITHER")
+        if 'MAPPING' not in options:
+            log.warning("MAPPING missing from header; using False - "
+                        "the mapping metadata block will not be "
+                        "written to the combined output header.")
         self.is_mapping = options.get_bool("MAPPING")
+        if 'SCANNING' not in options:
+            log.warning("SCANNING missing from header; using False - "
+                        "the scanning metadata block will not be "
+                        "written to the combined output header.")
         self.is_scanning = options.get_bool("SCANNING")
 
     def edit_header(self, header):

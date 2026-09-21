@@ -266,4 +266,8 @@ def parse_central_wavenumber(header):
             wnoc = waveno0
         else:
             wnoc = np.abs(wno0)
+    if wnoc is None or (isinstance(wnoc, (int, float)) and wnoc <= 0):
+        log.warning(f'No usable central wavenumber from WNO0/WAVENO0 '
+                    f'({wnoc}); calibrations derived from it will be '
+                    f'wrong.')
     return wnoc

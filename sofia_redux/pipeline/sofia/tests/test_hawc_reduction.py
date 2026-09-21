@@ -540,13 +540,14 @@ class TestHAWCReduction(object):
         assert capt.err == ''
         red.intermediate = False
 
-        # mode not found: also just runs demodulate directly
+        # mode not found: also just runs demodulate directly,
+        # with a warning that no step list was configured
         orig_input.mode = 'unknown'
         red.input = [orig_input]
         red.demodulate()
         capt = capsys.readouterr()
         assert capt.out.count('Sub-step') == 0
-        assert capt.err == ''
+        assert 'No step list configured' in capt.err
 
         # StepDemodulate not found in recipe: issues warning only
         orig_input.mode = 'intcal'

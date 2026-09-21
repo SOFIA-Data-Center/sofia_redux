@@ -502,7 +502,23 @@ def pipecal_config(header):
                 try:
                     config[field] = float(col[cidx[0]])
                 except ValueError:
-                    pass
+                    if field == 'std_scale':
+                        log.warning(
+                            "std_scale value '{}' for {} in {} could "
+                            "not be parsed; the model flux will be "
+                            "used unscaled - the standard flux and "
+                            "any calibration factor derived from it "
+                            "may be wrong by the intended scale "
+                            "factor.".format(
+                                col[cidx[0]], ob[cidx[0]], fname))
+                    elif field == 'std_eflux':
+                        log.warning(
+                            "std_eflux value '{}' for {} in {} could "
+                            "not be parsed; the model flux error "
+                            "will not be set - even if a model flux "
+                            "is found later, MODLFLX/MODLFLXE will "
+                            "not be written to the header.".format(
+                                col[cidx[0]], ob[cidx[0]], fname))
 
     # Read the standard flux defaul table
     # Columns: date, altcfg1, object, flux_file

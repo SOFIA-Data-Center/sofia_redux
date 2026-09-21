@@ -310,7 +310,7 @@ class DataParent(object):
             if override is not None:
                 self.config.merge(override)
             else:
-                log.debug('No date config file for %s' % date)
+                log.debug(f'No date config file for {date}')
 
         # Then set any mode-specific overrides
         if mode is not None:

@@ -1,5 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from astropy import log
 from astropy.io import fits
 import numpy as np
 
@@ -28,6 +29,11 @@ def expmap(hdul):
     flux = hdul['FLUX'].data
     ehead = hdul['ERROR'].header.copy()
 
+    if 'EXPTIME' not in header:
+        log.warning('EXPTIME missing from header; using 0.0 - the '
+                    'EXPOSURE extension for this frame will be zero, '
+                    'so it will not contribute when frames are '
+                    'summed into the coadded exposure map.')
     expmap = np.full(flux.shape, header.get('EXPTIME', 0.0), dtype=float)
 
     hdinsert(ehead, 'BUNIT', 's', 'Data units')

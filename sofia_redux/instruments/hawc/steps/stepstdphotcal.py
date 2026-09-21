@@ -209,6 +209,9 @@ class StepStdPhotCal(StepParent):
             try:
                 nhwp = self.dataout.getheadval('nhwp')
             except KeyError:
+                log.warning('NHWP missing from header; assuming 1 — '
+                            'only STOKES I/ERROR I will be '
+                            'flux-calibrated.')
                 nhwp = 1
             if nhwp == 1:
                 stokes = ['I']

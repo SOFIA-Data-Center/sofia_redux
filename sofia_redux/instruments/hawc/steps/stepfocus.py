@@ -528,11 +528,19 @@ class StepFocus(StepMOParent):
                     srcfwhm.append(dat.getheadval('SRCFWHM', dat.tabnames[0],
                                                   errmsg=False))
                 except (KeyError, IndexError):
+                    log.warning('SRCFWHM not found in the scan map table '
+                                'for file %d; using 0 arcsec - 0 enters '
+                                'the scan map FWHM focus fit unless '
+                                'SRCPEAK is missing too.' % (i + 1))
                     srcfwhm.append(0)
                 try:
                     srcpeak.append(dat.getheadval('SRCPEAK', dat.tabnames[0],
                                                   errmsg=False))
                 except (KeyError, IndexError):
+                    log.warning('SRCPEAK not found in the scan map table '
+                                'for file %d; using 0 - this file is '
+                                'dropped from the scan map peak and FWHM '
+                                'focus fits.' % (i + 1))
                     srcpeak.append(0)
             else:
                 # unsuccessful gaussian fit

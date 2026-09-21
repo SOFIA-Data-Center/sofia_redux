@@ -48,10 +48,16 @@ def validate_header(header, keywords):
             req_category = str(req['requirement']).strip()
         except KeyError:
             req_category = '*'
+            log.warning(f'No requirement in header configuration for '
+                        f'key {key}; using * - the keyword will be '
+                        f'required for every input file.')
         try:
             req_dtype = str(req['dtype']).strip()
         except KeyError:
             req_dtype = 'str'
+            log.warning(f'No dtype in header configuration for key '
+                        f'{key}; using str - the keyword will fail '
+                        f'validation unless its value is a string.')
         try:
             req_drange = req['drange']
         except KeyError:

@@ -240,6 +240,14 @@ class SOFIAChooser(Chooser):
                 continue
 
             # instrument and product type are needed for all files
+            if 'INSTRUME' not in header:
+                log.warning(
+                    f"INSTRUME missing from header for {datafile}; "
+                    "using UNKNOWN -- this file will not match any "
+                    "supported instrument, and if this holds for all "
+                    "input files, a generic reduction that only logs "
+                    "the input files will be returned, without "
+                    "further warning.")
             instrume = self.get_key_value(header, 'INSTRUME')
             prodtype = self.get_key_value(header, 'PRODTYPE')
 
@@ -254,6 +262,12 @@ class SOFIAChooser(Chooser):
                     spectel_key = 'SPECTEL2'
                 else:
                     spectel_key = 'SPECTEL1'
+                if spectel_key not in header:
+                    log.warning(
+                        f"{spectel_key} missing from header; using "
+                        "UNKNOWN -- grism cannot be identified, so "
+                        "spectroscopic data will be reduced as "
+                        "FORCAST imaging.")
                 spectel = self.get_key_value(header, spectel_key)
 
                 # grism options

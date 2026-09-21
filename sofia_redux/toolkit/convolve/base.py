@@ -1,5 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from astropy import log
 import numpy as np
 from scipy.interpolate import LinearNDInterpolator, interp1d
 from scipy.spatial import Delaunay
@@ -105,6 +106,13 @@ class ConvolveBase(Model):
             self._tri, self.error.ravel()[self.mask], ix)
 
         bad = np.isnan(new_error)
+        if bad.any():
+            log.warning(
+                f"Interpolated error was NaN for {bad.sum()} masked "
+                f"pixel(s) outside the valid sample range; using each "
+                f"pixel's raw, uninterpolated error instead. The "
+                f"returned error array mixes interpolated and raw "
+                f"values with no marker distinguishing them.")
         new_error[bad] = self.error.ravel()[invalid][bad]
         result[invalid] = new_error
         self._interpolated_error = result

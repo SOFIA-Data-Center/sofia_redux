@@ -112,7 +112,11 @@ def get_split_params(hdul, channel_index=3, sample_index=4,
         x['success'] = False
     hdinsert(header, 'CHANNEL', x['CHANNEL'], comment='Detector channel')
     x['CHOPLN'] = header.get('C_CHOPLN')
-    x['C_AMP'] = header.get('C_AMP', 0)
+    if 'C_AMP' not in header:
+        raise ValueError(
+            f"C_AMP header keyword missing for file {fname}. "
+            "This is only valid for unchopped observations")
+    x['C_AMP'] = header.get('C_AMP')
     for key in ['G_STRT', 'G_PSUP', 'G_SZUP', 'G_PSDN',
                 'G_SZDN', 'G_CYC', 'C_CYC', 'RAMPLN']:
         color_key = key + '_%s' % ('R' if x['CHANNEL'] == 'RED' else 'B')

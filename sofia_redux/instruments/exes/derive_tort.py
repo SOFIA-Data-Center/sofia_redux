@@ -449,10 +449,12 @@ def _process_cross_dispersed(data, header, method='deriv',
 
         old_spacing = header['SPACING']
         if np.isclose(spacing, old_spacing, atol=0.001):
-            log.warning(f"Order spacing changed from "
-                        f"{old_spacing} to {spacing}")
-            log.warning("Setting it back to avoid unnecessary modification")
+            log.info(f"Order spacing {spacing} matches the header value "
+                     f"{old_spacing}; keeping the header value.")
         else:
+            log.info(f"Order spacing changed from {old_spacing} to "
+                     f"{spacing}; updating SPACING and NT "
+                     f"({int(spacing)}).")
             header['SPACING'] = spacing
             header['NT'] = int(spacing)
 

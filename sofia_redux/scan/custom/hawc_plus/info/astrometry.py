@@ -1,6 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 from astropy import log
+import numpy as np
 
 from sofia_redux.scan.custom.sofia.info.astrometry import SofiaAstrometryInfo
 from sofia_redux.scan.coordinate_systems.equatorial_coordinates import \
@@ -41,8 +42,16 @@ class HawcPlusAstrometryInfo(SofiaAstrometryInfo):
             return
 
         if 'OBJRA' in self.configuration and 'OBJDEC' in self.configuration:
+            equinox = options.get_float("EQUINOX")
+            if np.isnan(equinox):
+                log.warning(
+                    "EQUINOX missing, blank, or unparseable; using an "
+                    "undefined ('Jnan') epoch for OBJRA/OBJDEC -- the "
+                    "coordinate passes validation but resolves to NaN "
+                    "RA/Dec once precessed, so it can be silently used "
+                    "as an invalid reference position.")
             self.object_coordinates = EquatorialCoordinates(
-                epoch=Epoch.get_epoch(options.get_float("EQUINOX")))
+                epoch=Epoch.get_epoch(equinox))
             self.object_coordinates.ra = options.get_hms_time(
                 "OBJRA", angle=True)
             self.object_coordinates.dec = options.get_dms_angle("OBJDEC")

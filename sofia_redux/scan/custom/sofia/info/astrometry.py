@@ -76,8 +76,15 @@ class SofiaAstrometryInfo(AstrometryInfo):
         if options is None:
             return
         self.file_date = options.get_string("DATE")
-        self.date = options.get_string("DATE-OBS",
-                                       default=self.default_fits_date)
+        self.date = options.get_string("DATE-OBS")
+        if self.date is None:
+            log.warning(
+                f"DATE-OBS missing or blank; using "
+                f"{self.default_fits_date} - date-dependent "
+                f"configuration (calibration files, array geometry, "
+                f"channel flags) is selected as for 1970, and the "
+                f"output DATE-OBS will read 1970.")
+            self.date = self.default_fits_date
 
         start_time = options.get_string("UTCSTART")
         if start_time is not None:
@@ -213,7 +220,11 @@ class SofiaAstrometryInfo(AstrometryInfo):
         coordinates : EquatorialCoordinates
         """
         if self.coordinate_valid(self.object_coordinates):
-            log.debug("Referencing scan to object coordinates OBJRA/OBJDEC.")
+            log.info(
+                "Referencing scan to object coordinates OBJRA/OBJDEC in "
+                "place of invalid OBSRA/OBSDEC - output astrometry is "
+                "anchored to OBJRA/OBJDEC, and this source is not "
+                "otherwise recorded in the output product.")
             return self.object_coordinates.copy()
 
         elif self.is_requested_valid(header=header):

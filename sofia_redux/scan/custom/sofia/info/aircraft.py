@@ -3,7 +3,7 @@
 from sofia_redux.scan.info.base import InfoBase
 from sofia_redux.scan.utilities.bracketed_values import BracketedValues
 import numpy as np
-from astropy import units
+from astropy import log, units
 from astropy.units import imperial
 
 from sofia_redux.scan.utilities.utils import to_header_float
@@ -70,6 +70,11 @@ class SofiaAircraftInfo(InfoBase):
         self.ground_speed = options.get_float("GRDSPEED") * self.knots
         self.altitude.start = options.get_float("ALTI_STA") * self.ft
         self.altitude.end = options.get_float("ALTI_END") * self.ft
+        if np.isnan(self.altitude.midpoint):
+            log.warning("ALTI_STA/ALTI_END missing or invalid; aircraft "
+                        "altitude is nan - with tau=atran (the HAWC+ "
+                        "default) the ATRAN correction is nan and this "
+                        "scan contributes no frames to the map.")
 
     def edit_header(self, header):
         """

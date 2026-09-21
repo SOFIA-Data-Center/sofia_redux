@@ -387,6 +387,17 @@ def extspec(rectimg, profile=None, spatial_map=None,
                             oerr[api, wavei] = error_function(col_var[zap],
                                                               weight)
 
+                    apdata = col_image[zap]
+                    if verbose and (apdata.size == 0
+                                    or np.all(np.isnan(apdata))):
+                        log.warning(
+                            "All pixels are missing or NaN in aperture "
+                            "at order=%i aperture=%i column=%i "
+                            "wavelength=%f; the extracted flux there "
+                            "(%s) is not a real measurement."
+                            % (order, api, wavei, wave[wavei],
+                               oflux[api, wavei]))
+
                     # set bitmask for any fixed pixels
                     if np.any(col_bits[zap] > 1):
                         obits[api, wavei] += 2

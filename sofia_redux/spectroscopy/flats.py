@@ -314,6 +314,14 @@ class FlatInfo(FlatBase):
             value = dtype(h.get(x[0], defaults[dtype]))
             setattr(self, name, value)
 
+        if 'ROTATION' not in h:
+            log.warning(
+                "ROTATION missing from flat header; using 0 (no "
+                "rotation applied) -- the order mask will stay in "
+                "the raw detector frame while edgecoeffs/xranges "
+                "assume the rotated frame, so orders will not align "
+                "with the mask.")
+
         if self.rotation is not None:
             # When reading the ordermask from the flatinfo file, rotation
             # should be applied.

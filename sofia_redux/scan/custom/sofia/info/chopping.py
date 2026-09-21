@@ -2,7 +2,7 @@
 
 from sofia_redux.scan.info.base import InfoBase
 import numpy as np
-from astropy import units
+from astropy import log, units
 
 from sofia_redux.scan.utilities.utils import (
     to_header_float, insert_info_in_header)
@@ -75,6 +75,11 @@ class SofiaChoppingInfo(InfoBase):
 
         self.chopping = options.get_bool("CHOPPING")
         self.frequency = options.get_float("CHPFREQ") * units.Unit('Hz')
+        if self.chopping and np.isnan(self.frequency):
+            log.warning(
+                "CHPFREQ missing or invalid while chopping is enabled; "
+                "chop frequency is nan - the point-source flux "
+                "correction will be corrupted.")
         self.profile_type = options.get_string("CHPPROF")
         self.symmetry_type = options.get_string("CHPSYM")
         self.amplitude = options.get_float("CHPAMP1") * units.Unit('arcsec')

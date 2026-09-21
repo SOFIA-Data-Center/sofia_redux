@@ -1657,6 +1657,8 @@ def make_hdul(combined, grid_info, append_weights=False):
                       'Setting TRANSMISSION to 1.0.')
             atran = np.full(w_out.shape, 1.0)
     else:
+        log.warning('No UNSMOOTHED_ATRAN extension in input file; '
+                    'setting TRANSMISSION to 1.0.')
         atran = np.full(w_out.shape, 1.0)
         unsmoothed_atran = None
 

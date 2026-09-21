@@ -3,6 +3,7 @@
 from argparse import Namespace
 import warnings
 
+from astropy import log
 import bottleneck as bn
 import numpy as np
 from scipy.stats import chi2
@@ -246,6 +247,11 @@ class Model(object):
             try:
                 error = float(error)
             except (ValueError, TypeError):
+                log.warning(
+                    "error value {!r} could not be parsed as a float; "
+                    "using 1.0 - chi2, reduced chi2, and Q will be computed "
+                    "with a uniform error of 1.0 instead of the supplied "
+                    "value.".format(error))
                 error = 1.0
         self._error = error
 

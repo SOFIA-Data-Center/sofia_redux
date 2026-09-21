@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import numpy as np
-from astropy import units
+from astropy import log, units
 
 from sofia_redux.scan.custom.sofia.info.scanning import SofiaScanningInfo
 from sofia_redux.scan.utilities.bracketed_values import BracketedValues
@@ -112,6 +112,11 @@ class SofiaExtendedScanningInfo(SofiaScanningInfo):
         self.raster_length = options.get_float('SCNLEN') * arcsec
         self.raster_step = options.get_float('SCNSTEP') * arcsec
         self.n_steps = options.get_int('SCNSTEPS', default=UNKNOWN_INT_VALUE)
+        if 'SCNCROSS' not in options:
+            log.warning("SCNCROSS missing; using False -- the output "
+                        "header will record the scan as not "
+                        "cross-scanning, though whether cross-scanning "
+                        "was performed is unknown.")
         self.is_cross_scanning = options.get_bool('SCNCROSS')
         self.rel_frequency = options.get_float('SCNFQRAT')
         self.rel_phase = options.get_float('SCNPHASE') * degree

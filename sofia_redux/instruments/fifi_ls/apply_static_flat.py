@@ -177,6 +177,9 @@ def get_flat(header):
     if 'G_FLT_B' in header:
         b_filter = str(header['G_FLT_B']).upper().strip()
         if b_filter not in ['1', '2']:
+            log.warning("G_FLT_B=%s missing or invalid; using "
+                        "value of G_ORD_B=%s for spectral flat selection." %
+                        (b_filter, b_order))
             b_filter = b_order
     else:
         b_filter = b_order

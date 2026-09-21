@@ -527,7 +527,8 @@ def classify_files(filenames, offbeam=False):
     bad_dates = df[df['mjd'] == 0]
     if len(bad_dates) > 0:
         for name, row in bad_dates.iterrows():
-            log.error('DATE-OBS in header is %s for %s' %
+            log.error('Modified Julian Date could not be parsed from DATE-OBS '
+                      '%s for %s. File will be dropped from nod combination.' %
                       (row['date-obs'], name))
         df = df.drop(bad_dates.index)
 

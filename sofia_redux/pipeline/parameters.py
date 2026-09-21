@@ -299,7 +299,15 @@ class Parameters(object):
                 for pkey, pval in co[key].items():
                     if pkey in pset:
                         pval = self.fix_param_type(pval, pset[pkey]['dtype'])
+                    else:
+                        log.warning("Parameter '{}' is not defined for "
+                                    "step {}; the step will not "
+                                    "use it.".format(pkey, name))
                     pset.set_value(pkey, pval)
+            elif key in co.sections:
+                log.warning("Configuration section '{}' does not match any "
+                            "step in this reduction; its {} setting(s) were "
+                            "not applied.".format(key, len(co[key])))
 
     def to_config(self):
         """
@@ -417,12 +425,22 @@ class Parameters(object):
                 except (TypeError, ValueError):
                     # allow it to be a non-number -- initial
                     # dtype may be not be broad enough
+                    log.warning("Value '{}' could not be parsed "
+                                "as int; using it as a string "
+                                "instead -- the step will receive "
+                                "a string, not an int, for this "
+                                "parameter.".format(value))
                     value = str(value)
         elif dtype == 'float':
             if type(value) is not float:
                 try:
                     value = float(value)
                 except (TypeError, ValueError):
+                    log.warning("Value '{}' could not be parsed "
+                                "as float; using it as a string "
+                                "instead -- the step will receive "
+                                "a string, not a float, for this "
+                                "parameter.".format(value))
                     value = str(value)
         elif dtype == 'strlist':
             if type(value) is not list:

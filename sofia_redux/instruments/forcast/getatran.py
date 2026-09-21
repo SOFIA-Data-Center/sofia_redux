@@ -188,6 +188,11 @@ def get_atran(header, resolution, filename=None,
             return
         za_start = float(header.get('ZA_START', 0))
         za_end = float(header.get('ZA_END', 0))
+        if 'ZA_START' not in header and 'ZA_END' not in header:
+            log.warning('ZA_START/ZA_END missing from header; using 0 deg '
+                        '- the ATRAN file with the lowest ZA will be '
+                        'selected and the atmospheric correction will be '
+                        'wrong.')
         if za_start > 0 >= za_end:
             za = za_start
         elif za_end > 0 >= za_start:
@@ -197,6 +202,10 @@ def get_atran(header, resolution, filename=None,
 
         alt_start = float(header.get('ALTI_STA', 0))
         alt_end = float(header.get('ALTI_END', 0))
+        if 'ALTI_STA' not in header and 'ALTI_END' not in header:
+            log.warning('ALTI_STA/ALTI_END missing from header; using 0 ft '
+                        '- the ATRAN file is matched at 0 ft, not flight '
+                        'altitude; the file used is recorded in ATRNFILE.')
         if alt_start > 0 >= alt_end:
             alt = alt_start
         elif alt_end > 0 >= alt_start:

@@ -195,11 +195,17 @@ def _check_header(header):
     try:
         header['PAGAIN'] = float(header['PAGAIN'])
     except (KeyError, ValueError):
+        log.warning('PAGAIN present but not a valid number; using 1.0 — '
+                    'coadded data values will be wrong unless the true '
+                    'preamp gain is 1.')
         header['PAGAIN'] = 1.0
 
     try:
         header['EPERADU'] = float(header['EPERADU'])
     except (KeyError, ValueError):
+        log.warning(f"EPERADU value {header.get('EPERADU')!r} is not a "
+                    "valid number; using 1.0 — the ERROR extension will "
+                    "be wrong unless the true electrons-per-DN gain is 1.")
         header['EPERADU'] = 1.0
 
 

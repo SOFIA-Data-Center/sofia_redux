@@ -3,6 +3,8 @@
 import re
 import enum
 
+from astropy import log
+
 from sofia_redux.scan.custom.sofia.flags.quality_flags import QualityFlags
 from sofia_redux.scan.info.base import InfoBase
 from sofia_redux.scan.utilities.utils import insert_info_in_header
@@ -117,6 +119,11 @@ class SofiaProcessingInfo(InfoBase):
         try:
             self.quality_level = self.flagspace.convert_flag(level)
         except AttributeError:
+            log.warning(
+                "DATAQUAL missing or not a recognized quality flag; "
+                "using 'NOMINAL' - the output product's DATAQUAL "
+                "metadata (the lowest quality among the input scans) "
+                "may not reflect this scan's true quality.")
             self.quality_level = self.flagspace.default_quality
 
     @staticmethod

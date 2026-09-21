@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 from abc import abstractmethod
-from astropy import log
+from astropy import log, units
 import numpy as np
 
 from sofia_redux.scan.channels.camera.camera import Camera
@@ -40,6 +40,17 @@ class ColorArrangement(Camera):
                 self.info.resolution = (
                     beam * self.info.instrument.get_size_unit())
                 self.data.set_beam_size(self.info.resolution)
+
+        else:
+            resolution = self.info.resolution
+            if isinstance(resolution, units.Quantity) and not np.isfinite(
+                    resolution):
+                log.warning(
+                    "'beam' not configured; resolution is nan - under the "
+                    "default 'vclip = auto' velocity clipping, the speed "
+                    "range becomes (nan, nan), which silently disables "
+                    "velocity clipping: no frame is flagged or rejected "
+                    "for scan speed, however fast or slow.")
 
     def get_min_beam_fwhm(self):
         """

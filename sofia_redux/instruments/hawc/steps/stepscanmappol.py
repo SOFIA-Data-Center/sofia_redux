@@ -136,6 +136,10 @@ class StepScanMapPol(StepMOParent):
                                             "%Y-%m-%dT%H:%M:%S")
                 dates.append(dateobs)
             except (KeyError, ValueError):
+                log.warning('Could not read DATE-OBS from scan map '
+                            'output; using the current time to order '
+                            'headers. The merged header may be taken '
+                            'from the wrong file.')
                 dates.append(datetime.now())
 
             try:
@@ -473,7 +477,9 @@ class StepScanMapPol(StepMOParent):
                 try:
                     k, v = val.split('=')
                 except (IndexError, ValueError, TypeError):
-                    pass
+                    log.warning(f'Could not parse option {val}; expected '
+                                'key=value - this setting will not be '
+                                'passed to the scan reduction.')
                 else:
                     options[k] = v
         kwargs['options'] = options

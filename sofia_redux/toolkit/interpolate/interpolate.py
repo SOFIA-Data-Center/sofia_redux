@@ -117,6 +117,17 @@ def interpolate_nans(x, y, xout, missing=np.nan, order=3, width=1, tck=False):
     if not np.any(mask):
         return result
 
+    if order >= nvalid:
+        if nvalid > 1:
+            log.warning(f"Only {nvalid} valid points for requested "
+                        f"spline order {order}; reducing order to "
+                        f"{nvalid - 1} — interpolation quality will "
+                        f"be reduced.")
+        else:
+            log.warning(f"Only {nvalid} valid point for requested "
+                        f"spline order {order}; too few points to "
+                        f"fit a spline — returning without "
+                        f"interpolating.")
     order = order if order < nvalid else nvalid - 1
     if order <= 0:
         return result

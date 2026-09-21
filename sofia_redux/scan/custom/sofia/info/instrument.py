@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 import numpy as np
-from astropy import units, constants
+from astropy import units, constants, log
 
 from sofia_redux.scan.info.camera.instrument import CameraInstrumentInfo
 from sofia_redux.scan.utilities.utils import (
@@ -75,9 +75,21 @@ class SofiaInstrumentInfo(CameraInstrumentInfo):
         self.detector_channel = options.get_string("DETCHAN")
         self.spectral_resolution = options.get_float("RESOLUN")
         self.exposure_time = options.get_float("EXPTIME") * units.Unit('s')
+        if np.isnan(self.exposure_time):
+            log.warning("EXPTIME missing or invalid; exposure time is "
+                        "nan - this scan's contribution poisons the "
+                        "coadded exposure time sum, and the product "
+                        "header ends up reporting EXPTIME=-9999.")
         self.total_integration_time = options.get_float("TOTINT"
                                                         ) * units.Unit('s')
         self.wavelength = options.get_float("WAVECENT") * units.Unit('um')
+        if np.isnan(self.wavelength):
+            log.warning("WAVECENT missing or invalid; wavelength is nan "
+                        "- the derived frequency is also nan, and the "
+                        "coadded product's ASSC_FRQ header value ends "
+                        "up with a literal 'nan' entry instead of the "
+                        "-9999 sentinel used elsewhere for missing "
+                        "values.")
 
         if 'aperture' in self.configuration:
             d = self.configuration['aperture'] * units.Unit('m')

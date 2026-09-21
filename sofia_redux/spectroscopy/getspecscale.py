@@ -47,12 +47,24 @@ def getspecscale(stack, refidx=None):
         normspec = refspec[None] / stack
         zi = np.isfinite(normspec)
         if not zi.any():
+            log.warning(
+                'No finite flux ratios between any spectrum and the '
+                'reference spectrum; using a scale factor of 1.0 for '
+                'all spectra -- they will be combined without rescaling '
+                'to a common flux level.')
             scales = np.full((nspec,), 1.0)
         else:
             if stack.ndim > 2:
                 scales = np.nanmedian(normspec, axis=(1, 2))
             else:
                 scales = np.nanmedian(normspec, axis=1)
-        scales[~np.isfinite(scales)] = 1.0
+        bad_scale = ~np.isfinite(scales)
+        if bad_scale.any():
+            log.warning(
+                'Could not compute a finite scale factor for {} of {} '
+                'spectra; using a scale factor of 1.0 for the affected '
+                'spectra -- they will be combined without rescaling to a '
+                'common flux level.'.format(bad_scale.sum(), nspec))
+        scales[bad_scale] = 1.0
 
     return scales

@@ -141,6 +141,11 @@ def get_response(header, filename=None):
             obsdate = int(''.join([x for x in obsdate[:10].split('-')]))
         except (TypeError, ValueError):
             obsdate = 99999999
+        if obsdate == 99999999:
+            log.warning('DATE-OBS missing, blank, or unparseable; '
+                        'using 99999999 as the comparison date — '
+                        'the newest response curve will be chosen '
+                        'regardless of when the data was taken.')
         channel = str(header['CHANNEL']).upper().strip()
         dichroic = str(header['DICHROIC'])
         b_order = str(header['G_ORD_B'])

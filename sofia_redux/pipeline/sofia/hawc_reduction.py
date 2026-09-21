@@ -698,6 +698,9 @@ class HAWCReduction(Reduction):
         except KeyError:
             # mode not found -- just run the DRP version of
             # demodulate
+            log.warning("No step list configured for mode '{}'; running "
+                        "the DRP demodulate step alone, with no "
+                        "preparation steps run first.".format(df.mode))
             self.run_drp_step(step_name='demodulate')
             return
         try:

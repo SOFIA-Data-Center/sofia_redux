@@ -531,6 +531,11 @@ class StepScanStokes(StepParent):
         except KeyError:
             hwpstart = -9999
         if hwpstart == -9999:
+            log.warning("HWPSTART is missing or is the -9999 placeholder "
+                        "from old scanpol files; using HWPINIT value %s "
+                        "instead — StepRotate's commanded-vs-actual "
+                        "HWP check will not detect a real mismatch for "
+                        "this file." % hwplist[0])
             self.dataout.setheadval('HWPSTART', hwplist[0],
                                     'HWP initial angle [deg]')
 

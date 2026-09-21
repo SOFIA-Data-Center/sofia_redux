@@ -78,6 +78,9 @@ class StepCalibrate(StepParent):
             obstype = header['OBSTYPE']
         except KeyError:
             obstype = 'UNKNOWN'
+            log.warning('OBSTYPE missing from header; using UNKNOWN - '
+                        'calibration will proceed even if this file '
+                        'is actually a flux standard.')
         if str(obstype).strip().upper() == 'STANDARD_FLUX':
             log.info('Flux standard; not applying calibration.')
             return

@@ -109,6 +109,10 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
             return
 
         self.plate_scale = self.options.get_float('PLATSCAL') * arcsec / mm
+        if np.isnan(self.plate_scale):
+            log.warning('PLATSCAL missing or invalid; plate scale is NaN '
+                        '— pixel size and all pixel offsets across the '
+                        'array will be NaN.')
         self.date_obs = Time(self.options.get_string('DATE-OBS'))
 
         ra = self.options.get_hms_time('OBSRA', angle=True)
@@ -243,6 +247,11 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
         """
         prime_ch = self.prime_array[0].upper()
         i0 = self.options.get_float(f'G_STRT_{prime_ch}')  # prime inductosyn
+        if np.isnan(i0):
+            log.warning(f'G_STRT_{prime_ch} missing or invalid; using NaN '
+                        f'for the prime inductosyn position — the '
+                        f'derived boresight offset logged below will be '
+                        f'NaN.')
         cx0, cy0 = self.coefficients_1
         dx = cx0[1] + (cx0[0] * i0) - cx0[2]
         dy = cy0[1] - (cy0[0] * i0) - cy0[2]
@@ -250,6 +259,11 @@ class FifiLsDetectorArrayInfo(SofiaDetectorArrayInfo):
         if self.coefficients_2 is not None:
             # grating inductosyn
             i1 = self.options.get_float(f'G_STRT_{self.ch.upper()}')
+            if np.isnan(i1):
+                log.warning(f'G_STRT_{self.ch.upper()} missing or invalid; '
+                            f'using NaN for the grating inductosyn '
+                            f'position — the derived boresight offset '
+                            f'logged below will be NaN.')
             cx1, cy1 = self.coefficients_2
             dx += (cx1[1] - cx0[1]) + (cx1[0] * i1 - cx0[0] * i0)
             dy -= (cy1[1] - cy0[1]) + (cy1[0] * i1 - cy0[0] * i0)

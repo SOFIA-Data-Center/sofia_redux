@@ -962,6 +962,11 @@ class FORCASTReduction(Reduction):
                 nexp = 2
             else:
                 nexp = 1
+            if 'DETITIME' not in header:
+                log.warning(
+                    'DETITIME missing from header; using 0.0 - '
+                    'EXPTIME will be written as 0, not the true '
+                    'on-source integration time.')
             detitime = header.get('DETITIME', 0.0)
             hdinsert(header, 'NEXP', nexp,
                      comment='Approximate number of exposures')
